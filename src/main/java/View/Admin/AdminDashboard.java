@@ -4,6 +4,16 @@
  */
 package View.Admin;
 
+import View.components.SidebarPanel;
+import java.awt.Color;
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import java.awt.BorderLayout;
+import java.awt.Font;
+import javax.swing.JLabel;
+import javax.swing.SwingConstants;
+import java.awt.Dimension;
+
 /**
  *
  * @author nityayadav
@@ -11,12 +21,119 @@ package View.Admin;
 public class AdminDashboard extends javax.swing.JFrame {
 
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(AdminDashboard.class.getName());
+    private SidebarPanel sidebarPanel;
+    private JPanel mainContentPanel; // To hold changing content
 
     /**
      * Creates new form AdminDashboard
      */
     public AdminDashboard() {
         initComponents();
+        initializeDashboard();
+    }
+
+    /**
+     * Initialize the dashboard with sidebar and main content
+     */
+    private void initializeDashboard() {
+        // Set BorderLayout for the entire frame
+        getContentPane().setLayout(new BorderLayout());
+
+        // Frame settings
+        setTitle("PharmaStock Pro - Admin Dashboard");
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+        // Create and add SidebarPanel
+        sidebarPanel = new SidebarPanel();
+        getContentPane().add(sidebarPanel, BorderLayout.WEST);
+
+        // Create main content panel (initially showing dashboard)
+        mainContentPanel = createDashboardContent();
+        getContentPane().add(mainContentPanel, BorderLayout.CENTER);
+
+        // Frame settings
+        setExtendedState(JFrame.MAXIMIZED_BOTH);
+        setMinimumSize(new Dimension(1000, 600));
+        setLocationRelativeTo(null); // Center on screen
+
+        // Refresh the frame
+        revalidate();
+        repaint();
+    }
+
+    /**
+     * Create the dashboard main content
+     */
+    private JPanel createDashboardContent() {
+        JPanel panel = new JPanel(new BorderLayout());
+        panel.setBackground(new Color(240, 242, 245)); // Light gray background
+
+        // Header
+        JLabel headerLabel = new JLabel("Dashboard Overview", SwingConstants.CENTER);
+        headerLabel.setFont(new Font("SansSerif", Font.BOLD, 28));
+        headerLabel.setForeground(new Color(0x0E, 0x28, 0x6B)); // Match sidebar blue
+        headerLabel.setBorder(javax.swing.BorderFactory.createEmptyBorder(20, 0, 20, 0));
+
+        panel.add(headerLabel, BorderLayout.NORTH);
+
+        // Add some sample content
+        JPanel contentPanel = new JPanel();
+        contentPanel.setLayout(new java.awt.GridLayout(2, 2, 20, 20));
+        contentPanel.setBorder(javax.swing.BorderFactory.createEmptyBorder(20, 20, 20, 20));
+        contentPanel.setBackground(new Color(240, 242, 245));
+
+        // Create sample cards
+        String[] cardTitles = {"Total Products", "Total Categories", "Recent Transactions", "Active Users"};
+        String[] cardValues = {"1,254", "24", "342", "18"};
+        Color[] cardColors = {
+            new Color(41, 128, 185), // Blue
+            new Color(39, 174, 96), // Green
+            new Color(142, 68, 173), // Purple
+            new Color(230, 126, 34) // Orange
+        };
+
+        for (int i = 0; i < 4; i++) {
+            JPanel card = createStatCard(cardTitles[i], cardValues[i], cardColors[i]);
+            contentPanel.add(card);
+        }
+
+        panel.add(contentPanel, BorderLayout.CENTER);
+
+        return panel;
+    }
+
+    /**
+     * Create a statistics card for the dashboard
+     */
+    private JPanel createStatCard(String title, String value, Color color) {
+        JPanel card = new JPanel();
+        card.setLayout(new BorderLayout());
+        card.setBackground(Color.WHITE);
+        card.setBorder(javax.swing.BorderFactory.createCompoundBorder(
+                javax.swing.BorderFactory.createLineBorder(new Color(200, 200, 200), 1),
+                javax.swing.BorderFactory.createEmptyBorder(20, 20, 20, 20)
+        ));
+
+        // Title
+        JLabel titleLabel = new JLabel(title);
+        titleLabel.setFont(new Font("SansSerif", Font.PLAIN, 16));
+        titleLabel.setForeground(Color.GRAY);
+
+        // Value
+        JLabel valueLabel = new JLabel(value);
+        valueLabel.setFont(new Font("SansSerif", Font.BOLD, 32));
+        valueLabel.setForeground(color);
+
+        // Color indicator
+        JPanel colorIndicator = new JPanel();
+        colorIndicator.setBackground(color);
+        colorIndicator.setPreferredSize(new Dimension(5, 0));
+
+        card.add(titleLabel, BorderLayout.NORTH);
+        card.add(valueLabel, BorderLayout.CENTER);
+        card.add(colorIndicator, BorderLayout.WEST);
+
+        return card;
     }
 
     /**
@@ -28,39 +145,7 @@ public class AdminDashboard extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jPanel2 = new javax.swing.JPanel();
-        sidebarPanelAdmin2 = new View.components.SidebarPanelAdmin();
-
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-
-        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
-        jPanel2.setLayout(jPanel2Layout);
-        jPanel2Layout.setHorizontalGroup(
-            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel2Layout.createSequentialGroup()
-                .addComponent(sidebarPanelAdmin2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 539, Short.MAX_VALUE))
-        );
-        jPanel2Layout.setVerticalGroup(
-            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel2Layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(sidebarPanelAdmin2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(57, Short.MAX_VALUE))
-        );
-
-        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
-        getContentPane().setLayout(layout);
-        layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-        );
-        layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, Short.MAX_VALUE))
-        );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -74,6 +159,21 @@ public class AdminDashboard extends javax.swing.JFrame {
         /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
          * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
          */
+//        try {
+//            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
+//                if ("Nimbus".equals(info.getName())) {
+//                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
+//                    break;
+//                }
+//            }
+//        } catch (ReflectiveOperationException | javax.swing.UnsupportedLookAndFeelException ex) {
+//            logger.log(java.util.logging.Level.SEVERE, null, ex);
+//        }
+//        //</editor-fold>
+//
+//        /* Create and display the form */
+//        java.awt.EventQueue.invokeLater(() -> new AdminDashboard().setVisible(true));
+
         try {
             for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
                 if ("Nimbus".equals(info.getName())) {
@@ -87,11 +187,13 @@ public class AdminDashboard extends javax.swing.JFrame {
         //</editor-fold>
 
         /* Create and display the form */
-        java.awt.EventQueue.invokeLater(() -> new AdminDashboard().setVisible(true));
+        java.awt.EventQueue.invokeLater(() -> {
+            AdminDashboard dashboard = new AdminDashboard();
+            dashboard.setVisible(true);
+        });
+
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JPanel jPanel2;
-    private View.components.SidebarPanelAdmin sidebarPanelAdmin2;
     // End of variables declaration//GEN-END:variables
 }

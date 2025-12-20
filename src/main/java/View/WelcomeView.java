@@ -53,7 +53,7 @@ public class WelcomeView extends javax.swing.JFrame {
         jPanel2.setBackground(new java.awt.Color(14, 40, 107));
 
         jLabel1.setBackground(new java.awt.Color(0, 255, 255));
-        jLabel1.setFont(new java.awt.Font("Kailasa", 1, 24)); // NOI18N
+        jLabel1.setFont(new java.awt.Font("InaiMathi", 1, 24)); // NOI18N
         jLabel1.setForeground(new java.awt.Color(255, 255, 255));
         jLabel1.setText("PharmaStock");
 
