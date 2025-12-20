@@ -1,185 +1,137 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package View.components;
 
 import java.awt.*;
 import javax.swing.*;
-
 import javax.swing.border.EmptyBorder;
 
-/**
- *
- * @author nityayadav
- */
 public class SidebarPanel extends JPanel {
 
-    private JButton dashboardBtn, categoriesBtn, productBtn, transactionBtn, customerBtn, userBtn;
-
-    private final Color DARK_BLUE = new Color(14, 40, 107); // #0E286B
-    private final Color WHITE = Color.WHITE;
+    private final Color SIDEBAR_BG = new Color(52, 58, 64); // Dark gray
+    private final Color TEXT_COLOR = Color.WHITE;
+    private final Color HIGHLIGHT_BG = new Color(0, 123, 255); // Bootstrap blue for active
+    private final Color HOVER_BG = new Color(73, 80, 87);
 
     public SidebarPanel() {
         setLayout(new BorderLayout());
-        setBackground(WHITE);
-        setPreferredSize(new Dimension(250, 800));
+        setBackground(SIDEBAR_BG);
+        setPreferredSize(new Dimension(260, 800));
+        setBorder(new EmptyBorder(20, 0, 20, 0));
 
-        // Top Panel - Only Logo
-        JPanel topPanel = new JPanel();
-        topPanel.setBackground(WHITE);
-        topPanel.setBorder(new EmptyBorder(40, 20, 40, 20)); // Padding
-        topPanel.setLayout(new BoxLayout(topPanel, BoxLayout.Y_AXIS));
-
+        // Top Logo Section
+        JPanel logoPanel = new JPanel();
+        logoPanel.setBackground(SIDEBAR_BG);
+        logoPanel.setLayout(new FlowLayout(FlowLayout.LEFT, 20, 20));
         JLabel logoLabel = new JLabel("PharmaStock");
-        logoLabel.setFont(new Font("Serif", Font.BOLD, 28)); // Closest built-in to InaiMathi; change to "InaiMathi" if installed
-        logoLabel.setForeground(DARK_BLUE);
-        logoLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-        topPanel.add(logoLabel);
+        logoLabel.setFont(new Font("Segoe UI", Font.BOLD, 24));
+        logoLabel.setForeground(Color.WHITE);
+//        logoLabel.setIcon(new ImageIcon(getClass().getResource("/resources/images/logo-icon.png"))); // Optional logo icon
+//       Design-time safe image loading
+        if (!java.beans.Beans.isDesignTime()) {
+            java.net.URL iconUrl
+                    = getClass().getClassLoader().getResource("images/logo-icon.png");
 
-        add(topPanel, BorderLayout.NORTH);
+            if (iconUrl != null) {
+                logoLabel.setIcon(new ImageIcon(iconUrl));
+                logoLabel.setIconTextGap(10);
+            } else {
+                System.err.println("Logo icon not found: images/logo-icon.png");
+            }
+        }
+        logoPanel.add(logoLabel);
+        add(logoPanel, BorderLayout.NORTH);
 
-        // Main Menu Panel
+        // Menu Items Panel
         JPanel menuPanel = new JPanel();
         menuPanel.setLayout(new BoxLayout(menuPanel, BoxLayout.Y_AXIS));
-        menuPanel.setBackground(WHITE);
-        menuPanel.setBorder(new EmptyBorder(20, 20, 20, 20));
+        menuPanel.setBackground(SIDEBAR_BG);
+        menuPanel.setBorder(new EmptyBorder(30, 20, 20, 20));
 
-        // MENU Label (optional - not in your latest description, but in screenshot)
+        // MENU Label
         JLabel menuLabel = new JLabel("MENU");
-        menuLabel.setForeground(Color.GRAY);
-        menuLabel.setFont(new Font("SansSerif", Font.PLAIN, 12));
+        menuLabel.setForeground(new Color(173, 181, 189));
+        menuLabel.setFont(new Font("Segoe UI", Font.BOLD, 12));
         menuLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
         menuPanel.add(menuLabel);
         menuPanel.add(Box.createRigidArea(new Dimension(0, 15)));
 
-        // Menu Buttons
-        dashboardBtn = createMenuButton("Dashboard", "dashboard-icon.png");
-        dashboardBtn.setBackground(DARK_BLUE); // Highlighted since on dashboard page
-        dashboardBtn.setForeground(WHITE);
+        // Dashboard - Highlighted
+        JButton dashboardBtn = createMenuItem("Dashboard", "dashboard-icon.png", true);
         menuPanel.add(dashboardBtn);
-        menuPanel.add(Box.createRigidArea(new Dimension(0, 10)));
+        menuPanel.add(Box.createRigidArea(new Dimension(0, 5)));
 
-        categoriesBtn = createMenuButton("Categories", "categories-icon.png");
+        // Products
+        JButton productsBtn = createMenuItem("Products", "products-icon.png", false);
+        menuPanel.add(productsBtn);
+        menuPanel.add(Box.createRigidArea(new Dimension(0, 5)));
+
+        // Categories
+        JButton categoriesBtn = createMenuItem("Categories", "categories-icon.png", false);
         menuPanel.add(categoriesBtn);
-        menuPanel.add(Box.createRigidArea(new Dimension(0, 10)));
+        menuPanel.add(Box.createRigidArea(new Dimension(0, 5)));
 
-        productBtn = createMenuButton("Product", "product-icon.png");
-        menuPanel.add(productBtn);
-        menuPanel.add(Box.createRigidArea(new Dimension(0, 10)));
-
-        transactionBtn = createMenuButton("Transaction", "transaction-icon.png");
-        menuPanel.add(transactionBtn);
+        // Transactions
+        JButton transactionsBtn = createMenuItem("Transactions", "transactions-icon.png", false);
+        menuPanel.add(transactionsBtn);
         menuPanel.add(Box.createRigidArea(new Dimension(0, 30)));
 
         // OTHERS Label
         JLabel othersLabel = new JLabel("OTHERS");
-        othersLabel.setForeground(Color.GRAY);
-        othersLabel.setFont(new Font("SansSerif", Font.PLAIN, 12));
+        othersLabel.setForeground(new Color(173, 181, 189));
+        othersLabel.setFont(new Font("Segoe UI", Font.BOLD, 12));
         othersLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
         menuPanel.add(othersLabel);
         menuPanel.add(Box.createRigidArea(new Dimension(0, 15)));
 
-        customerBtn = createMenuButton("Customer", "customer-icon.png");
-        menuPanel.add(customerBtn);
-        menuPanel.add(Box.createRigidArea(new Dimension(0, 10)));
+        // Customer
+        JButton Customerbtn = createMenuItem("Customer", "settings-icon.png", false);
+        menuPanel.add(Customerbtn);
+        menuPanel.add(Box.createRigidArea(new Dimension(0, 5)));
 
-        userBtn = createMenuButton("User", "user-icon.png");
-        menuPanel.add(userBtn);
+        // User
+        JButton UserBtn = createMenuItem("User", "User-icon.png", false);
+        menuPanel.add(UserBtn);
 
-        menuPanel.add(Box.createVerticalGlue()); // Push to bottom if needed
+        menuPanel.add(Box.createVerticalGlue()); // Push items up
 
         add(menuPanel, BorderLayout.CENTER);
     }
 
-    private JButton createMenuButton(String text, String iconPath) {
+    private JButton createMenuItem(String text, String iconPath, boolean isActive) {
         JButton button = new JButton(text);
-        button.setIcon(new ImageIcon(getClass().getResource("/resources/images/" + iconPath)));
+//        button.setIcon(new ImageIcon(getClass().getResource("/resources/images/" + iconPath)));
         button.setHorizontalAlignment(SwingConstants.LEFT);
-        button.setMaximumSize(new Dimension(Integer.MAX_VALUE, 45));
-        button.setPreferredSize(new Dimension(Integer.MAX_VALUE, 45));
+        button.setMaximumSize(new Dimension(Integer.MAX_VALUE, 50));
+        button.setPreferredSize(new Dimension(Integer.MAX_VALUE, 50));
         button.setFocusPainted(false);
         button.setBorderPainted(false);
-        button.setContentAreaFilled(false); // Transparent background by default
-        button.setForeground(WHITE);
-        button.setFont(new Font("SansSerif", Font.PLAIN, 16)); // Size close to 12pt feel
+        button.setContentAreaFilled(false);
+        button.setForeground(TEXT_COLOR);
+        button.setFont(new Font("Segoe UI", Font.PLAIN, 16));
         button.setIconTextGap(15);
         button.setAlignmentX(Component.LEFT_ALIGNMENT);
         button.setCursor(new Cursor(Cursor.HAND_CURSOR));
 
-        // Hover effect (turns dark blue)
-        button.addMouseListener(new java.awt.event.MouseAdapter() {
-            @Override
-            public void mouseEntered(java.awt.event.MouseEvent evt) {
-                if (button != dashboardBtn) { // Don't change highlighted one
-                    button.setForeground(DARK_BLUE);
+        if (isActive) {
+            button.setBackground(HIGHLIGHT_BG);
+            button.setOpaque(true);
+            button.setForeground(Color.WHITE);
+        } else {
+            // Hover effect
+            button.addMouseListener(new java.awt.event.MouseAdapter() {
+                @Override
+                public void mouseEntered(java.awt.event.MouseEvent evt) {
+                    button.setBackground(HOVER_BG);
+                    button.setOpaque(true);
                 }
-            }
 
-            @Override
-            public void mouseExited(java.awt.event.MouseEvent evt) {
-                if (button != dashboardBtn) {
-                    button.setForeground(WHITE);
+                @Override
+                public void mouseExited(java.awt.event.MouseEvent evt) {
+                    button.setBackground(null);
+                    button.setOpaque(false);
                 }
-            }
-        });
+            });
+        }
 
         return button;
-    }
-
-    // Public method to change highlighted button when navigating pages
-    public void setActiveButton(String active) {
-        // Reset all
-        JButton[] buttons = {dashboardBtn, categoriesBtn, productBtn, transactionBtn, customerBtn, userBtn};
-        for (JButton btn : buttons) {
-            btn.setBackground(null);
-            btn.setForeground(WHITE);
-        }
-
-        // Highlight selected
-        switch (active) {
-            case "Dashboard" -> {
-                dashboardBtn.setBackground(DARK_BLUE);
-                dashboardBtn.setForeground(WHITE);
-            }
-            case "Categories" -> {
-                categoriesBtn.setBackground(DARK_BLUE);
-                categoriesBtn.setForeground(WHITE);
-            }
-            case "Product" -> {
-                productBtn.setBackground(DARK_BLUE);
-                productBtn.setForeground(WHITE);
-            }
-            case "Transaction" -> {
-                transactionBtn.setBackground(DARK_BLUE);
-                transactionBtn.setForeground(WHITE);
-            }
-            // Add more if needed
-        }
-    }
-
-    // Add listeners (call from controller)
-    public void addDashboardListener(java.awt.event.ActionListener listener) {
-        dashboardBtn.addActionListener(listener);
-    }
-
-    public void addCategoriesListener(java.awt.event.ActionListener listener) {
-        categoriesBtn.addActionListener(listener);
-    }
-
-    public void addProductListener(java.awt.event.ActionListener listener) {
-        productBtn.addActionListener(listener);
-    }
-
-    public void addTransactionListener(java.awt.event.ActionListener listener) {
-        transactionBtn.addActionListener(listener);
-    }
-
-    public void addCustomerListener(java.awt.event.ActionListener listener) {
-        customerBtn.addActionListener(listener);
-    }
-
-    public void addUserListener(java.awt.event.ActionListener listener) {
-        userBtn.addActionListener(listener);
     }
 }

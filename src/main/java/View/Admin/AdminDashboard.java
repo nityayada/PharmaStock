@@ -5,14 +5,18 @@
 package View.Admin;
 
 import View.components.SidebarPanel;
+import View.components.NavbarPanel;
 import java.awt.Color;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import java.awt.BorderLayout;
+//import javax.swing.border.EmptyBorder;
 import java.awt.Font;
 import javax.swing.JLabel;
 import javax.swing.SwingConstants;
 import java.awt.Dimension;
+import java.awt.GridLayout;
+import javax.swing.BorderFactory;
 
 /**
  *
@@ -22,67 +26,64 @@ public class AdminDashboard extends javax.swing.JFrame {
 
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(AdminDashboard.class.getName());
     private SidebarPanel sidebarPanel;
-    private JPanel mainContentPanel; // To hold changing content
+    private NavbarPanel navbarPanel;
+    private JPanel mainContentPanel;
 
-    /**
-     * Creates new form AdminDashboard
-     */
     public AdminDashboard() {
         initComponents();
         initializeDashboard();
     }
 
-    /**
-     * Initialize the dashboard with sidebar and main content
-     */
     private void initializeDashboard() {
-        // Set BorderLayout for the entire frame
+        // Main frame layout
         getContentPane().setLayout(new BorderLayout());
 
-        // Frame settings
         setTitle("PharmaStock Pro - Admin Dashboard");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setExtendedState(JFrame.MAXIMIZED_BOTH);
+        setMinimumSize(new Dimension(1000, 600));
 
-        // Create and add SidebarPanel
+        // 1. Create Sidebar (full height on left)
         sidebarPanel = new SidebarPanel();
         getContentPane().add(sidebarPanel, BorderLayout.WEST);
 
-        // Create main content panel (initially showing dashboard)
+        // 2. Create RIGHT WRAPPER: Navbar + Content (so navbar doesn't overlap sidebar)
+        JPanel rightWrapper = new JPanel(new BorderLayout());
+        rightWrapper.setBackground(new Color(217, 217, 217));
+
+        // Navbar - only on top of content area
+        navbarPanel = new NavbarPanel();
+        rightWrapper.add(navbarPanel, BorderLayout.NORTH);
+
+        // Main dashboard content
         mainContentPanel = createDashboardContent();
-        getContentPane().add(mainContentPanel, BorderLayout.CENTER);
+        rightWrapper.add(mainContentPanel, BorderLayout.CENTER);
 
-        // Frame settings
-        setExtendedState(JFrame.MAXIMIZED_BOTH);
-        setMinimumSize(new Dimension(1000, 600));
-        setLocationRelativeTo(null); // Center on screen
+        // Add the right wrapper to the CENTER of the frame
+        getContentPane().add(rightWrapper, BorderLayout.CENTER);
 
-        // Refresh the frame
+        // Final refresh
         revalidate();
         repaint();
     }
 
-    /**
-     * Create the dashboard main content
-     */
     private JPanel createDashboardContent() {
         JPanel panel = new JPanel(new BorderLayout());
-        panel.setBackground(new Color(240, 242, 245)); // Light gray background
+        panel.setBackground(new Color(217, 217, 217));
 
         // Header
         JLabel headerLabel = new JLabel("Dashboard Overview", SwingConstants.CENTER);
         headerLabel.setFont(new Font("SansSerif", Font.BOLD, 28));
-        headerLabel.setForeground(new Color(0x0E, 0x28, 0x6B)); // Match sidebar blue
-        headerLabel.setBorder(javax.swing.BorderFactory.createEmptyBorder(20, 0, 20, 0));
-
+        headerLabel.setForeground(new Color(0x0E, 0x28, 0x6B));
+        headerLabel.setBorder(BorderFactory.createEmptyBorder(20, 0, 20, 0));
         panel.add(headerLabel, BorderLayout.NORTH);
 
-        // Add some sample content
+        // Stats Cards Grid
         JPanel contentPanel = new JPanel();
-        contentPanel.setLayout(new java.awt.GridLayout(2, 2, 20, 20));
-        contentPanel.setBorder(javax.swing.BorderFactory.createEmptyBorder(20, 20, 20, 20));
-        contentPanel.setBackground(new Color(240, 242, 245));
+        contentPanel.setLayout(new GridLayout(2, 2, 20, 20));
+        contentPanel.setBorder(BorderFactory.createEmptyBorder(20, 40, 40, 40));
+        contentPanel.setBackground(new Color(217, 217, 217));
 
-        // Create sample cards
         String[] cardTitles = {"Total Products", "Total Categories", "Recent Transactions", "Active Users"};
         String[] cardValues = {"1,254", "24", "342", "18"};
         Color[] cardColors = {
@@ -98,20 +99,16 @@ public class AdminDashboard extends javax.swing.JFrame {
         }
 
         panel.add(contentPanel, BorderLayout.CENTER);
-
         return panel;
     }
 
-    /**
-     * Create a statistics card for the dashboard
-     */
     private JPanel createStatCard(String title, String value, Color color) {
         JPanel card = new JPanel();
         card.setLayout(new BorderLayout());
         card.setBackground(Color.WHITE);
-        card.setBorder(javax.swing.BorderFactory.createCompoundBorder(
-                javax.swing.BorderFactory.createLineBorder(new Color(200, 200, 200), 1),
-                javax.swing.BorderFactory.createEmptyBorder(20, 20, 20, 20)
+        card.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(new Color(217, 217, 217), 1),
+                BorderFactory.createEmptyBorder(20, 20, 20, 20)
         ));
 
         // Title
@@ -124,14 +121,14 @@ public class AdminDashboard extends javax.swing.JFrame {
         valueLabel.setFont(new Font("SansSerif", Font.BOLD, 32));
         valueLabel.setForeground(color);
 
-        // Color indicator
-        JPanel colorIndicator = new JPanel();
-        colorIndicator.setBackground(color);
-        colorIndicator.setPreferredSize(new Dimension(5, 0));
+        // Color bar on left
+        JPanel colorBar = new JPanel();
+        colorBar.setBackground(color);
+        colorBar.setPreferredSize(new Dimension(6, 0));
 
         card.add(titleLabel, BorderLayout.NORTH);
         card.add(valueLabel, BorderLayout.CENTER);
-        card.add(colorIndicator, BorderLayout.WEST);
+        card.add(colorBar, BorderLayout.WEST);
 
         return card;
     }
