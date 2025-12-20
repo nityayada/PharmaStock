@@ -18,23 +18,30 @@ public class NavbarPanel extends JPanel {
 
     public NavbarPanel() {
         setLayout(new BorderLayout());
-        setBackground(new Color(245, 245, 245)); // Light gray like in image
+        setBackground(new Color(250, 250, 250)); // full white like in image
         setPreferredSize(new Dimension(0, 70)); // Fixed height
         setBorder(new EmptyBorder(10, 30, 10, 30)); // Padding left/right
 
-        // Left: Welcome Label
-        JPanel leftPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 10));
+        // Left: Welcome Label (VERTICAL)
+        JPanel leftPanel = new JPanel();
+        leftPanel.setLayout(new BoxLayout(leftPanel, BoxLayout.Y_AXIS));
         leftPanel.setBackground(null);
 
-        JLabel welcomeLabel = new JLabel("Welcome, ");
-        welcomeLabel.setFont(new Font("Segoe UI", Font.PLAIN, 18));
+        JLabel welcomeLabel = new JLabel("Welcome,");
+        welcomeLabel.setFont(new Font("InaiMathi", Font.PLAIN, 14));
         welcomeLabel.setForeground(Color.GRAY);
 
         JLabel adminLabel = new JLabel("Admin");
-        adminLabel.setFont(new Font("Segoe UI", Font.BOLD, 22));
+        adminLabel.setFont(new Font("InaiMathi", Font.BOLD, 22));
         adminLabel.setForeground(Color.BLACK);
 
+//      Align labels to the left
+        welcomeLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+        adminLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+//       Optional spacing between labels
         leftPanel.add(welcomeLabel);
+        leftPanel.add(Box.createRigidArea(new Dimension(0, 2)));
         leftPanel.add(adminLabel);
 
         add(leftPanel, BorderLayout.WEST);
@@ -51,7 +58,7 @@ public class NavbarPanel extends JPanel {
 
         if (!java.beans.Beans.isDesignTime()) {
             java.net.URL iconUrl
-                    = getClass().getClassLoader().getResource("images/search-icon.png");
+                    = getClass().getClassLoader().getResource("Resources/Image/search-icon.png");
 
             if (iconUrl != null) {
                 searchIcon.setIcon(new ImageIcon(iconUrl));
@@ -59,12 +66,11 @@ public class NavbarPanel extends JPanel {
                 System.err.println("Search icon not found: images/search-icon.png");
             }
         }
-        searchIcon.setCursor(new Cursor(Cursor.HAND_CURSOR));
 
         // Search Field
         searchField = new JTextField("Search anything");
         searchField.setPreferredSize(new Dimension(300, 40));
-        searchField.setFont(new Font("Segoe UI", Font.PLAIN, 16));
+        searchField.setFont(new Font("InaiMathi", Font.PLAIN, 16));
         searchField.setForeground(Color.GRAY);
         searchField.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createLineBorder(new Color(220, 220, 220), 1),

@@ -21,116 +21,82 @@ import javax.swing.BorderFactory;
  *
  * @author nityayadav
  */
-public class AdminDashboard extends javax.swing.JFrame {
+public class AdminCategory extends javax.swing.JFrame {
 
-    private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(AdminDashboard.class.getName());
+    private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(AdminCategory.class.getName());
     private SidebarPanel sidebarPanel;
     private NavbarPanel navbarPanel;
     private JPanel mainContentPanel;
 
-    public AdminDashboard() {
+    /**
+     * Creates new form AdminCategory
+     */
+    public AdminCategory() {
         initComponents();
-        initializeDashboard();
+        initializeCategory();
     }
 
-    private void initializeDashboard() {
+    private void initializeCategory() {
         // Main frame layout
         getContentPane().setLayout(new BorderLayout());
 
-        setTitle("PharmaStock - Admin Dashboard");
+        setTitle("PharmaStock Pro - Categories");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-//        setExtendedState(JFrame.MAXIMIZED_BOTH);
+        setExtendedState(JFrame.MAXIMIZED_BOTH);
         setMinimumSize(new Dimension(1200, 800));
 
         // 1. Create Sidebar (full height on left)
         sidebarPanel = new SidebarPanel();
-        sidebarPanel.setActiveButton("Dashboard");
+        sidebarPanel.setActiveButton("Categories");
         getContentPane().add(sidebarPanel, BorderLayout.WEST);
 
-        // 2. Create RIGHT WRAPPER: Navbar + Content (so navbar doesn't overlap sidebar)
-        JPanel rightWrapper = new JPanel(new BorderLayout());
-        rightWrapper.setBackground(new Color(217, 217, 217));
+        // Highlight "Categories" in sidebar
+        sidebarPanel.setActiveButton("Categories");  // <--- This line highlights Categories
 
-        // Navbar - only on top of content area
+        // 2. Create RIGHT WRAPPER: Navbar + Content
+        JPanel rightWrapper = new JPanel(new BorderLayout());
+        rightWrapper.setBackground(new Color(240, 242, 245));
+
+        // Navbar
         navbarPanel = new NavbarPanel();
         rightWrapper.add(navbarPanel, BorderLayout.NORTH);
 
-        // Main dashboard content
-        mainContentPanel = createDashboardContent();
+        // Main content for Categories page
+        mainContentPanel = createCategoryContent();
         rightWrapper.add(mainContentPanel, BorderLayout.CENTER);
 
-        // Add the right wrapper to the CENTER of the frame
+        // Add right wrapper to frame
         getContentPane().add(rightWrapper, BorderLayout.CENTER);
 
-        // Final refresh
         revalidate();
         repaint();
     }
 
-    private JPanel createDashboardContent() {
+    private JPanel createCategoryContent() {
         JPanel panel = new JPanel(new BorderLayout());
-        panel.setBackground(new Color(217, 217, 217));
+        panel.setBackground(new Color(240, 242, 245));
 
-        // Header
-        JLabel headerLabel = new JLabel("Dashboard Overview", SwingConstants.CENTER);
-        headerLabel.setFont(new Font("InaiMathi", Font.BOLD, 28));
+        // Header - Categories Page
+        JLabel headerLabel = new JLabel("Categories Management", SwingConstants.CENTER);
+        headerLabel.setFont(new Font("SansSerif", Font.BOLD, 32));
         headerLabel.setForeground(new Color(0x0E, 0x28, 0x6B));
-        headerLabel.setBorder(BorderFactory.createEmptyBorder(20, 0, 20, 0));
+        headerLabel.setBorder(BorderFactory.createEmptyBorder(30, 0, 40, 0));
         panel.add(headerLabel, BorderLayout.NORTH);
 
-        // Stats Cards Grid
-        JPanel contentPanel = new JPanel();
-        contentPanel.setLayout(new GridLayout(1, 4, 10, 10));
-        contentPanel.setBorder(BorderFactory.createEmptyBorder(20, 40, 40, 40));
-        contentPanel.setBackground(new Color(217, 217, 217));
+        // Placeholder content (you'll replace this with real category table/form later)
+        JPanel placeholder = new JPanel();
+        placeholder.setLayout(new BorderLayout());
+        placeholder.setBackground(Color.WHITE);
+        placeholder.setBorder(BorderFactory.createEmptyBorder(40, 60, 40, 60));
 
-        String[] cardTitles = {"Total Products", "Total Categories", "Recent Transactions", "Active Users"};
-        String[] cardValues = {"1,254", "24", "342", "18"};
-        Color[] cardColors = {
-            new Color(41, 128, 185), // Blue
-            new Color(39, 174, 96), // Green
-            new Color(142, 68, 173), // Purple
-            new Color(230, 126, 34) // Orange
-        };
+        JLabel placeholderLabel = new JLabel("Categories List / Add / Edit Form Will Go Here", SwingConstants.CENTER);
+        placeholderLabel.setFont(new Font("SansSerif", Font.PLAIN, 24));
+        placeholderLabel.setForeground(Color.GRAY);
+        placeholder.add(placeholderLabel, BorderLayout.CENTER);
 
-        for (int i = 0; i < 4; i++) {
-            JPanel card = createStatCard(cardTitles[i], cardValues[i], cardColors[i]);
-            contentPanel.add(card);
-        }
+        panel.add(placeholder, BorderLayout.CENTER);
 
-        panel.add(contentPanel, BorderLayout.CENTER);
         return panel;
-    }
-
-    private JPanel createStatCard(String title, String value, Color color) {
-        JPanel card = new JPanel();
-        card.setLayout(new BorderLayout());
-        card.setBackground(Color.WHITE);
-        card.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createLineBorder(new Color(217, 217, 217), 1),
-                BorderFactory.createEmptyBorder(20, 20, 20, 20)
-        ));
-
-        // Title
-        JLabel titleLabel = new JLabel(title);
-        titleLabel.setFont(new Font("InaiMathi", Font.PLAIN, 16));
-        titleLabel.setForeground(Color.GRAY);
-
-        // Value
-        JLabel valueLabel = new JLabel(value);
-        valueLabel.setFont(new Font("InaiMathi", Font.BOLD, 32));
-        valueLabel.setForeground(color);
-
-        // Color bar on left
-        JPanel colorBar = new JPanel();
-        colorBar.setBackground(color);
-        colorBar.setPreferredSize(new Dimension(6, 0));
-
-        card.add(titleLabel, BorderLayout.NORTH);
-        card.add(valueLabel, BorderLayout.CENTER);
-        card.add(colorBar, BorderLayout.WEST);
-
-        return card;
     }
 
     /**
@@ -143,6 +109,17 @@ public class AdminDashboard extends javax.swing.JFrame {
     private void initComponents() {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+
+        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
+        getContentPane().setLayout(layout);
+        layout.setHorizontalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 400, Short.MAX_VALUE)
+        );
+        layout.setVerticalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 300, Short.MAX_VALUE)
+        );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -169,8 +146,7 @@ public class AdminDashboard extends javax.swing.JFrame {
 //        //</editor-fold>
 //
 //        /* Create and display the form */
-//        java.awt.EventQueue.invokeLater(() -> new AdminDashboard().setVisible(true));
-
+//        java.awt.EventQueue.invokeLater(() -> new AdminCategory().setVisible(true));
         try {
             for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
                 if ("Nimbus".equals(info.getName())) {
@@ -178,17 +154,13 @@ public class AdminDashboard extends javax.swing.JFrame {
                     break;
                 }
             }
-        } catch (ReflectiveOperationException | javax.swing.UnsupportedLookAndFeelException ex) {
-            logger.log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (Exception ex) {
+            java.util.logging.Logger.getLogger(AdminCategory.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
-        //</editor-fold>
 
-        /* Create and display the form */
         java.awt.EventQueue.invokeLater(() -> {
-            AdminDashboard dashboard = new AdminDashboard();
-            dashboard.setVisible(true);
+            new AdminCategory().setVisible(true);
         });
-
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

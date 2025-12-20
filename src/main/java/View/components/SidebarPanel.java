@@ -11,10 +11,13 @@ public class SidebarPanel extends JPanel {
     private final Color HIGHLIGHT_BG = new Color(0, 123, 255); // Bootstrap blue for active
     private final Color HOVER_BG = new Color(73, 80, 87);
 
+    // Add these private fields to access buttons later
+    private JButton dashboardBtn, productsBtn, categoriesBtn, transactionsBtn, Customerbtn, UserBtn;
+
     public SidebarPanel() {
         setLayout(new BorderLayout());
         setBackground(SIDEBAR_BG);
-        setPreferredSize(new Dimension(260, 800));
+        setPreferredSize(new Dimension(240, 400));
         setBorder(new EmptyBorder(20, 0, 20, 0));
 
         // Top Logo Section
@@ -24,12 +27,10 @@ public class SidebarPanel extends JPanel {
         JLabel logoLabel = new JLabel("PharmaStock");
         logoLabel.setFont(new Font("Segoe UI", Font.BOLD, 24));
         logoLabel.setForeground(Color.WHITE);
-//        logoLabel.setIcon(new ImageIcon(getClass().getResource("/resources/images/logo-icon.png"))); // Optional logo icon
-//       Design-time safe image loading
-        if (!java.beans.Beans.isDesignTime()) {
-            java.net.URL iconUrl
-                    = getClass().getClassLoader().getResource("images/logo-icon.png");
 
+        // Design-time safe image loading
+        if (!java.beans.Beans.isDesignTime()) {
+            java.net.URL iconUrl = getClass().getClassLoader().getResource("images/logo-icon.png");
             if (iconUrl != null) {
                 logoLabel.setIcon(new ImageIcon(iconUrl));
                 logoLabel.setIconTextGap(10);
@@ -54,23 +55,23 @@ public class SidebarPanel extends JPanel {
         menuPanel.add(menuLabel);
         menuPanel.add(Box.createRigidArea(new Dimension(0, 15)));
 
-        // Dashboard - Highlighted
-        JButton dashboardBtn = createMenuItem("Dashboard", "dashboard-icon.png", true);
+        // Dashboard - now starts inactive (false)
+        dashboardBtn = createMenuItem("Dashboard", "dashboard-icon.png", false);
         menuPanel.add(dashboardBtn);
         menuPanel.add(Box.createRigidArea(new Dimension(0, 5)));
 
         // Products
-        JButton productsBtn = createMenuItem("Products", "products-icon.png", false);
+        productsBtn = createMenuItem("Products", "products-icon.png", false);
         menuPanel.add(productsBtn);
         menuPanel.add(Box.createRigidArea(new Dimension(0, 5)));
 
         // Categories
-        JButton categoriesBtn = createMenuItem("Categories", "categories-icon.png", false);
+        categoriesBtn = createMenuItem("Categories", "categories-icon.png", false);
         menuPanel.add(categoriesBtn);
         menuPanel.add(Box.createRigidArea(new Dimension(0, 5)));
 
         // Transactions
-        JButton transactionsBtn = createMenuItem("Transactions", "transactions-icon.png", false);
+        transactionsBtn = createMenuItem("Transactions", "transactions-icon.png", false);
         menuPanel.add(transactionsBtn);
         menuPanel.add(Box.createRigidArea(new Dimension(0, 30)));
 
@@ -83,22 +84,21 @@ public class SidebarPanel extends JPanel {
         menuPanel.add(Box.createRigidArea(new Dimension(0, 15)));
 
         // Customer
-        JButton Customerbtn = createMenuItem("Customer", "settings-icon.png", false);
+        Customerbtn = createMenuItem("Customer", "settings-icon.png", false);
         menuPanel.add(Customerbtn);
         menuPanel.add(Box.createRigidArea(new Dimension(0, 5)));
 
         // User
-        JButton UserBtn = createMenuItem("User", "User-icon.png", false);
+        UserBtn = createMenuItem("User", "User-icon.png", false);
         menuPanel.add(UserBtn);
 
         menuPanel.add(Box.createVerticalGlue()); // Push items up
-
         add(menuPanel, BorderLayout.CENTER);
     }
 
     private JButton createMenuItem(String text, String iconPath, boolean isActive) {
         JButton button = new JButton(text);
-//        button.setIcon(new ImageIcon(getClass().getResource("/resources/images/" + iconPath)));
+
         button.setHorizontalAlignment(SwingConstants.LEFT);
         button.setMaximumSize(new Dimension(Integer.MAX_VALUE, 50));
         button.setPreferredSize(new Dimension(Integer.MAX_VALUE, 50));
@@ -111,27 +111,74 @@ public class SidebarPanel extends JPanel {
         button.setAlignmentX(Component.LEFT_ALIGNMENT);
         button.setCursor(new Cursor(Cursor.HAND_CURSOR));
 
+        // Design-time safe icon loading
+        if (!java.beans.Beans.isDesignTime()) {
+            java.net.URL iconUrl = getClass().getClassLoader().getResource("images/" + iconPath);
+            if (iconUrl != null) {
+                button.setIcon(new ImageIcon(iconUrl));
+            } else {
+                System.err.println("Icon not found: images/" + iconPath);
+            }
+        }
+
         if (isActive) {
             button.setBackground(HIGHLIGHT_BG);
             button.setOpaque(true);
             button.setForeground(Color.WHITE);
         } else {
-            // Hover effect
+            // Hover effect - only apply to non-active buttons
             button.addMouseListener(new java.awt.event.MouseAdapter() {
                 @Override
                 public void mouseEntered(java.awt.event.MouseEvent evt) {
-                    button.setBackground(HOVER_BG);
-                    button.setOpaque(true);
+                    if (!isActive) {
+                        button.setBackground(HOVER_BG);
+                        button.setOpaque(true);
+                    }
                 }
 
                 @Override
                 public void mouseExited(java.awt.event.MouseEvent evt) {
-                    button.setBackground(null);
-                    button.setOpaque(false);
+                    if (!isActive) {
+                        button.setBackground(null);
+                        button.setOpaque(false);
+                    }
                 }
             });
         }
 
         return button;
+    }
+
+    public void setActiveButton(String buttonName) {
+        JButton[] allButtons = {dashboardBtn, productsBtn, categoriesBtn, transactionsBtn, Customerbtn, UserBtn};
+        for (JButton btn : allButtons) {
+            if (btn != null) {
+                btn.setBackground(null);
+                btn.setOpaque(false);
+                btn.setForeground(TEXT_COLOR);
+            }
+        }
+
+        JButton target = null;
+        switch (buttonName) {
+            case "Dashboard" ->
+                target = dashboardBtn;
+            case "Products" ->
+                target = productsBtn;
+            case "Categories" ->
+                target = categoriesBtn;
+            case "Transactions" ->
+                target = transactionsBtn;
+            case "Customer" ->
+                target = Customerbtn;
+            case "User" ->
+                target = UserBtn;
+        }
+
+        if (target != null) {
+            target.setBackground(HIGHLIGHT_BG);
+            target.setOpaque(true);
+            target.setForeground(Color.WHITE);
+        }
     }
 }
