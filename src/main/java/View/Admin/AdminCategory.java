@@ -34,7 +34,6 @@ import javax.swing.table.DefaultTableModel;
  */
 public class AdminCategory extends javax.swing.JFrame {
 
-    private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(AdminCategory.class.getName());
     private SidebarPanel sidebarPanel;
     private NavbarPanel navbarPanel;
     private JPanel mainContentPanel;
@@ -85,7 +84,7 @@ public class AdminCategory extends javax.swing.JFrame {
 
         // Header
         JLabel headerLabel = new JLabel("Categories", SwingConstants.LEFT);
-        headerLabel.setFont(new Font("Segoe UI", Font.BOLD, 32));
+        headerLabel.setFont(new Font("InaiMathi", Font.BOLD, 32));
         headerLabel.setForeground(new Color(14, 40, 107));
         headerLabel.setBorder(BorderFactory.createEmptyBorder(30, 50, 20, 0));
         panel.add(headerLabel, BorderLayout.NORTH);
@@ -134,7 +133,7 @@ public class AdminCategory extends javax.swing.JFrame {
         JButton addNewBtn = new JButton("+ Add New");
         addNewBtn.setBackground(new Color(14, 40, 107));
         addNewBtn.setForeground(Color.WHITE);
-        addNewBtn.setFont(new Font("Segoe UI", Font.BOLD, 16));
+        addNewBtn.setFont(new Font("InaiMathi", Font.BOLD, 16));
         addNewBtn.setPreferredSize(new Dimension(150, 40));
         addNewBtn.setCursor(new Cursor(Cursor.HAND_CURSOR));
 
@@ -172,7 +171,7 @@ public class AdminCategory extends javax.swing.JFrame {
         JTable table = new JTable(model);
         table.setRowHeight(50);
         table.getTableHeader().setBackground(new Color(220, 220, 220));
-        table.getTableHeader().setFont(new Font("Segoe UI", Font.BOLD, 14));
+        table.getTableHeader().setFont(new Font("InaiMathi", Font.BOLD, 14));
 
         // Action column with Edit/Delete buttons
         table.getColumn("Action").setCellRenderer((table1, value, isSelected, hasFocus, row, column) -> {
@@ -183,13 +182,13 @@ public class AdminCategory extends javax.swing.JFrame {
             editBtn.setForeground(new Color(41, 128, 185));
             editBtn.setBorderPainted(false);
             editBtn.setContentAreaFilled(false);
-            editBtn.setFont(new Font("Segoe UI", Font.BOLD, 18));
+            editBtn.setFont(new Font("InaiMathi", Font.BOLD, 18));
 
             JButton deleteBtn = new JButton("🗑");
             deleteBtn.setForeground(new Color(231, 76, 60));
             deleteBtn.setBorderPainted(false);
             deleteBtn.setContentAreaFilled(false);
-            deleteBtn.setFont(new Font("Segoe UI", Font.BOLD, 18));
+            deleteBtn.setFont(new Font("InaiMathi", Font.BOLD, 18));
 
             actionPanel.add(editBtn);
             actionPanel.add(deleteBtn);
@@ -231,7 +230,7 @@ public class AdminCategory extends javax.swing.JFrame {
         textPanel.add(titleLabel);
 
         JLabel valueLabel = new JLabel(value);
-        valueLabel.setFont(new Font("Segoe UI", Font.BOLD, 32));
+        valueLabel.setFont(new Font("InaiMathi", Font.BOLD, 32));
         valueLabel.setForeground(color);
         textPanel.add(valueLabel);
 
