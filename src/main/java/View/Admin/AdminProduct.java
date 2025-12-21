@@ -35,7 +35,7 @@ public class AdminProduct extends javax.swing.JFrame {
 
         setTitle("PharmaStock Pro - Products");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setExtendedState(JFrame.MAXIMIZED_BOTH);
+//        setExtendedState(JFrame.MAXIMIZED_BOTH);
         setMinimumSize(new Dimension(1200, 800));
 
         // 1. Sidebar - full height
@@ -61,6 +61,7 @@ public class AdminProduct extends javax.swing.JFrame {
 
         revalidate();
         repaint();
+        setLocationRelativeTo(null);
     }
 
     private JPanel createProductContent() {
@@ -69,7 +70,7 @@ public class AdminProduct extends javax.swing.JFrame {
 
         // Page Header
         JLabel headerLabel = new JLabel("Products Management", SwingConstants.CENTER);
-        headerLabel.setFont(new Font("Segoe UI", Font.BOLD, 32));
+        headerLabel.setFont(new Font("InaiMathi", Font.BOLD, 32));
         headerLabel.setForeground(new Color(14, 40, 107)); // #0E286B
         headerLabel.setBorder(BorderFactory.createEmptyBorder(40, 0, 50, 0));
         panel.add(headerLabel, BorderLayout.NORTH);
@@ -84,7 +85,7 @@ public class AdminProduct extends javax.swing.JFrame {
                 + "<p>View, Add, Edit, and Delete medicines here</p>"
                 + "<p>JTable with search, pagination, and CRUD buttons coming soon</p>"
                 + "</center></html>", SwingConstants.CENTER);
-        infoLabel.setFont(new Font("Segoe UI", Font.PLAIN, 20));
+        infoLabel.setFont(new Font("InaiMathi", Font.PLAIN, 20));
         infoLabel.setForeground(Color.GRAY);
 
         placeholder.add(infoLabel, BorderLayout.CENTER);

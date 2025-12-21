@@ -25,7 +25,7 @@ public class SidebarPanel extends JPanel {
         logoPanel.setBackground(SIDEBAR_BG);
         logoPanel.setLayout(new FlowLayout(FlowLayout.LEFT, 20, 20));
         JLabel logoLabel = new JLabel("PharmaStock");
-        logoLabel.setFont(new Font("Segoe UI", Font.BOLD, 24));
+        logoLabel.setFont(new Font("InaiMathi", Font.BOLD, 24));
         logoLabel.setForeground(Color.WHITE);
 
         // Design-time safe image loading
@@ -50,7 +50,7 @@ public class SidebarPanel extends JPanel {
         // MENU Label
         JLabel menuLabel = new JLabel("MENU");
         menuLabel.setForeground(new Color(173, 181, 189));
-        menuLabel.setFont(new Font("Segoe UI", Font.BOLD, 12));
+        menuLabel.setFont(new Font("InaiMathi", Font.BOLD, 12));
         menuLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
         menuPanel.add(menuLabel);
         menuPanel.add(Box.createRigidArea(new Dimension(0, 15)));
@@ -78,7 +78,7 @@ public class SidebarPanel extends JPanel {
         // OTHERS Label
         JLabel othersLabel = new JLabel("OTHERS");
         othersLabel.setForeground(new Color(173, 181, 189));
-        othersLabel.setFont(new Font("Segoe UI", Font.BOLD, 12));
+        othersLabel.setFont(new Font("InaiMathi", Font.BOLD, 12));
         othersLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
         menuPanel.add(othersLabel);
         menuPanel.add(Box.createRigidArea(new Dimension(0, 15)));
@@ -106,7 +106,7 @@ public class SidebarPanel extends JPanel {
         button.setBorderPainted(false);
         button.setContentAreaFilled(false);
         button.setForeground(TEXT_COLOR);
-        button.setFont(new Font("Segoe UI", Font.PLAIN, 16));
+        button.setFont(new Font("InaiMathi", Font.PLAIN, 16));
         button.setIconTextGap(15);
         button.setAlignmentX(Component.LEFT_ALIGNMENT);
         button.setCursor(new Cursor(Cursor.HAND_CURSOR));
