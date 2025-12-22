@@ -5,6 +5,7 @@
 package View.components;
 
 import java.awt.*;
+import java.net.URL;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 
@@ -57,13 +58,13 @@ public class NavbarPanel extends JPanel {
         searchIcon.setCursor(new Cursor(Cursor.HAND_CURSOR));
 
         if (!java.beans.Beans.isDesignTime()) {
-            java.net.URL iconUrl
-                    = getClass().getClassLoader().getResource("Resources/Image/search-icon.png");
+            URL iconUrl = getClass().getClassLoader().getResource("src/main/resources/images/search-icon.png");
 
             if (iconUrl != null) {
                 searchIcon.setIcon(new ImageIcon(iconUrl));
+
             } else {
-                System.err.println("Search icon not found: images/search-icon.png");
+                System.err.println("Icon not found: images/search-icon.png");
             }
         }
 
