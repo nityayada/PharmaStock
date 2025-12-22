@@ -15,32 +15,32 @@ import javax.swing.table.DefaultTableModel;
  *
  * @author nityayadav
  */
-public class AdminTransaction extends javax.swing.JFrame {
+public class AdminCustomer extends javax.swing.JFrame {
 
-    private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(AdminTransaction.class.getName());
+    private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(AdminCustomer.class.getName());
     private SidebarPanel sidebarPanel;
     private NavbarPanel navbarPanel;
     private JPanel mainContentPanel;
 
     /**
-     * Creates new form AdminTransaction
+     * Creates new form AdminCustomer
      */
-    public AdminTransaction() {
+    public AdminCustomer() {
         initComponents();
-        initializeTransactionPage();
+        initializeCustomerPage();
     }
 
-    private void initializeTransactionPage() {
+    private void initializeCustomerPage() {
         getContentPane().setLayout(new BorderLayout());
 
-        setTitle("PharmaStock Pro - Transaction");
+        setTitle("PharmaStock Pro - Customer");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setExtendedState(JFrame.MAXIMIZED_BOTH);
         setMinimumSize(new Dimension(1200, 800));
 
         // Sidebar
         sidebarPanel = new SidebarPanel();
-        sidebarPanel.setActiveButton("Transactions");
+        sidebarPanel.setActiveButton("Customer");
         getContentPane().add(sidebarPanel, BorderLayout.WEST);
 
         // Right wrapper
@@ -52,7 +52,7 @@ public class AdminTransaction extends javax.swing.JFrame {
         rightWrapper.add(navbarPanel, BorderLayout.NORTH);
 
         // Main content
-        mainContentPanel = createTransactionContent();
+        mainContentPanel = createCustomerContent();
         rightWrapper.add(mainContentPanel, BorderLayout.CENTER);
 
         getContentPane().add(rightWrapper, BorderLayout.CENTER);
@@ -62,12 +62,12 @@ public class AdminTransaction extends javax.swing.JFrame {
         setLocationRelativeTo(null);
     }
 
-    private JPanel createTransactionContent() {
+    private JPanel createCustomerContent() {
         JPanel panel = new JPanel(new BorderLayout());
         panel.setBackground(new Color(217, 217, 217));
 
         // Header
-        JLabel headerLabel = new JLabel("Transaction", SwingConstants.LEFT);
+        JLabel headerLabel = new JLabel("Customer", SwingConstants.LEFT);
         headerLabel.setFont(new Font("InaiMathi", Font.BOLD, 32));
         headerLabel.setForeground(new Color(14, 40, 107));
         headerLabel.setBorder(BorderFactory.createEmptyBorder(30, 50, 20, 0));
@@ -84,7 +84,7 @@ public class AdminTransaction extends javax.swing.JFrame {
         cardsRow.setBackground(new Color(217, 217, 217));
         cardsRow.setBorder(BorderFactory.createEmptyBorder(0, 0, 40, 0));
 
-        cardsRow.add(createIconCard("Total Transaction", "500", "transaction-icon.png", new Color(41, 128, 185)));
+        cardsRow.add(createIconCard("Total Customer", "7000", "customer-icon.png", new Color(41, 128, 185)));
         cardsRow.add(createIconCard("Total Sale", "23,000", "sale-icon.png", new Color(39, 174, 96)));
 
         content.add(cardsRow);
@@ -106,24 +106,24 @@ public class AdminTransaction extends javax.swing.JFrame {
         content.add(Box.createRigidArea(new Dimension(0, 30)));
 
         // === Table ===
-        String[] columns = {"Transaction ID", "Customer ID", "Date", "Time", "Amount (Rs)", "Action"};
+        String[] columns = {"Customer ID", "Name", "Phone Number", "Action"};
         Object[][] data = {
-            {"TRX988", "C324", "01-01-2025", "09:42", "32,000", ""},
-            {"TRX988", "C324", "01-01-2025", "09:42", "32,000", ""},
-            {"TRX988", "C324", "01-01-2025", "09:42", "32,000", ""},
-            {"TRX988", "C324", "01-01-2025", "09:42", "32,000", ""},
-            {"TRX988", "C324", "01-01-2025", "09:42", "32,000", ""},
-            {"TRX988", "C324", "01-01-2025", "09:42", "32,000", ""},
-            {"TRX988", "C324", "01-01-2025", "09:42", "32,000", ""},
-            {"TRX988", "C324", "01-01-2025", "09:42", "32,000", ""},
-            {"TRX988", "C324", "01-01-2025", "09:42", "32,000", ""},
-            {"TRX988", "C324", "01-01-2025", "09:42", "32,000", ""}
+            {"C8583", "Hari Prasad Khadka", "9874672922", ""},
+            {"C8583", "Hari Prasad Khadka", "9874672922", ""},
+            {"C8583", "Hari Prasad Khadka", "9874672922", ""},
+            {"C8583", "Hari Prasad Khadka", "9874672922", ""},
+            {"C8583", "Hari Prasad Khadka", "9874672922", ""},
+            {"C8583", "Hari Prasad Khadka", "9874672922", ""},
+            {"C8583", "Hari Prasad Khadka", "9874672922", ""},
+            {"C8583", "Hari Prasad Khadka", "9874672922", ""},
+            {"C8583", "Hari Prasad Khadka", "9874672922", ""},
+            {"C8583", "Hari Prasad Khadka", "9874672922", ""}
         };
 
         DefaultTableModel model = new DefaultTableModel(data, columns) {
             @Override
             public boolean isCellEditable(int row, int column) {
-                return column == 5; // Only Action column
+                return column == 3; // Only Action column
             }
         };
 
@@ -238,13 +238,13 @@ public class AdminTransaction extends javax.swing.JFrame {
                     break;
                 }
             }
-        } catch (Exception ex) {
-            java.util.logging.Logger.getLogger(AdminTransaction.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (ReflectiveOperationException | javax.swing.UnsupportedLookAndFeelException ex) {
+            logger.log(java.util.logging.Level.SEVERE, null, ex);
         }
+        //</editor-fold>
 
-        java.awt.EventQueue.invokeLater(() -> {
-            new AdminTransaction().setVisible(true);
-        });
+        /* Create and display the form */
+        java.awt.EventQueue.invokeLater(() -> new AdminCustomer().setVisible(true));
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

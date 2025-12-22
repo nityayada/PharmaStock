@@ -61,7 +61,7 @@ public class AdminCategory extends javax.swing.JFrame {
 
         // Right wrapper
         JPanel rightWrapper = new JPanel(new BorderLayout());
-        rightWrapper.setBackground(new Color(240, 242, 245));
+        rightWrapper.setBackground(new Color(217, 217, 217));
 
         // Navbar
         navbarPanel = new NavbarPanel();
@@ -80,7 +80,7 @@ public class AdminCategory extends javax.swing.JFrame {
 
     private JPanel createCategoryContent() {
         JPanel panel = new JPanel(new BorderLayout());
-        panel.setBackground(new Color(240, 242, 245));
+        panel.setBackground(new Color(217, 217, 217));
 
         // Header
         JLabel headerLabel = new JLabel("Categories", SwingConstants.LEFT);
@@ -92,12 +92,12 @@ public class AdminCategory extends javax.swing.JFrame {
         // Main content with vertical layout
         JPanel content = new JPanel();
         content.setLayout(new BoxLayout(content, BoxLayout.Y_AXIS));
-        content.setBackground(new Color(240, 242, 245));
+        content.setBackground(new Color(217, 217, 217));
         content.setBorder(BorderFactory.createEmptyBorder(20, 50, 50, 50));
 
         // === Top 4 Cards ===
         JPanel cardsRow = new JPanel(new GridLayout(1, 4, 20, 20));
-        cardsRow.setBackground(new Color(240, 242, 245));
+        cardsRow.setBackground(new Color(217, 217, 217));
 
         cardsRow.add(createIconCard("Total Categories", "11", "categories-icon.png", new Color(41, 128, 185)));
         cardsRow.add(createIconCard("Total Types", "5", "types-icon.png", new Color(39, 174, 96)));
@@ -109,11 +109,11 @@ public class AdminCategory extends javax.swing.JFrame {
 
         // === Search + Filters + Add Button ===
         JPanel filterPanel = new JPanel(new BorderLayout());
-        filterPanel.setBackground(new Color(240, 242, 245));
+        filterPanel.setBackground(new Color(217, 217, 217));
 
         // Left: Search + Combos
         JPanel leftFilters = new JPanel(new FlowLayout(FlowLayout.LEFT, 15, 10));
-        leftFilters.setBackground(new Color(240, 242, 245));
+        leftFilters.setBackground(new Color(217, 217, 217));
 
         JTextField searchField = new JTextField("Search anything");
         searchField.setPreferredSize(new Dimension(300, 40));
@@ -138,7 +138,7 @@ public class AdminCategory extends javax.swing.JFrame {
         addNewBtn.setCursor(new Cursor(Cursor.HAND_CURSOR));
 
         JPanel rightBtn = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-        rightBtn.setBackground(new Color(240, 242, 245));
+        rightBtn.setBackground(new Color(217, 217, 217));
         rightBtn.add(addNewBtn);
         filterPanel.add(rightBtn, BorderLayout.EAST);
 
