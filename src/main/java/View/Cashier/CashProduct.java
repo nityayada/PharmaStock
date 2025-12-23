@@ -6,6 +6,7 @@ package View.Cashier;
 
 import View.components.CashNavbarPanel;
 import View.components.CashSidebarPanel;
+import controller.ProductController;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -25,6 +26,9 @@ import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.table.DefaultTableModel;
+import java.util.List;
+import javax.swing.JOptionPane;
+import model.Product;
 
 /**
  *
@@ -36,19 +40,20 @@ public class CashProduct extends javax.swing.JFrame {
     private CashSidebarPanel cashSidebarPanel;
     private CashNavbarPanel cashNavbarPanel;
     private JPanel mainContentPanel;
+    private ProductController productController;
+    private JTable table;
+    private DefaultTableModel model;
 
-    /**
-     * Creates new form CashProduct
-     */
     public CashProduct() {
         initComponents();
+        productController = new ProductController();
         initializeCashProductPage();
     }
 
     private void initializeCashProductPage() {
         getContentPane().setLayout(new BorderLayout());
 
-        setTitle("PharmaStock Pro - Cashier Product");
+        setTitle("PharmaStock - Cashier Product");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setExtendedState(JFrame.MAXIMIZED_BOTH);
         setMinimumSize(new Dimension(1200, 800));
@@ -60,7 +65,7 @@ public class CashProduct extends javax.swing.JFrame {
 
         // Right wrapper
         JPanel rightWrapper = new JPanel(new BorderLayout());
-        rightWrapper.setBackground(new Color(217, 217, 217)); // Light & clean
+        rightWrapper.setBackground(new Color(245, 245, 245));
 
         // Navbar
         cashNavbarPanel = new CashNavbarPanel();
@@ -79,11 +84,11 @@ public class CashProduct extends javax.swing.JFrame {
 
     private JPanel createCashProductContent() {
         JPanel panel = new JPanel(new BorderLayout());
-        panel.setBackground(new Color(217, 217, 217));
+        panel.setBackground(new Color(245, 245, 245));
 
         // Header
         JLabel headerLabel = new JLabel("Product", SwingConstants.LEFT);
-        headerLabel.setFont(new Font("Segoe UI", Font.BOLD, 32));
+        headerLabel.setFont(new Font("InaiMathi", Font.BOLD, 32));
         headerLabel.setForeground(new Color(44, 62, 80));
         headerLabel.setBorder(BorderFactory.createEmptyBorder(30, 50, 20, 0));
         panel.add(headerLabel, BorderLayout.NORTH);
@@ -91,62 +96,49 @@ public class CashProduct extends javax.swing.JFrame {
         // Main vertical layout
         JPanel content = new JPanel();
         content.setLayout(new BoxLayout(content, BoxLayout.Y_AXIS));
-        content.setBackground(new Color(217, 217, 217));
+        content.setBackground(new Color(245, 245, 245));
         content.setBorder(BorderFactory.createEmptyBorder(20, 50, 50, 50));
 
-        // === Top 3 Cards ===
+        // === Top 3 Cards (connected to ProductController) ===
         JPanel cardsRow = new JPanel(new GridLayout(1, 3, 25, 20));
-        cardsRow.setBackground(new Color(217, 217, 217));
+        cardsRow.setBackground(new Color(245, 245, 245));
 
-        cardsRow.add(createIconCard("Total Products", "6,553", "product-icon.png", new Color(52, 152, 219)));
-        cardsRow.add(createIconCard("Low Stock Product", "223", "lowstock-icon.png", new Color(230, 126, 34)));
-        cardsRow.add(createIconCard("Out of Stock Product", "54", "outofstock-icon.png", new Color(231, 76, 60)));
+        cardsRow.add(createIconCard("Total Products", String.valueOf(productController.getTotalProducts()), "product-icon.png", new Color(52, 152, 219)));
+        cardsRow.add(createIconCard("Low Stock Product", String.valueOf(productController.getLowStockProducts().size()), "lowstock-icon.png", new Color(230, 126, 34)));
+        cardsRow.add(createIconCard("Out of Stock Product", String.valueOf(productController.getOutOfStockProducts().size()), "outofstock-icon.png", new Color(231, 76, 60)));
 
         content.add(cardsRow);
         content.add(Box.createRigidArea(new Dimension(0, 40)));
 
         // === Search Bar ===
         JPanel searchPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 10));
-        searchPanel.setBackground(new Color(217, 217, 217));
+        searchPanel.setBackground(new Color(245, 245, 245));
 
         JTextField searchField = new JTextField("Search anything");
         searchField.setPreferredSize(new Dimension(400, 45));
-        searchField.setFont(new Font("Segoe UI", Font.PLAIN, 16));
-        searchField.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createLineBorder(new Color(200, 200, 200)),
-                BorderFactory.createEmptyBorder(0, 20, 0, 20)
-        ));
+        searchField.setFont(new Font("InaiMathi", Font.PLAIN, 16));
+        searchField.addActionListener(e -> updateTable(productController.searchProducts(searchField.getText()))); // Real search
         searchPanel.add(searchField);
 
         content.add(searchPanel);
         content.add(Box.createRigidArea(new Dimension(0, 30)));
 
-        // === Table ===
+        // === Table (connected to ProductController) ===
         String[] columns = {"Product ID", "Product Name", "Items", "Price (Rs)", "Status", "Action"};
-        Object[][] data = {
-            {"P0321", "Paracetamol Kalbe 500mg", "789", "2,000", "Available", ""},
-            {"P0685", "Blackmores Vit C 1000mg", "540", "8,000", "Available", ""},
-            {"P0998", "Nature Republic Aloe Vera", "48", "5,000", "Available", ""},
-            {"P0389", "Minyak Telon My Baby 60ml", "20", "200", "Low Stock", ""},
-            {"P0322", "Vitacid 0.025% 15gr", "0", "0", "Empty", ""},
-            {"P0321", "Paracetamol Kalbe 500mg", "789", "2,000", "Available", ""},
-            {"P0321", "Paracetamol Kalbe 500mg", "789", "2,000", "Available", ""},
-            {"P0321", "Paracetamol Kalbe 500mg", "789", "2,000", "Empty", ""},
-            {"P0321", "Paracetamol Kalbe 500mg", "789", "2,000", "Empty", ""},
-            {"P0321", "Paracetamol Kalbe 500mg", "789", "2,000", "Available", ""}
-        };
-
-        DefaultTableModel model = new DefaultTableModel(data, columns) {
+        model = new DefaultTableModel(columns, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
-                return column == 5; // Only Action column
+                return column == 5; // Only Action
             }
         };
 
-        JTable table = new JTable(model);
+        table = new JTable(model);
         table.setRowHeight(55);
         table.getTableHeader().setBackground(new Color(220, 220, 220));
-        table.getTableHeader().setFont(new Font("Segoe UI", Font.BOLD, 14));
+        table.getTableHeader().setFont(new Font("InaiMathi", Font.BOLD, 14));
+
+        // Load initial real data
+        updateTable(productController.getAllProducts());
 
         // Status color
         table.getColumn("Status").setCellRenderer((table1, value, isSelected, hasFocus, row, column) -> {
@@ -158,7 +150,7 @@ public class CashProduct extends javax.swing.JFrame {
             } else if ("Low Stock".equals(value)) {
                 label.setBackground(new Color(230, 126, 34, 50));
                 label.setForeground(new Color(230, 126, 34));
-            } else if ("Empty".equals(value)) {
+            } else if ("Out of Stock".equals(value)) {
                 label.setBackground(new Color(231, 76, 60, 50));
                 label.setForeground(new Color(231, 76, 60));
             }
@@ -175,6 +167,7 @@ public class CashProduct extends javax.swing.JFrame {
             viewBtn.setForeground(new Color(41, 128, 185));
             viewBtn.setBorderPainted(false);
             viewBtn.setContentAreaFilled(false);
+            viewBtn.addActionListener(e -> viewProduct(row));
 
             actionPanel.add(viewBtn);
             return actionPanel;
@@ -188,6 +181,40 @@ public class CashProduct extends javax.swing.JFrame {
         panel.add(content, BorderLayout.CENTER);
 
         return panel;
+    }
+
+    // Load/update table with real products
+    private void updateTable(List<Product> productList) {
+        model.setRowCount(0); // Clear table
+        for (Product p : productList) {
+            model.addRow(new Object[]{
+                p.getProductId(),
+                p.getName(),
+                p.getQuantity(),
+                p.getPrice(),
+                p.getStatus(),
+                "" // Action placeholder
+            });
+        }
+    }
+
+    // View product details (simple dialog)
+    private void viewProduct(int row) {
+        String id = (String) model.getValueAt(row, 0);
+        Product p = productController.getAllProducts().stream()
+                .filter(prod -> prod.getProductId().equals(id))
+                .findFirst()
+                .orElse(null);
+
+        if (p != null) {
+            JOptionPane.showMessageDialog(this,
+                    "Product ID: " + p.getProductId() + "\n"
+                    + "Name: " + p.getName() + "\n"
+                    + "Items: " + p.getQuantity() + "\n"
+                    + "Price: Rs. " + p.getPrice() + "\n"
+                    + "Status: " + p.getStatus(),
+                    "Product Details", JOptionPane.INFORMATION_MESSAGE);
+        }
     }
 
     private JPanel createIconCard(String title, String value, String iconPath, Color color) {
@@ -214,7 +241,7 @@ public class CashProduct extends javax.swing.JFrame {
         textPanel.add(titleLabel);
 
         JLabel valueLabel = new JLabel(value);
-        valueLabel.setFont(new Font("Segoe UI", Font.BOLD, 36));
+        valueLabel.setFont(new Font("InaiMathi", Font.BOLD, 36));
         valueLabel.setForeground(color);
         textPanel.add(valueLabel);
 

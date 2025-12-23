@@ -48,7 +48,7 @@ public class CashOrder extends javax.swing.JFrame {
     private void initializeCashOrderPage() {
         getContentPane().setLayout(new BorderLayout());
 
-        setTitle("PharmaStock Pro - Cashier Order");
+        setTitle("PharmaStock - Cashier Order");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setExtendedState(JFrame.MAXIMIZED_BOTH);
         setMinimumSize(new Dimension(1200, 800));
@@ -83,7 +83,7 @@ public class CashOrder extends javax.swing.JFrame {
 
         // Header
         JLabel headerLabel = new JLabel("New Order", SwingConstants.LEFT);
-        headerLabel.setFont(new Font("Segoe UI", Font.BOLD, 32));
+        headerLabel.setFont(new Font("InaiMathi", Font.BOLD, 32));
         headerLabel.setForeground(new Color(44, 62, 80));
         headerLabel.setBorder(BorderFactory.createEmptyBorder(30, 50, 20, 0));
         panel.add(headerLabel, BorderLayout.NORTH);
@@ -104,7 +104,7 @@ public class CashOrder extends javax.swing.JFrame {
 
         JTextField searchField = new JTextField("Search product by name or ID");
         searchField.setPreferredSize(new Dimension(500, 45));
-        searchField.setFont(new Font("Segoe UI", Font.PLAIN, 16));
+        searchField.setFont(new Font("InaiMathi", Font.PLAIN, 16));
         searchBarPanel.add(searchField);
 
         leftPanel.add(searchBarPanel, BorderLayout.NORTH);
@@ -137,7 +137,7 @@ public class CashOrder extends javax.swing.JFrame {
         ));
 
         JLabel cartTitle = new JLabel("Order Summary");
-        cartTitle.setFont(new Font("Segoe UI", Font.BOLD, 22));
+        cartTitle.setFont(new Font("InaiMathi", Font.BOLD, 22));
         cartTitle.setBorder(BorderFactory.createEmptyBorder(0, 0, 15, 0));
         cartPanel.add(cartTitle, BorderLayout.NORTH);
 
@@ -170,7 +170,7 @@ public class CashOrder extends javax.swing.JFrame {
 
         totalsPanel.add(new JLabel("Total:"));
         JLabel totalLabel = new JLabel("Rs. 0.00", SwingConstants.RIGHT);
-        totalLabel.setFont(new Font("Segoe UI", Font.BOLD, 18));
+        totalLabel.setFont(new Font("InaiMathi", Font.BOLD, 18));
         totalLabel.setForeground(new Color(52, 152, 219));
         totalsPanel.add(totalLabel);
 
@@ -191,7 +191,7 @@ public class CashOrder extends javax.swing.JFrame {
         JButton placeOrderBtn = new JButton("Place Order");
         placeOrderBtn.setBackground(new Color(46, 204, 113));
         placeOrderBtn.setForeground(Color.WHITE);
-        placeOrderBtn.setFont(new Font("Segoe UI", Font.BOLD, 16));
+        placeOrderBtn.setFont(new Font("InaiMathi", Font.BOLD, 16));
         placeOrderBtn.setPreferredSize(new Dimension(200, 50));
         bottomButtons.add(placeOrderBtn);
 
@@ -216,11 +216,11 @@ public class CashOrder extends javax.swing.JFrame {
         card.add(icon, BorderLayout.CENTER);
 
         JLabel nameLabel = new JLabel(name, SwingConstants.CENTER);
-        nameLabel.setFont(new Font("Segoe UI", Font.BOLD, 14));
+        nameLabel.setFont(new Font("InaiMathi", Font.BOLD, 14));
         card.add(nameLabel, BorderLayout.NORTH);
 
         JLabel priceLabel = new JLabel(price, SwingConstants.CENTER);
-        priceLabel.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+        priceLabel.setFont(new Font("InaiMathi", Font.PLAIN, 14));
         priceLabel.setForeground(new Color(52, 152, 219));
         card.add(priceLabel, BorderLayout.SOUTH);
 

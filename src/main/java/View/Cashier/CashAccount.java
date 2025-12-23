@@ -55,7 +55,7 @@ public class CashAccount extends javax.swing.JFrame {
 
         // Right wrapper
         JPanel rightWrapper = new JPanel(new BorderLayout());
-        rightWrapper.setBackground(new Color(245, 245, 245));
+        rightWrapper.setBackground(new Color(217, 217, 217));
 
         // Navbar
         cashNavbarPanel = new CashNavbarPanel();
@@ -74,7 +74,7 @@ public class CashAccount extends javax.swing.JFrame {
 
     private JPanel createCashAccountContent() {
         JPanel panel = new JPanel(new BorderLayout());
-        panel.setBackground(new Color(245, 245, 245));
+        panel.setBackground(new Color(217, 217, 217));
 
         // Header
         JLabel headerLabel = new JLabel("My Account", SwingConstants.CENTER);

@@ -1,5 +1,6 @@
 package View.components;
 
+import View.WelcomeView;
 import java.awt.*;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -65,11 +66,10 @@ public class SidebarPanel extends JPanel {
         menuPanel.add(productsBtn);
         menuPanel.add(Box.createRigidArea(new Dimension(0, 5)));
 
-        // Categories
-        categoriesBtn = createMenuItem("Categories", "categories-icon.png", false);
-        menuPanel.add(categoriesBtn);
-        menuPanel.add(Box.createRigidArea(new Dimension(0, 5)));
-
+//        // Categories
+//        categoriesBtn = createMenuItem("Categories", "categories-icon.png", false);
+//        menuPanel.add(categoriesBtn);
+//        menuPanel.add(Box.createRigidArea(new Dimension(0, 5)));
         // Transactions
         transactionsBtn = createMenuItem("Transactions", "transactions-icon.png", false);
         menuPanel.add(transactionsBtn);
@@ -94,6 +94,21 @@ public class SidebarPanel extends JPanel {
 
         menuPanel.add(Box.createVerticalGlue()); // Push items up
         add(menuPanel, BorderLayout.CENTER);
+
+        // Logout button at the bottom
+        JButton logoutBtn = createMenuItem("Log Out", "logout-icon.png", false);
+        logoutBtn.setForeground(new Color(231, 76, 60)); // Red color for logout
+
+        menuPanel.add(Box.createRigidArea(new Dimension(0, 20))); // Extra space above logout
+        menuPanel.add(logoutBtn);
+
+        // Add navigation listeners
+        dashboardBtn.addActionListener(e -> navigateTo("AdminDashboard"));
+        productsBtn.addActionListener(e -> navigateTo("AdminProduct"));
+        transactionsBtn.addActionListener(e -> navigateTo("AdminTransaction"));
+        Customerbtn.addActionListener(e -> navigateTo("AdminCustomer"));
+        UserBtn.addActionListener(e -> navigateTo("AdminUser"));
+        logoutBtn.addActionListener(e -> logout()); // If you have logout
     }
 
     private JButton createMenuItem(String text, String iconPath, boolean isActive) {
@@ -165,8 +180,8 @@ public class SidebarPanel extends JPanel {
                 target = dashboardBtn;
             case "Products" ->
                 target = productsBtn;
-            case "Categories" ->
-                target = categoriesBtn;
+//            case "Categories" ->
+//                target = categoriesBtn;
             case "Transactions" ->
                 target = transactionsBtn;
             case "Customer" ->
@@ -179,6 +194,29 @@ public class SidebarPanel extends JPanel {
             target.setBackground(HIGHLIGHT_BG);
             target.setOpaque(true);
             target.setForeground(Color.WHITE);
+        }
+    }
+
+    private void navigateTo(String pageName) {
+        SwingUtilities.getWindowAncestor(this).dispose(); // Close current frame
+        try {
+            Class<?> pageClass = Class.forName("View.Admin." + pageName);
+            JFrame newPage = (JFrame) pageClass.getDeclaredConstructor().newInstance();
+            newPage.setVisible(true);
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(null, "Error opening page: " + ex.getMessage(), "Navigation Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    private void logout() {
+        int confirm = JOptionPane.showConfirmDialog(null,
+                "Are you sure you want to log out?",
+                "Confirm Logout",
+                JOptionPane.YES_NO_OPTION);
+
+        if (confirm == JOptionPane.YES_OPTION) {
+            SwingUtilities.getWindowAncestor(this).dispose();
+            new WelcomeView().setVisible(true);
         }
     }
 }

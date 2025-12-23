@@ -19,6 +19,7 @@ import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
+
 import javax.swing.JScrollPane;
 
 /**
@@ -208,8 +209,8 @@ public class AdminDashboard extends javax.swing.JFrame {
         CustPageLabel.setFont(new Font("InaiMathi", Font.BOLD, 14));
         CustPageLabel.setForeground(new Color(170, 170, 170)); // gray
 
-        productCard.add(CusLabel);
-        productCard.add(CustPageLabel);
+        customersCard.add(CusLabel);
+        customersCard.add(CustPageLabel);
 
         JLabel cust500 = new JLabel("500");
         cust500.setFont(new Font("InaiMathi", Font.BOLD, 40));
@@ -232,6 +233,7 @@ public class AdminDashboard extends javax.swing.JFrame {
         scrollPane.setBorder(null);
         scrollPane.setBackground(new Color(217, 217, 217));
         panel.add(scrollPane, BorderLayout.CENTER);
+        // At the end of createDashboardContent()
         return panel;
     }
 

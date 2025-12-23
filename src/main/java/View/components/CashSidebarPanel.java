@@ -4,6 +4,7 @@
  */
 package View.components;
 
+import View.WelcomeView;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
@@ -15,9 +16,12 @@ import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
 
 /**
@@ -90,6 +94,20 @@ public class CashSidebarPanel extends JPanel {
 
         menuPanel.add(Box.createVerticalGlue());
         add(menuPanel, BorderLayout.CENTER);
+
+        // Logout button at the bottom
+        JButton logoutBtn = createMenuItem("Log Out", "logout-icon.png", false);
+        logoutBtn.setForeground(new Color(231, 76, 60)); // Red color for logout
+
+        menuPanel.add(Box.createRigidArea(new Dimension(0, 20))); // Space above
+        menuPanel.add(logoutBtn);
+
+        // Add navigation listeners
+        dashboardBtn.addActionListener(e -> navigateTo("CashDashboard"));
+        productBtn.addActionListener(e -> navigateTo("CashProduct"));
+        orderBtn.addActionListener(e -> navigateTo("CashOrder"));
+        accountBtn.addActionListener(e -> navigateTo("CashAccount"));
+        logoutBtn.addActionListener(e -> logout()); // If you have logout
     }
 
     private JButton createMenuItem(String text, String iconPath, boolean isActive) {
@@ -164,6 +182,29 @@ public class CashSidebarPanel extends JPanel {
             target.setBackground(HIGHLIGHT_BG);
             target.setOpaque(true);
             target.setForeground(Color.WHITE);
+        }
+    }
+
+    private void navigateTo(String pageName) {
+        SwingUtilities.getWindowAncestor(this).dispose(); // Close current frame
+        try {
+            Class<?> pageClass = Class.forName("View.Cashier." + pageName);
+            JFrame newPage = (JFrame) pageClass.getDeclaredConstructor().newInstance();
+            newPage.setVisible(true);
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(null, "Error opening page: " + ex.getMessage(), "Navigation Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    private void logout() {
+        int confirm = JOptionPane.showConfirmDialog(null,
+                "Are you sure you want to log out?",
+                "Confirm Logout",
+                JOptionPane.YES_NO_OPTION);
+
+        if (confirm == JOptionPane.YES_OPTION) {
+            SwingUtilities.getWindowAncestor(this).dispose();
+            new WelcomeView().setVisible(true);
         }
     }
 }
