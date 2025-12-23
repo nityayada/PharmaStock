@@ -1,47 +1,64 @@
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
+ */
 package View.components;
 
-import java.awt.*;
-import javax.swing.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Cursor;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.Font;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 
-public class SidebarPanel extends JPanel {
+/**
+ *
+ * @author nityayadav
+ */
+public class CashSidebarPanel extends JPanel {
 
-    private final Color SIDEBAR_BG = new Color(44, 62, 80); // Dark gray
+    private final Color SIDEBAR_BG = new Color(44, 62, 80); // Slightly lighter dark gray for cashier
     private final Color TEXT_COLOR = Color.WHITE;
-    private final Color HIGHLIGHT_BG = new Color(0, 123, 255); // Bootstrap blue for active
+    private final Color HIGHLIGHT_BG = new Color(52, 152, 219); // Friendly blue
     private final Color HOVER_BG = new Color(73, 80, 87);
 
-    // Add these private fields to access buttons later
-    private JButton dashboardBtn, productsBtn, categoriesBtn, transactionsBtn, Customerbtn, UserBtn;
+    // Fields for buttons
+    private JButton dashboardBtn, productBtn, orderBtn, accountBtn;
 
-    public SidebarPanel() {
+    public CashSidebarPanel() {
         setLayout(new BorderLayout());
         setBackground(SIDEBAR_BG);
         setPreferredSize(new Dimension(240, 400));
         setBorder(new EmptyBorder(20, 0, 20, 0));
 
-        // Top Logo Section
+        // Top Logo
         JPanel logoPanel = new JPanel();
         logoPanel.setBackground(SIDEBAR_BG);
         logoPanel.setLayout(new FlowLayout(FlowLayout.LEFT, 20, 20));
         JLabel logoLabel = new JLabel("PharmaStock");
         logoLabel.setFont(new Font("InaiMathi", Font.BOLD, 24));
         logoLabel.setForeground(Color.WHITE);
-
-        // Design-time safe image loading
+        // Safe icon loading
         if (!java.beans.Beans.isDesignTime()) {
             java.net.URL iconUrl = getClass().getClassLoader().getResource("images/logo-icon.png");
             if (iconUrl != null) {
                 logoLabel.setIcon(new ImageIcon(iconUrl));
                 logoLabel.setIconTextGap(10);
-            } else {
-                System.err.println("Logo icon not found: images/logo-icon.png");
             }
         }
         logoPanel.add(logoLabel);
         add(logoPanel, BorderLayout.NORTH);
 
-        // Menu Items Panel
+        // Menu Panel
         JPanel menuPanel = new JPanel();
         menuPanel.setLayout(new BoxLayout(menuPanel, BoxLayout.Y_AXIS));
         menuPanel.setBackground(SIDEBAR_BG);
@@ -55,50 +72,28 @@ public class SidebarPanel extends JPanel {
         menuPanel.add(menuLabel);
         menuPanel.add(Box.createRigidArea(new Dimension(0, 15)));
 
-        // Dashboard - now starts inactive (false)
+        // Dashboard (default active for cashier dashboard)
         dashboardBtn = createMenuItem("Dashboard", "dashboard-icon.png", false);
         menuPanel.add(dashboardBtn);
         menuPanel.add(Box.createRigidArea(new Dimension(0, 5)));
 
-        // Products
-        productsBtn = createMenuItem("Products", "products-icon.png", false);
-        menuPanel.add(productsBtn);
+        productBtn = createMenuItem("Product", "products-icon.png", false);
+        menuPanel.add(productBtn);
         menuPanel.add(Box.createRigidArea(new Dimension(0, 5)));
 
-        // Categories
-        categoriesBtn = createMenuItem("Categories", "categories-icon.png", false);
-        menuPanel.add(categoriesBtn);
+        orderBtn = createMenuItem("Order", "order-icon.png", false);
+        menuPanel.add(orderBtn);
         menuPanel.add(Box.createRigidArea(new Dimension(0, 5)));
 
-        // Transactions
-        transactionsBtn = createMenuItem("Transactions", "transactions-icon.png", false);
-        menuPanel.add(transactionsBtn);
-        menuPanel.add(Box.createRigidArea(new Dimension(0, 30)));
+        accountBtn = createMenuItem("Account", "account-icon.png", false);
+        menuPanel.add(accountBtn);
 
-        // OTHERS Label
-        JLabel othersLabel = new JLabel("OTHERS");
-        othersLabel.setForeground(new Color(173, 181, 189));
-        othersLabel.setFont(new Font("InaiMathi", Font.BOLD, 12));
-        othersLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
-        menuPanel.add(othersLabel);
-        menuPanel.add(Box.createRigidArea(new Dimension(0, 15)));
-
-        // Customer
-        Customerbtn = createMenuItem("Customer", "settings-icon.png", false);
-        menuPanel.add(Customerbtn);
-        menuPanel.add(Box.createRigidArea(new Dimension(0, 5)));
-
-        // User
-        UserBtn = createMenuItem("User", "User-icon.png", false);
-        menuPanel.add(UserBtn);
-
-        menuPanel.add(Box.createVerticalGlue()); // Push items up
+        menuPanel.add(Box.createVerticalGlue());
         add(menuPanel, BorderLayout.CENTER);
     }
 
     private JButton createMenuItem(String text, String iconPath, boolean isActive) {
         JButton button = new JButton(text);
-
         button.setHorizontalAlignment(SwingConstants.LEFT);
         button.setMaximumSize(new Dimension(Integer.MAX_VALUE, 50));
         button.setPreferredSize(new Dimension(Integer.MAX_VALUE, 50));
@@ -111,13 +106,11 @@ public class SidebarPanel extends JPanel {
         button.setAlignmentX(Component.LEFT_ALIGNMENT);
         button.setCursor(new Cursor(Cursor.HAND_CURSOR));
 
-        // Design-time safe icon loading
+        // Icon loading
         if (!java.beans.Beans.isDesignTime()) {
             java.net.URL iconUrl = getClass().getClassLoader().getResource("images/" + iconPath);
             if (iconUrl != null) {
                 button.setIcon(new ImageIcon(iconUrl));
-            } else {
-                System.err.println("Icon not found: images/" + iconPath);
             }
         }
 
@@ -126,22 +119,17 @@ public class SidebarPanel extends JPanel {
             button.setOpaque(true);
             button.setForeground(Color.WHITE);
         } else {
-            // Hover effect - only apply to non-active buttons
             button.addMouseListener(new java.awt.event.MouseAdapter() {
                 @Override
                 public void mouseEntered(java.awt.event.MouseEvent evt) {
-                    if (!isActive) {
-                        button.setBackground(HOVER_BG);
-                        button.setOpaque(true);
-                    }
+                    button.setBackground(HOVER_BG);
+                    button.setOpaque(true);
                 }
 
                 @Override
                 public void mouseExited(java.awt.event.MouseEvent evt) {
-                    if (!isActive) {
-                        button.setBackground(null);
-                        button.setOpaque(false);
-                    }
+                    button.setBackground(null);
+                    button.setOpaque(false);
                 }
             });
         }
@@ -149,8 +137,9 @@ public class SidebarPanel extends JPanel {
         return button;
     }
 
+    // Public method to highlight active menu from pages
     public void setActiveButton(String buttonName) {
-        JButton[] allButtons = {dashboardBtn, productsBtn, categoriesBtn, transactionsBtn, Customerbtn, UserBtn};
+        JButton[] allButtons = {dashboardBtn, productBtn, orderBtn, accountBtn};
         for (JButton btn : allButtons) {
             if (btn != null) {
                 btn.setBackground(null);
@@ -163,16 +152,12 @@ public class SidebarPanel extends JPanel {
         switch (buttonName) {
             case "Dashboard" ->
                 target = dashboardBtn;
-            case "Products" ->
-                target = productsBtn;
-            case "Categories" ->
-                target = categoriesBtn;
-            case "Transactions" ->
-                target = transactionsBtn;
-            case "Customer" ->
-                target = Customerbtn;
-            case "User" ->
-                target = UserBtn;
+            case "Product" ->
+                target = productBtn;
+            case "Order" ->
+                target = orderBtn;
+            case "Account" ->
+                target = accountBtn;
         }
 
         if (target != null) {
