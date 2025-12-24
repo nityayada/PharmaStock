@@ -38,10 +38,12 @@ public class ProductController {
         products.add(product);
     }
 
-    public void updateProduct(String id, Product updated) {
-        for (int i = 0; i < products.size(); i++) {
-            if (products.get(i).getProductId().equals(id)) {
-                products.set(i, updated);
+    public void updateProduct(String id, String name, int quantity, double price) {
+        for (Product p : products) {
+            if (p.getProductId().equals(id)) {
+                p.setName(name);
+                p.setQuantity(quantity);
+                p.setPrice(price);
                 break;
             }
         }

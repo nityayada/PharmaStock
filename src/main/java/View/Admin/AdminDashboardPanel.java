@@ -35,22 +35,15 @@ public class AdminDashboardPanel extends JPanel {
 
     private JPanel createDashboardContent() {
         JPanel panel = new JPanel(new BorderLayout());
-        panel.setBackground(new Color(240, 242, 245));
+        panel.setBackground(new Color(217, 217, 217));
 
         // Header
         JLabel headerLabel = new JLabel("Dashboard", SwingConstants.CENTER);
-        headerLabel.setFont(new Font("Segoe UI", Font.BOLD, 32));
+        headerLabel.setFont(new Font("InaiMathi", Font.BOLD, 32));
         headerLabel.setForeground(new Color(14, 40, 107));
         headerLabel.setBorder(BorderFactory.createEmptyBorder(40, 0, 30, 0));
         panel.add(headerLabel, BorderLayout.NORTH);
 
-//        // Your existing cards, charts, placeholders, etc. here...
-//        // Example placeholder
-//        JLabel placeholder = new JLabel("Admin Dashboard Content Goes Here", SwingConstants.CENTER);
-//        placeholder.setFont(new Font("Segoe UI", Font.PLAIN, 24));
-//        placeholder.setForeground(Color.GRAY);
-//        panel.add(placeholder, BorderLayout.CENTER);
-// Main scrollable content
         JPanel contentWrapper = new JPanel();
         contentWrapper.setLayout(new BoxLayout(contentWrapper, BoxLayout.Y_AXIS));
         contentWrapper.setBackground(new Color(217, 217, 217));

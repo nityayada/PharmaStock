@@ -10,6 +10,7 @@ import javax.swing.*;
 import java.awt.Dimension;
 import javax.swing.table.DefaultTableModel;
 import model.Product;
+
 import java.util.List;
 
 /**
@@ -34,67 +35,49 @@ public class AdminProductPanel extends JPanel {
     private JPanel createProductContent() {
         JPanel panel = new JPanel(new BorderLayout());
         panel.setBackground(new Color(217, 217, 217));
-        //        // Your existing header, cards, filters, table code here...
-        //        // Example table placeholder
-        //        JTable table = new JTable(new DefaultTableModel(new String[]{"ID", "Name"}, 0));
-        //        panel.add(new JScrollPane(table), BorderLayout.CENTER);
-
         // Header
         JLabel headerLabel = new JLabel("Product", SwingConstants.LEFT);
         headerLabel.setFont(new Font("InaiMathi", Font.BOLD, 32));
         headerLabel.setForeground(new Color(14, 40, 107));
         headerLabel.setBorder(BorderFactory.createEmptyBorder(30, 50, 20, 0));
         panel.add(headerLabel, BorderLayout.NORTH);
-
         // Main vertical layout
         JPanel content = new JPanel();
         content.setLayout(new BoxLayout(content, BoxLayout.Y_AXIS));
         content.setBackground(new Color(217, 217, 217));
         content.setBorder(BorderFactory.createEmptyBorder(20, 50, 50, 50));
-
-        // === Top 3 Cards (connected to ProductController) ===
+        // Top 3 Cards
         JPanel cardsRow = new JPanel(new GridLayout(1, 3, 20, 20));
         cardsRow.setBackground(new Color(217, 217, 217));
-
         cardsRow.add(createIconCard("Total Product", String.valueOf(productController.getTotalProducts()), "product-icon.png", new Color(142, 68, 173)));
         cardsRow.add(createIconCard("Low Stock Product", String.valueOf(productController.getLowStockProducts().size()), "lowstock-icon.png", new Color(230, 126, 34)));
         cardsRow.add(createIconCard("Out of Stock Product", String.valueOf(productController.getOutOfStockProducts().size()), "outofstock-icon.png", new Color(231, 76, 60)));
-
         content.add(cardsRow);
         content.add(Box.createRigidArea(new Dimension(0, 40)));
-
-        // === Search + Add Button ===
+        // Search + Add New Button
         JPanel filterPanel = new JPanel(new BorderLayout());
         filterPanel.setBackground(new Color(217, 217, 217));
-
-        // Left: Search
         JPanel leftFilters = new JPanel(new FlowLayout(FlowLayout.LEFT, 15, 10));
         leftFilters.setBackground(new Color(217, 217, 217));
-
         JTextField searchField = new JTextField("Search anything");
         searchField.setPreferredSize(new Dimension(400, 40));
         searchField.addActionListener(e -> updateTable(productController.searchProducts(searchField.getText())));
         leftFilters.add(searchField);
-
         filterPanel.add(leftFilters, BorderLayout.WEST);
-
-        // Right: Add New Button
         JButton addNewBtn = new JButton("+ Add New");
         addNewBtn.setBackground(new Color(14, 40, 107));
         addNewBtn.setForeground(Color.WHITE);
         addNewBtn.setFont(new Font("InaiMathi", Font.BOLD, 16));
         addNewBtn.setPreferredSize(new Dimension(150, 40));
         addNewBtn.setCursor(new Cursor(Cursor.HAND_CURSOR));
-        addNewBtn.addActionListener(e -> addNewProduct());
+        addNewBtn.addActionListener(e -> showAddProductDialog());
         JPanel rightBtn = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         rightBtn.setBackground(new Color(217, 217, 217));
         rightBtn.add(addNewBtn);
         filterPanel.add(rightBtn, BorderLayout.EAST);
-
         content.add(filterPanel);
         content.add(Box.createRigidArea(new Dimension(0, 30)));
-
-        // === Table (connected to ProductController) ===
+        // Table
         String[] columns = {"Product ID", "Product Name", "Items", "Price (Rs)", "Status", "Action"};
         model = new DefaultTableModel(columns, 0) {
             @Override
@@ -102,15 +85,14 @@ public class AdminProductPanel extends JPanel {
                 return column == 5; // Only Action
             }
         };
-
         table = new JTable(model);
+        table.getColumn("Action").setCellRenderer(new ActionRenderer());
+        table.getColumn("Action").setCellEditor(new ActionEditor());
+
         table.setRowHeight(50);
         table.getTableHeader().setBackground(new Color(220, 220, 220));
         table.getTableHeader().setFont(new Font("InaiMathi", Font.BOLD, 14));
-
-        // Load initial data from ProductController
         updateTable(productController.getAllProducts());
-
         // Status color
         table.getColumn("Status").setCellRenderer((table1, value, isSelected, hasFocus, row, column) -> {
             JLabel label = new JLabel((String) value, SwingConstants.CENTER);
@@ -127,53 +109,43 @@ public class AdminProductPanel extends JPanel {
             }
             return label;
         });
-
         // Action column with View/Edit/Delete buttons
-        table.getColumn("Action").setCellRenderer((table1, value, isSelected, hasFocus, row, column) -> {
-            JPanel actionPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 0));
-            actionPanel.setBackground(Color.WHITE);
-
-            JButton viewBtn = new JButton("👁");
-            viewBtn.setForeground(new Color(41, 128, 185));
-            viewBtn.setToolTipText("View");
-            viewBtn.addActionListener(e -> viewProduct(row));
-
-            JButton editBtn = new JButton("✎");
-            editBtn.setForeground(new Color(39, 174, 96));
-            editBtn.setToolTipText("Edit");
-            editBtn.addActionListener(e -> editProduct(row));
-
-            JButton deleteBtn = new JButton("🗑");
-            deleteBtn.setForeground(new Color(231, 76, 60));
-            deleteBtn.setToolTipText("Delete");
-            deleteBtn.addActionListener(e -> deleteProduct(row));
-
-            viewBtn.setBorderPainted(false);
-            viewBtn.setContentAreaFilled(false);
-            editBtn.setBorderPainted(false);
-            editBtn.setContentAreaFilled(false);
-            deleteBtn.setBorderPainted(false);
-            deleteBtn.setContentAreaFilled(false);
-
-            actionPanel.add(viewBtn);
-            actionPanel.add(editBtn);
-            actionPanel.add(deleteBtn);
-            return actionPanel;
-        });
-
+//        table.getColumn("Action").setCellRenderer((table1, value, isSelected, hasFocus, row, column) -> {
+//            JPanel actionPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 0));
+//            actionPanel.setBackground(Color.WHITE);
+//            JButton viewBtn = new JButton("👁");
+//            viewBtn.setForeground(new Color(41, 128, 185));
+//            viewBtn.setToolTipText("View");
+//            viewBtn.addActionListener(e -> viewProduct(row));
+//            JButton editBtn = new JButton("✎");
+//            editBtn.setForeground(new Color(39, 174, 96));
+//            editBtn.setToolTipText("Edit");
+//            editBtn.addActionListener(e -> editProduct(row));
+//            JButton deleteBtn = new JButton("🗑");
+//            deleteBtn.setForeground(new Color(231, 76, 60));
+//            deleteBtn.setToolTipText("Delete");
+//            deleteBtn.addActionListener(e -> deleteProduct(row));
+//            viewBtn.setBorderPainted(false);
+//            viewBtn.setContentAreaFilled(false);
+//            editBtn.setBorderPainted(false);
+//            editBtn.setContentAreaFilled(false);
+//            deleteBtn.setBorderPainted(false);
+//            deleteBtn.setContentAreaFilled(false);
+//            actionPanel.add(viewBtn);
+//            actionPanel.add(editBtn);
+//            actionPanel.add(deleteBtn);
+//            return actionPanel;
+//        });
         JScrollPane scrollPane = new JScrollPane(table);
         scrollPane.setBorder(BorderFactory.createLineBorder(new Color(200, 200, 200)));
-
         content.add(scrollPane);
         panel.add(content, BorderLayout.CENTER);
-
         return panel;
     }
 
-    // Your other methods like createIconCard go here...
-    // Load/update table with products
+    // Load/update table
     private void updateTable(List<Product> productList) {
-        model.setRowCount(0); // Clear table
+        model.setRowCount(0);
         for (Product p : productList) {
             model.addRow(new Object[]{
                 p.getProductId(),
@@ -181,19 +153,18 @@ public class AdminProductPanel extends JPanel {
                 p.getQuantity(),
                 p.getPrice(),
                 p.getStatus(),
-                "" // Action placeholder
+                ""
             });
         }
     }
 
-    // View product details (simple dialog)
+    // View product
     private void viewProduct(int row) {
         String id = (String) model.getValueAt(row, 0);
         Product p = productController.getAllProducts().stream()
                 .filter(prod -> prod.getProductId().equals(id))
                 .findFirst()
                 .orElse(null);
-
         if (p != null) {
             JOptionPane.showMessageDialog(this,
                     "Product ID: " + p.getProductId() + "\n"
@@ -205,21 +176,55 @@ public class AdminProductPanel extends JPanel {
         }
     }
 
-    // Edit product (simple dialog)
     private void editProduct(int row) {
-        String id = (String) model.getValueAt(row, 0);
-        Product p = productController.getAllProducts().stream()
-                .filter(prod -> prod.getProductId().equals(id))
-                .findFirst()
-                .orElse(null);
+        String productId = table.getValueAt(row, 0).toString();
+        String name = table.getValueAt(row, 1).toString();
+        int quantity = Integer.parseInt(table.getValueAt(row, 2).toString());
+        double price = Double.parseDouble(table.getValueAt(row, 3).toString());
 
-        if (p != null) {
-            String newName = JOptionPane.showInputDialog(this, "New Name:", p.getName());
-            if (newName != null) {
-                p.setName(newName);
-                productController.updateProduct(id, p);
+        JTextField nameField = new JTextField(name);
+        JTextField quantityField = new JTextField(String.valueOf(quantity));
+        JTextField priceField = new JTextField(String.valueOf(price));
+
+        JPanel panel = new JPanel(new GridLayout(0, 2, 10, 10));
+        panel.add(new JLabel("Product ID:"));
+        panel.add(new JLabel(productId));
+
+        panel.add(new JLabel("Name:"));
+        panel.add(nameField);
+
+        panel.add(new JLabel("Quantity:"));
+        panel.add(quantityField);
+
+        panel.add(new JLabel("Price:"));
+        panel.add(priceField);
+
+        int result = JOptionPane.showConfirmDialog(this, panel, "Edit Product",
+                JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+
+        if (result == JOptionPane.OK_OPTION) {
+            try {
+                String newName = nameField.getText().trim();
+                int newQty = Integer.parseInt(quantityField.getText().trim());
+                double newPrice = Double.parseDouble(priceField.getText().trim());
+
+                if (newName.isEmpty()) {
+                    JOptionPane.showMessageDialog(this, "Name cannot be empty",
+                            "Validation Error", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+
+                // Correct method call
+                productController.updateProduct(productId, newName, newQty, newPrice);
+
                 updateTable(productController.getAllProducts());
-                updateCards(); // Refresh cards
+                JOptionPane.showMessageDialog(this, "Product updated successfully!",
+                        "Success", JOptionPane.INFORMATION_MESSAGE);
+
+            } catch (NumberFormatException ex) {
+                JOptionPane.showMessageDialog(this,
+                        "Quantity and Price must be valid numbers",
+                        "Invalid Input", JOptionPane.ERROR_MESSAGE);
             }
         }
     }
@@ -235,33 +240,103 @@ public class AdminProductPanel extends JPanel {
         }
     }
 
-    // Add new product (simple dialog)
-    private void addNewProduct() {
-        String id = JOptionPane.showInputDialog(this, "Product ID:");
-        String name = JOptionPane.showInputDialog(this, "Name:");
-        String qtyStr = JOptionPane.showInputDialog(this, "Quantity:");
-        String priceStr = JOptionPane.showInputDialog(this, "Price:");
-
-        if (id != null && name != null && qtyStr != null && priceStr != null) {
-            try {
-                int qty = Integer.parseInt(qtyStr);
-                double price = Double.parseDouble(priceStr);
-                Product newProduct = new Product(id, name, qty, price);
-                productController.addProduct(newProduct);
-                updateTable(productController.getAllProducts());
-                updateCards();
-            } catch (NumberFormatException e) {
-                JOptionPane.showMessageDialog(this, "Invalid quantity or price!", "Error", JOptionPane.ERROR_MESSAGE);
+    // New: Single Dialog for Add New Product with Validation
+    private void showAddProductDialog() {
+        JDialog dialog = new JDialog((JFrame) SwingUtilities.getWindowAncestor(this), "Add New Product", true);
+        dialog.setSize(450, 400);
+        dialog.setLocationRelativeTo(this);
+        dialog.setLayout(new BorderLayout(10, 10));
+        dialog.getContentPane().setBackground(new Color(245, 245, 245));
+        // Title
+        JLabel titleLabel = new JLabel("Add New Product", SwingConstants.CENTER);
+        titleLabel.setFont(new Font("InaiMathi", Font.BOLD, 24));
+        titleLabel.setForeground(new Color(14, 40, 107));
+        titleLabel.setBorder(BorderFactory.createEmptyBorder(20, 0, 10, 0));
+        dialog.add(titleLabel, BorderLayout.NORTH);
+        // Form Panel
+        JPanel formPanel = new JPanel(new GridLayout(5, 2, 10, 15));
+        formPanel.setBorder(BorderFactory.createEmptyBorder(20, 30, 20, 30));
+        formPanel.setBackground(new Color(245, 245, 245));
+        // ID
+        formPanel.add(new JLabel("Product ID:"));
+        JTextField idField = new JTextField();
+        formPanel.add(idField);
+        // Name
+        formPanel.add(new JLabel("Product Name:"));
+        JTextField nameField = new JTextField();
+        formPanel.add(nameField);
+        // Quantity
+        formPanel.add(new JLabel("Quantity:"));
+        JTextField qtyField = new JTextField();
+        formPanel.add(qtyField);
+        // Price
+        formPanel.add(new JLabel("Price (Rs):"));
+        JTextField priceField = new JTextField();
+        formPanel.add(priceField);
+        dialog.add(formPanel, BorderLayout.CENTER);
+        // Buttons
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 15, 15));
+        buttonPanel.setBackground(new Color(245, 245, 245));
+        JButton cancelBtn = new JButton("Cancel");
+        cancelBtn.setBackground(new Color(231, 76, 60));
+        cancelBtn.setForeground(Color.WHITE);
+        cancelBtn.addActionListener(e -> dialog.dispose());
+        buttonPanel.add(cancelBtn);
+        JButton saveBtn = new JButton("Save Product");
+        saveBtn.setBackground(new Color(14, 40, 107));
+        saveBtn.setForeground(Color.WHITE);
+        saveBtn.addActionListener(e -> {
+            String id = idField.getText().trim();
+            String name = nameField.getText().trim();
+            String qtyStr = qtyField.getText().trim();
+            String priceStr = priceField.getText().trim();
+            // Validation
+            if (id.isEmpty() || name.isEmpty() || qtyStr.isEmpty() || priceStr.isEmpty()) {
+                JOptionPane.showMessageDialog(dialog, "All fields are required!", "Validation Error", JOptionPane.ERROR_MESSAGE);
+                return;
             }
-        }
+            int qty;
+            double price;
+            try {
+                qty = Integer.parseInt(qtyStr);
+                price = Double.parseDouble(priceStr);
+                if (qty < 0 || price < 0) {
+                    JOptionPane.showMessageDialog(dialog, "Quantity and Price cannot be negative!", "Validation Error", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+            } catch (NumberFormatException ex) {
+                JOptionPane.showMessageDialog(dialog, "Quantity and Price must be valid numbers!", "Validation Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            // Duplicate ID check
+            if (productIdExists(id)) {
+                JOptionPane.showMessageDialog(
+                        dialog,
+                        "Product ID already exists!",
+                        "Duplicate Product",
+                        JOptionPane.ERROR_MESSAGE
+                );
+                return;
+            }
+
+            // Create and add product
+            Product newProduct = new Product(id, name, qty, price);
+            productController.addProduct(newProduct);
+            updateTable(productController.getAllProducts());
+            updateCards();
+            JOptionPane.showMessageDialog(dialog, "Product added successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
+            dialog.dispose();
+        });
+        buttonPanel.add(saveBtn);
+        dialog.add(buttonPanel, BorderLayout.SOUTH);
+        dialog.setVisible(true);
     }
 
-    // Update top cards with real data
+    // Update top cards
     private void updateCards() {
-        // Assuming your cardsRow is accessible or recreate it
-        // For simplicity, you can call this after any change
-        // In real code, store card labels as fields and update them
-        JOptionPane.showMessageDialog(this, "Cards updated with new data!"); // Placeholder - implement real update
+        // Re-create or update card values here
+        // For simplicity, show message (you can improve by storing card labels)
+//        JOptionPane.showMessageDialog(this, "Cards updated with new data!");
     }
 
     private JPanel createIconCard(String title, String value, String iconPath, Color color) {
@@ -271,7 +346,6 @@ public class AdminProductPanel extends JPanel {
                 BorderFactory.createLineBorder(new Color(200, 200, 200)),
                 BorderFactory.createEmptyBorder(20, 20, 20, 20)
         ));
-
         JLabel iconLabel = new JLabel();
         if (!java.beans.Beans.isDesignTime()) {
             java.net.URL url = getClass().getClassLoader().getResource("images/" + iconPath);
@@ -280,21 +354,105 @@ public class AdminProductPanel extends JPanel {
             }
         }
         card.add(iconLabel, BorderLayout.WEST);
-
         JPanel textPanel = new JPanel(new GridLayout(2, 1));
         textPanel.setBackground(Color.WHITE);
         JLabel titleLabel = new JLabel(title);
         titleLabel.setForeground(Color.GRAY);
         textPanel.add(titleLabel);
-
         JLabel valueLabel = new JLabel(value);
         valueLabel.setFont(new Font("InaiMathi", Font.BOLD, 32));
         valueLabel.setForeground(color);
         textPanel.add(valueLabel);
-
         card.add(textPanel, BorderLayout.CENTER);
-
         return card;
+    }
+
+    private boolean productIdExists(String id) {
+        return productController.getAllProducts()
+                .stream()
+                .anyMatch(p -> p.getProductId().equalsIgnoreCase(id));
+    }
+
+    private class ActionRenderer extends JPanel
+            implements javax.swing.table.TableCellRenderer {
+
+        public ActionRenderer() {
+            setLayout(new FlowLayout(FlowLayout.CENTER, 10, 0));
+            setBackground(Color.WHITE);
+
+            add(createButton("👁"));
+            add(createButton("✎"));
+            add(createButton("🗑"));
+        }
+
+        private JButton createButton(String text) {
+            JButton btn = new JButton(text);
+            btn.setBorderPainted(false);
+            btn.setContentAreaFilled(false);
+            return btn;
+        }
+
+        @Override
+        public Component getTableCellRendererComponent(
+                JTable table, Object value, boolean isSelected,
+                boolean hasFocus, int row, int column) {
+            return this;
+        }
+    }
+
+    private class ActionEditor extends AbstractCellEditor
+            implements javax.swing.table.TableCellEditor {
+
+        private JPanel panel;
+        private int row;
+
+        public ActionEditor() {
+            panel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 0));
+            panel.setBackground(Color.WHITE);
+
+            JButton viewBtn = createButton("👁");
+            JButton editBtn = createButton("✎");
+            JButton deleteBtn = createButton("🗑");
+
+            viewBtn.addActionListener(e -> {
+                fireEditingStopped();
+                viewProduct(row);
+            });
+
+            editBtn.addActionListener(e -> {
+                fireEditingStopped();
+                editProduct(row);
+            });
+
+            deleteBtn.addActionListener(e -> {
+                fireEditingStopped();
+                deleteProduct(row);
+            });
+
+            panel.add(viewBtn);
+            panel.add(editBtn);
+            panel.add(deleteBtn);
+        }
+
+        private JButton createButton(String text) {
+            JButton btn = new JButton(text);
+            btn.setBorderPainted(false);
+            btn.setContentAreaFilled(false);
+            return btn;
+        }
+
+        @Override
+        public Component getTableCellEditorComponent(
+                JTable table, Object value, boolean isSelected,
+                int row, int column) {
+            this.row = row;
+            return panel;
+        }
+
+        @Override
+        public Object getCellEditorValue() {
+            return "";
+        }
     }
 
 }
