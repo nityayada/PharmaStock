@@ -47,59 +47,61 @@ public class NavbarPanel extends JPanel {
 
         add(leftPanel, BorderLayout.WEST);
 
-        // Right: Search Bar
-        JPanel rightPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 20, 10));
-        rightPanel.setBackground(null);
+//        // Right: Search Bar
+//        JPanel rightPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 20, 10));
+//        rightPanel.setBackground(null);
+//
+//        // Search Icon
+    
 
-        // Search Icon
-//        JLabel searchIcon = new JLabel(new ImageIcon(getClass().getResource("/resources/images/search-icon.png")));
+    ////        JLabel searchIcon = new JLabel(new ImageIcon(getClass().getResource("/resources/images/search-icon.png")));
+////        searchIcon.setCursor(new Cursor(Cursor.HAND_CURSOR));
+//        JLabel searchIcon = new JLabel();
 //        searchIcon.setCursor(new Cursor(Cursor.HAND_CURSOR));
-        JLabel searchIcon = new JLabel();
-        searchIcon.setCursor(new Cursor(Cursor.HAND_CURSOR));
-
-        if (!java.beans.Beans.isDesignTime()) {
-            URL iconUrl = getClass().getClassLoader().getResource("src/main/resources/images/search-icon.png");
-
-            if (iconUrl != null) {
-                searchIcon.setIcon(new ImageIcon(iconUrl));
-
-            } else {
-                System.err.println("Icon not found: images/search-icon.png");
-            }
-        }
-
-        // Search Field
-        searchField = new JTextField("Search anything");
-        searchField.setPreferredSize(new Dimension(300, 40));
-        searchField.setFont(new Font("InaiMathi", Font.PLAIN, 16));
-        searchField.setForeground(Color.GRAY);
-        searchField.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createLineBorder(new Color(220, 220, 220), 1),
-                BorderFactory.createEmptyBorder(0, 15, 0, 15)
-        ));
-        searchField.setBackground(Color.WHITE);
-
-        // Rounded corners (custom painting)
-        searchField.setBorder(BorderFactory.createCompoundBorder(
-                new RoundedBorder(new Color(220, 220, 220), 20), // 20 = radius
-                BorderFactory.createEmptyBorder(0, 40, 0, 15)
-        ));
-
-        // Panel to hold icon + field
-        JPanel searchContainer = new JPanel(new BorderLayout());
-        searchContainer.setBackground(null);
-        searchContainer.add(searchIcon, BorderLayout.WEST);
-        searchContainer.add(searchField, BorderLayout.CENTER);
-
-        rightPanel.add(searchContainer);
-
-        add(rightPanel, BorderLayout.EAST);
+//
+//        if (!java.beans.Beans.isDesignTime()) {
+//            URL iconUrl = getClass().getClassLoader().getResource("src/main/resources/images/search-icon.png");
+//
+//            if (iconUrl != null) {
+//                searchIcon.setIcon(new ImageIcon(iconUrl));
+//
+//            } else {
+//                System.err.println("Icon not found: images/search-icon.png");
+//            }
+//        }
+//
+//        // Search Field
+//        searchField = new JTextField("Search anything");
+//        searchField.setPreferredSize(new Dimension(300, 40));
+//        searchField.setFont(new Font("InaiMathi", Font.PLAIN, 16));
+//        searchField.setForeground(Color.GRAY);
+//        searchField.setBorder(BorderFactory.createCompoundBorder(
+//                BorderFactory.createLineBorder(new Color(220, 220, 220), 1),
+//                BorderFactory.createEmptyBorder(0, 15, 0, 15)
+//        ));
+//        searchField.setBackground(Color.WHITE);
+//
+//        // Rounded corners (custom painting)
+//        searchField.setBorder(BorderFactory.createCompoundBorder(
+//                new RoundedBorder(new Color(220, 220, 220), 20), // 20 = radius
+//                BorderFactory.createEmptyBorder(0, 40, 0, 15)
+//        ));
+//
+//        // Panel to hold icon + field
+//        JPanel searchContainer = new JPanel(new BorderLayout());
+//        searchContainer.setBackground(null);
+//        searchContainer.add(searchIcon, BorderLayout.WEST);
+//        searchContainer.add(searchField, BorderLayout.CENTER);
+//
+//        rightPanel.add(searchContainer);
+//
+//        add(rightPanel, BorderLayout.EAST);
     }
 
-    // Optional: Getter for search field (to add listener later)
-    public JTextField getSearchField() {
-        return searchField;
-    }
+//    // Optional: Getter for search field (to add listener later)
+//    public JTextField getSearchField() {
+//        return searchField;
+//    }
 
     // Custom rounded border class
     private static class RoundedBorder extends javax.swing.border.AbstractBorder {

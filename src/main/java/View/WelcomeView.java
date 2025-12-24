@@ -7,8 +7,7 @@ package View;
 import View.Admin.AdminMainFrame;
 import controller.UserController;
 import model.User;
-//import View.Admin.AdminDashboard;
-import View.Cashier.CashDashboard;
+import View.Cashier.CashMainFrame;
 import javax.swing.JOptionPane;
 
 /**
@@ -254,7 +253,7 @@ public class WelcomeView extends javax.swing.JFrame {
             if (user.getRole().equals("Admin")) {
                 new AdminMainFrame().setVisible(true);
             } else if (user.getRole().equals("Cashier")) {
-                new CashDashboard().setVisible(true);
+                new CashMainFrame().setVisible(true);
             }
         } else {
             JOptionPane.showMessageDialog(this, "Invalid email, password, or role!", "Login Failed", JOptionPane.ERROR_MESSAGE);
