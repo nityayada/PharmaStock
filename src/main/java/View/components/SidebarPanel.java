@@ -1,5 +1,6 @@
 package View.components;
 
+import View.Admin.AdminMainFrame;
 import View.WelcomeView;
 import java.awt.*;
 import javax.swing.*;
@@ -11,11 +12,13 @@ public class SidebarPanel extends JPanel {
     private final Color TEXT_COLOR = Color.WHITE;
     private final Color HIGHLIGHT_BG = new Color(0, 123, 255); // Bootstrap blue for active
     private final Color HOVER_BG = new Color(73, 80, 87);
+    private AdminMainFrame mainFrame;
 
     // Add these private fields to access buttons later
     private JButton dashboardBtn, productsBtn, categoriesBtn, transactionsBtn, Customerbtn, UserBtn;
 
-    public SidebarPanel() {
+    public SidebarPanel(AdminMainFrame mainFrame) {
+        this.mainFrame = mainFrame;
         setLayout(new BorderLayout());
         setBackground(SIDEBAR_BG);
         setPreferredSize(new Dimension(240, 400));
@@ -102,12 +105,31 @@ public class SidebarPanel extends JPanel {
         menuPanel.add(Box.createRigidArea(new Dimension(0, 20))); // Extra space above logout
         menuPanel.add(logoutBtn);
 
-        // Add navigation listeners
-        dashboardBtn.addActionListener(e -> navigateTo("AdminDashboard"));
-        productsBtn.addActionListener(e -> navigateTo("AdminProduct"));
-        transactionsBtn.addActionListener(e -> navigateTo("AdminTransaction"));
-        Customerbtn.addActionListener(e -> navigateTo("AdminCustomer"));
-        UserBtn.addActionListener(e -> navigateTo("AdminUser"));
+        // Navigation listeners - use mainFrame.switchPage instead of opening new frames
+        dashboardBtn.addActionListener(e -> {
+            mainFrame.switchPage("Dashboard");
+            setActiveButton("Dashboard");
+        });
+
+        productsBtn.addActionListener(e -> {
+            mainFrame.switchPage("Products");
+            setActiveButton("Products");
+        });
+
+        transactionsBtn.addActionListener(e -> {
+            mainFrame.switchPage("Transactions");
+            setActiveButton("Transactions");
+        });
+
+        Customerbtn.addActionListener(e -> {
+            mainFrame.switchPage("Customer");
+            setActiveButton("Customer");
+        });
+
+        UserBtn.addActionListener(e -> {
+            mainFrame.switchPage("User");
+            setActiveButton("User");
+        });
         logoutBtn.addActionListener(e -> logout()); // If you have logout
     }
 
@@ -180,8 +202,6 @@ public class SidebarPanel extends JPanel {
                 target = dashboardBtn;
             case "Products" ->
                 target = productsBtn;
-//            case "Categories" ->
-//                target = categoriesBtn;
             case "Transactions" ->
                 target = transactionsBtn;
             case "Customer" ->

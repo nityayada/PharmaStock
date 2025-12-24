@@ -4,9 +4,10 @@
  */
 package View;
 
+import View.Admin.AdminMainFrame;
 import controller.UserController;
 import model.User;
-import View.Admin.AdminDashboard;
+//import View.Admin.AdminDashboard;
 import View.Cashier.CashDashboard;
 import javax.swing.JOptionPane;
 
@@ -251,7 +252,7 @@ public class WelcomeView extends javax.swing.JFrame {
 
             // Open correct dashboard based on role
             if (user.getRole().equals("Admin")) {
-                new AdminDashboard().setVisible(true);
+                new AdminMainFrame().setVisible(true);
             } else if (user.getRole().equals("Cashier")) {
                 new CashDashboard().setVisible(true);
             }
