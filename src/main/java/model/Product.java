@@ -4,6 +4,8 @@
  */
 package model;
 
+import java.time.LocalDate;
+
 /**
  *
  * @author nityayadav
@@ -15,12 +17,23 @@ public class Product {
     private int quantity;
     private double price;
     private String status; // "Available", "Low Stock", "Empty"
+    private LocalDate expiryDate;   // compulsory
+    private String imagePath;       // product image path
 
-    public Product(String productId, String name, int quantity, double price) {
+    public Product(
+            String productId,
+            String name,
+            int quantity,
+            double price,
+            LocalDate expiryDate,
+            String imagePath
+    ) {
         this.productId = productId;
         this.name = name;
         this.quantity = quantity;
         this.price = price;
+        this.expiryDate = expiryDate;
+        this.imagePath = imagePath;
         updateStatus();
     }
 
@@ -71,4 +84,21 @@ public class Product {
     public String getStatus() {
         return status;
     }
+
+    public LocalDate getExpiryDate() {
+        return expiryDate;
+    }
+
+    public void setExpiryDate(LocalDate expiryDate) {
+        this.expiryDate = expiryDate;
+    }
+
+    public String getImagePath() {
+        return imagePath;
+    }
+
+    public void setImagePath(String imagePath) {
+        this.imagePath = imagePath;
+    }
+
 }

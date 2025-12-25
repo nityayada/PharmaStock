@@ -10,6 +10,11 @@ import javax.swing.*;
 import java.awt.Dimension;
 import javax.swing.table.DefaultTableModel;
 import model.Product;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+import javax.swing.filechooser.FileNameExtensionFilter;
+import java.io.File;
 
 import java.util.List;
 
@@ -109,33 +114,7 @@ public class AdminProductPanel extends JPanel {
             }
             return label;
         });
-        // Action column with View/Edit/Delete buttons
-//        table.getColumn("Action").setCellRenderer((table1, value, isSelected, hasFocus, row, column) -> {
-//            JPanel actionPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 0));
-//            actionPanel.setBackground(Color.WHITE);
-//            JButton viewBtn = new JButton("👁");
-//            viewBtn.setForeground(new Color(41, 128, 185));
-//            viewBtn.setToolTipText("View");
-//            viewBtn.addActionListener(e -> viewProduct(row));
-//            JButton editBtn = new JButton("✎");
-//            editBtn.setForeground(new Color(39, 174, 96));
-//            editBtn.setToolTipText("Edit");
-//            editBtn.addActionListener(e -> editProduct(row));
-//            JButton deleteBtn = new JButton("🗑");
-//            deleteBtn.setForeground(new Color(231, 76, 60));
-//            deleteBtn.setToolTipText("Delete");
-//            deleteBtn.addActionListener(e -> deleteProduct(row));
-//            viewBtn.setBorderPainted(false);
-//            viewBtn.setContentAreaFilled(false);
-//            editBtn.setBorderPainted(false);
-//            editBtn.setContentAreaFilled(false);
-//            deleteBtn.setBorderPainted(false);
-//            deleteBtn.setContentAreaFilled(false);
-//            actionPanel.add(viewBtn);
-//            actionPanel.add(editBtn);
-//            actionPanel.add(deleteBtn);
-//            return actionPanel;
-//        });
+
         JScrollPane scrollPane = new JScrollPane(table);
         scrollPane.setBorder(BorderFactory.createLineBorder(new Color(200, 200, 200)));
         content.add(scrollPane);
@@ -160,71 +139,133 @@ public class AdminProductPanel extends JPanel {
 
     // View product
     private void viewProduct(int row) {
-        String id = (String) model.getValueAt(row, 0);
+
+        String id = model.getValueAt(row, 0).toString();
+
         Product p = productController.getAllProducts().stream()
                 .filter(prod -> prod.getProductId().equals(id))
                 .findFirst()
                 .orElse(null);
-        if (p != null) {
-            JOptionPane.showMessageDialog(this,
-                    "Product ID: " + p.getProductId() + "\n"
-                    + "Name: " + p.getName() + "\n"
-                    + "Items: " + p.getQuantity() + "\n"
-                    + "Price: Rs. " + p.getPrice() + "\n"
-                    + "Status: " + p.getStatus(),
-                    "Product Details", JOptionPane.INFORMATION_MESSAGE);
+
+        if (p == null) {
+            return;
         }
+
+        JPanel panel = new JPanel(new BorderLayout(10, 10));
+        panel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+
+        // Text info
+        JTextArea info = new JTextArea(
+                "Product ID: " + p.getProductId() + "\n"
+                + "Name: " + p.getName() + "\n"
+                + "Quantity: " + p.getQuantity() + "\n"
+                + "Price: Rs. " + p.getPrice() + "\n"
+                + "Status: " + p.getStatus() + "\n"
+                + "Expiry Date: " + p.getExpiryDate()
+        );
+        info.setEditable(false);
+        info.setBackground(null);
+
+        panel.add(info, BorderLayout.CENTER);
+
+        // Image (optional)
+        if (p.getImagePath() != null) {
+            ImageIcon icon = new ImageIcon(p.getImagePath());
+            Image img = icon.getImage().getScaledInstance(120, 120, Image.SCALE_SMOOTH);
+            panel.add(new JLabel(new ImageIcon(img)), BorderLayout.EAST);
+        }
+
+        JOptionPane.showMessageDialog(
+                this,
+                panel,
+                "Product Details",
+                JOptionPane.INFORMATION_MESSAGE
+        );
     }
 
     private void editProduct(int row) {
-        String productId = table.getValueAt(row, 0).toString();
-        String name = table.getValueAt(row, 1).toString();
-        int quantity = Integer.parseInt(table.getValueAt(row, 2).toString());
-        double price = Double.parseDouble(table.getValueAt(row, 3).toString());
+        String productId = model.getValueAt(row, 0).toString();
 
-        JTextField nameField = new JTextField(name);
-        JTextField quantityField = new JTextField(String.valueOf(quantity));
-        JTextField priceField = new JTextField(String.valueOf(price));
+        Product p = productController.getAllProducts().stream()
+                .filter(prod -> prod.getProductId().equals(productId))
+                .findFirst()
+                .orElse(null);
 
+        if (p == null) {
+            return;
+        }
+
+        // Input fields
+        JTextField nameField = new JTextField(p.getName());
+        JTextField qtyField = new JTextField(String.valueOf(p.getQuantity()));
+        JTextField priceField = new JTextField(String.valueOf(p.getPrice()));
+        JTextField expiryField = new JTextField(p.getExpiryDate().toString());
+
+        JLabel imageLabel = new JLabel(p.getImagePath() == null ? "No image selected" : p.getImagePath());
+        JButton browseBtn = new JButton("Browse");
+        final String[] imagePath = {p.getImagePath()};
+
+        browseBtn.addActionListener(e -> {
+            JFileChooser fc = new JFileChooser();
+            fc.setFileFilter(new FileNameExtensionFilter("Images", "jpg", "png", "jpeg"));
+            if (fc.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
+                imagePath[0] = fc.getSelectedFile().getAbsolutePath();
+                imageLabel.setText(imagePath[0]);
+            }
+        });
+
+        // Form layout
         JPanel panel = new JPanel(new GridLayout(0, 2, 10, 10));
         panel.add(new JLabel("Product ID:"));
         panel.add(new JLabel(productId));
-
         panel.add(new JLabel("Name:"));
         panel.add(nameField);
-
         panel.add(new JLabel("Quantity:"));
-        panel.add(quantityField);
-
+        panel.add(qtyField);
         panel.add(new JLabel("Price:"));
         panel.add(priceField);
+        panel.add(new JLabel("Expiry Date (YYYY-MM-DD):"));
+        panel.add(expiryField);
+        panel.add(new JLabel("Product Image:"));
+        panel.add(browseBtn);
+        panel.add(new JLabel(""));
+        panel.add(imageLabel);
 
+        // Show dialog
         int result = JOptionPane.showConfirmDialog(this, panel, "Edit Product",
                 JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
 
         if (result == JOptionPane.OK_OPTION) {
             try {
-                String newName = nameField.getText().trim();
-                int newQty = Integer.parseInt(quantityField.getText().trim());
-                double newPrice = Double.parseDouble(priceField.getText().trim());
-
-                if (newName.isEmpty()) {
-                    JOptionPane.showMessageDialog(this, "Name cannot be empty",
-                            "Validation Error", JOptionPane.ERROR_MESSAGE);
+                // Parse and validate expiry date
+                LocalDate expiry = LocalDate.parse(expiryField.getText().trim());
+                if (expiry.isBefore(LocalDate.now())) {
+                    JOptionPane.showMessageDialog(this, "Expiry must be a future date", "Validation Error", JOptionPane.ERROR_MESSAGE);
                     return;
                 }
 
-                // Correct method call
-                productController.updateProduct(productId, newName, newQty, newPrice);
+                // Validate name
+                String name = nameField.getText().trim();
+                if (name.isEmpty()) {
+                    JOptionPane.showMessageDialog(this, "Name cannot be empty", "Validation Error", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+
+                int qty = Integer.parseInt(qtyField.getText().trim());
+                double price = Double.parseDouble(priceField.getText().trim());
+
+                // Update product through controller
+                productController.updateProduct(productId, name, qty, price, expiry, imagePath[0]);
 
                 updateTable(productController.getAllProducts());
-                JOptionPane.showMessageDialog(this, "Product updated successfully!",
-                        "Success", JOptionPane.INFORMATION_MESSAGE);
+                updateCards();
+
+                JOptionPane.showMessageDialog(this, "Product updated successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
 
             } catch (NumberFormatException ex) {
-                JOptionPane.showMessageDialog(this,
-                        "Quantity and Price must be valid numbers",
-                        "Invalid Input", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "Quantity and Price must be valid numbers", "Validation Error", JOptionPane.ERROR_MESSAGE);
+            } catch (Exception ex) {
+                JOptionPane.showMessageDialog(this, "Please enter valid data", "Error", JOptionPane.ERROR_MESSAGE);
             }
         }
     }
@@ -240,95 +281,127 @@ public class AdminProductPanel extends JPanel {
         }
     }
 
-    // New: Single Dialog for Add New Product with Validation
     private void showAddProductDialog() {
         JDialog dialog = new JDialog((JFrame) SwingUtilities.getWindowAncestor(this), "Add New Product", true);
-        dialog.setSize(450, 400);
+        dialog.setSize(500, 450);
         dialog.setLocationRelativeTo(this);
         dialog.setLayout(new BorderLayout(10, 10));
         dialog.getContentPane().setBackground(new Color(245, 245, 245));
+
         // Title
         JLabel titleLabel = new JLabel("Add New Product", SwingConstants.CENTER);
         titleLabel.setFont(new Font("InaiMathi", Font.BOLD, 24));
         titleLabel.setForeground(new Color(14, 40, 107));
         titleLabel.setBorder(BorderFactory.createEmptyBorder(20, 0, 10, 0));
         dialog.add(titleLabel, BorderLayout.NORTH);
+
         // Form Panel
-        JPanel formPanel = new JPanel(new GridLayout(5, 2, 10, 15));
+        JPanel formPanel = new JPanel(new GridLayout(6, 2, 10, 15));
         formPanel.setBorder(BorderFactory.createEmptyBorder(20, 30, 20, 30));
         formPanel.setBackground(new Color(245, 245, 245));
+
         // ID
         formPanel.add(new JLabel("Product ID:"));
         JTextField idField = new JTextField();
         formPanel.add(idField);
+
         // Name
         formPanel.add(new JLabel("Product Name:"));
         JTextField nameField = new JTextField();
         formPanel.add(nameField);
+
         // Quantity
         formPanel.add(new JLabel("Quantity:"));
         JTextField qtyField = new JTextField();
         formPanel.add(qtyField);
+
         // Price
         formPanel.add(new JLabel("Price (Rs):"));
         JTextField priceField = new JTextField();
         formPanel.add(priceField);
+
+        // Expiry Date (Mandatory)
+        formPanel.add(new JLabel("Expiry Date (YYYY-MM-DD):"));
+        JTextField expiryField = new JTextField();
+        formPanel.add(expiryField);
+
+        // Image (Optional)
+        formPanel.add(new JLabel("Product Image:"));
+        JButton browseBtn = new JButton("Browse");
+        formPanel.add(browseBtn);
+
+        final String[] imagePath = {null};
+        browseBtn.addActionListener(e -> {
+            JFileChooser fc = new JFileChooser();
+            fc.setFileFilter(new FileNameExtensionFilter("Images", "jpg", "png", "jpeg"));
+            if (fc.showOpenDialog(dialog) == JFileChooser.APPROVE_OPTION) {
+                imagePath[0] = fc.getSelectedFile().getAbsolutePath();
+            }
+        });
+
         dialog.add(formPanel, BorderLayout.CENTER);
+
         // Buttons
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 15, 15));
         buttonPanel.setBackground(new Color(245, 245, 245));
+
         JButton cancelBtn = new JButton("Cancel");
         cancelBtn.setBackground(new Color(231, 76, 60));
         cancelBtn.setForeground(Color.WHITE);
         cancelBtn.addActionListener(e -> dialog.dispose());
         buttonPanel.add(cancelBtn);
+
         JButton saveBtn = new JButton("Save Product");
         saveBtn.setBackground(new Color(14, 40, 107));
         saveBtn.setForeground(Color.WHITE);
         saveBtn.addActionListener(e -> {
-            String id = idField.getText().trim();
-            String name = nameField.getText().trim();
-            String qtyStr = qtyField.getText().trim();
-            String priceStr = priceField.getText().trim();
-            // Validation
-            if (id.isEmpty() || name.isEmpty() || qtyStr.isEmpty() || priceStr.isEmpty()) {
-                JOptionPane.showMessageDialog(dialog, "All fields are required!", "Validation Error", JOptionPane.ERROR_MESSAGE);
-                return;
-            }
-            int qty;
-            double price;
             try {
-                qty = Integer.parseInt(qtyStr);
-                price = Double.parseDouble(priceStr);
-                if (qty < 0 || price < 0) {
-                    JOptionPane.showMessageDialog(dialog, "Quantity and Price cannot be negative!", "Validation Error", JOptionPane.ERROR_MESSAGE);
+                String id = idField.getText().trim();
+                String name = nameField.getText().trim();
+                int qty = Integer.parseInt(qtyField.getText().trim());
+                double price = Double.parseDouble(priceField.getText().trim());
+
+                // Expiry validation (MANDATORY)
+                LocalDate expiry = LocalDate.parse(expiryField.getText().trim());
+                if (expiry.isBefore(LocalDate.now())) {
+                    JOptionPane.showMessageDialog(dialog, "Expiry date must be a future date", "Validation Error", JOptionPane.ERROR_MESSAGE);
                     return;
                 }
-            } catch (NumberFormatException ex) {
-                JOptionPane.showMessageDialog(dialog, "Quantity and Price must be valid numbers!", "Validation Error", JOptionPane.ERROR_MESSAGE);
-                return;
-            }
-            // Duplicate ID check
-            if (productIdExists(id)) {
-                JOptionPane.showMessageDialog(
-                        dialog,
-                        "Product ID already exists!",
-                        "Duplicate Product",
-                        JOptionPane.ERROR_MESSAGE
-                );
-                return;
-            }
 
-            // Create and add product
-            Product newProduct = new Product(id, name, qty, price);
-            productController.addProduct(newProduct);
-            updateTable(productController.getAllProducts());
-            updateCards();
-            JOptionPane.showMessageDialog(dialog, "Product added successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
-            dialog.dispose();
+                // Validate required fields
+                if (id.isEmpty() || name.isEmpty()) {
+                    JOptionPane.showMessageDialog(dialog, "Product ID and Name cannot be empty", "Validation Error", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+
+                // Duplicate ID check
+                if (productIdExists(id)) {
+                    JOptionPane.showMessageDialog(dialog, "Product ID already exists!", "Duplicate Product", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+
+                // Create product object with expiryDate and optional imagePath
+                Product product = new Product(id, name, qty, price, expiry, imagePath[0]);
+
+                // Add product via controller
+                productController.addProduct(product, expiry, imagePath[0]);
+
+                // Update table and cards
+                updateTable(productController.getAllProducts());
+                updateCards();
+                JOptionPane.showMessageDialog(dialog, "Product added successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
+                dialog.dispose();
+
+            } catch (NumberFormatException ex) {
+                JOptionPane.showMessageDialog(dialog, "Quantity and Price must be valid numbers", "Validation Error", JOptionPane.ERROR_MESSAGE);
+            } catch (Exception ex) {
+                JOptionPane.showMessageDialog(dialog, "Please enter valid data for all fields", "Validation Error", JOptionPane.ERROR_MESSAGE);
+            }
         });
+
         buttonPanel.add(saveBtn);
         dialog.add(buttonPanel, BorderLayout.SOUTH);
+
         dialog.setVisible(true);
     }
 
