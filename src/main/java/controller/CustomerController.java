@@ -7,6 +7,7 @@ package controller;
 import model.Customer;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  *
@@ -19,7 +20,7 @@ public class CustomerController {
     public CustomerController() {
         if (customers.isEmpty()) {
             customers.add(new Customer("C8583", "Hari Prasad Khadka", "9874672922", "hari@example.com"));
-            // Add more sample customers if needed
+
         }
     }
 
@@ -37,5 +38,16 @@ public class CustomerController {
 
     public int getTotalCustomers() {
         return customers.size();
+    }
+
+    public List<Customer> searchCustomers(String keyword) {
+        if (keyword == null || keyword.trim().isEmpty()) {
+            return getAllCustomers();
+        }
+        return customers.stream()
+                .filter(c -> c.getName().toLowerCase().contains(keyword.toLowerCase())
+                || c.getPhoneNumber().contains(keyword)
+                || c.getEmail().toLowerCase().contains(keyword.toLowerCase()))
+                .collect(Collectors.toList());
     }
 }

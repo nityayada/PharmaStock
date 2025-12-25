@@ -4,8 +4,6 @@
  */
 package View.Admin;
 
-import View.components.SidebarPanel;
-import View.components.NavbarPanel;
 import controller.UserController;
 import java.awt.*;
 import javax.swing.*;
@@ -13,6 +11,7 @@ import java.awt.Dimension;
 import javax.swing.table.DefaultTableModel;
 import model.User;
 import java.util.List;
+import javax.swing.table.TableCellEditor;
 
 /**
  *
@@ -37,10 +36,6 @@ public class AdminUserPanel extends JPanel {
         JPanel panel = new JPanel(new BorderLayout());
         panel.setBackground(new Color(217, 217, 217));
 
-//        // Your existing header, filters, table code here...
-//        // Example
-//        JTable table = new JTable(new DefaultTableModel(new String[]{"Name", "Email"}, 0));
-//        panel.add(new JScrollPane(table), BorderLayout.CENTER);
 // Header
         JLabel headerLabel = new JLabel("User", SwingConstants.LEFT);
         headerLabel.setFont(new Font("InaiMathi", Font.BOLD, 32));
@@ -106,6 +101,8 @@ public class AdminUserPanel extends JPanel {
         };
 
         table = new JTable(model);
+        table.getColumn("Action").setCellEditor(new ActionEditor());
+
         table.setRowHeight(55);
         table.getTableHeader().setBackground(new Color(220, 220, 220));
         table.getTableHeader().setFont(new Font("InaiMathi", Font.BOLD, 14));
@@ -200,26 +197,68 @@ public class AdminUserPanel extends JPanel {
         }
     }
 
-    // Edit user (simple dialog)
     private void editUser(int row) {
-        String email = (String) model.getValueAt(row, 1);
+
+        String email = model.getValueAt(row, 1).toString();
         User u = userController.getAllUsers().stream()
                 .filter(user -> user.getEmail().equals(email))
                 .findFirst()
                 .orElse(null);
 
-        if (u != null) {
-            String newName = JOptionPane.showInputDialog(this, "New Name:", u.getName());
-            String newEmail = JOptionPane.showInputDialog(this, "New Email:", u.getEmail());
-            String newPhone = JOptionPane.showInputDialog(this, "New Phone:", u.getPhoneNumber());
+        if (u == null) {
+            return;
+        }
 
-            if (newName != null && newEmail != null && newPhone != null) {
-                u.setName(newName);
-                u.setEmail(newEmail);
-                u.setPhoneNumber(newPhone);
-                userController.updateUser(u); // Add this method to UserController
-                updateTable(userController.getAllUsers());
+        JTextField nameField = new JTextField(u.getName());
+        JTextField emailField = new JTextField(u.getEmail());
+        JTextField phoneField = new JTextField(u.getPhoneNumber());
+        JComboBox<String> roleBox = new JComboBox<>(new String[]{"Admin", "Cashier"});
+        roleBox.setSelectedItem(u.getRole());
+
+        JPanel panel = new JPanel(new GridLayout(0, 2, 10, 10));
+
+        panel.add(new JLabel("Name:"));
+        panel.add(nameField);
+
+        panel.add(new JLabel("Email:"));
+        panel.add(emailField);
+
+        panel.add(new JLabel("Phone:"));
+        panel.add(phoneField);
+
+        panel.add(new JLabel("Role:"));
+        panel.add(roleBox);
+
+        int result = JOptionPane.showConfirmDialog(
+                this,
+                panel,
+                "Edit User",
+                JOptionPane.OK_CANCEL_OPTION,
+                JOptionPane.PLAIN_MESSAGE
+        );
+
+        if (result == JOptionPane.OK_OPTION) {
+
+            if (nameField.getText().trim().isEmpty()
+                    || emailField.getText().trim().isEmpty()
+                    || phoneField.getText().trim().isEmpty()) {
+
+                JOptionPane.showMessageDialog(
+                        this,
+                        "Fields cannot be empty",
+                        "Validation Error",
+                        JOptionPane.ERROR_MESSAGE
+                );
+                return;
             }
+
+            u.setName(nameField.getText().trim());
+            u.setEmail(emailField.getText().trim());
+            u.setPhoneNumber(phoneField.getText().trim());
+            u.setRole(roleBox.getSelectedItem().toString());
+
+            userController.updateUser(u);
+            updateTable(userController.getAllUsers());
         }
     }
 
@@ -235,16 +274,75 @@ public class AdminUserPanel extends JPanel {
 
     // Add new user (simple dialog)
     private void addNewUser() {
-        String name = JOptionPane.showInputDialog(this, "Name:");
-        String email = JOptionPane.showInputDialog(this, "Email:");
-        String phone = JOptionPane.showInputDialog(this, "Phone:");
-        String role = (String) JOptionPane.showInputDialog(this, "Role:", "Role", JOptionPane.QUESTION_MESSAGE, null, new String[]{"Admin", "Cashier"}, "Cashier");
-        String password = JOptionPane.showInputDialog(this, "Password:");
 
-        if (name != null && email != null && phone != null && role != null && password != null) {
-            User newUser = new User("U" + (userController.getAllUsers().size() + 1), name, email, phone, password, role);
+        JTextField nameField = new JTextField();
+        JTextField emailField = new JTextField();
+        JTextField phoneField = new JTextField();
+        JPasswordField passwordField = new JPasswordField();
+        JComboBox<String> roleBox = new JComboBox<>(new String[]{"Admin", "Cashier"});
+
+        JPanel panel = new JPanel(new GridLayout(0, 2, 10, 10));
+
+        panel.add(new JLabel("Name:"));
+        panel.add(nameField);
+
+        panel.add(new JLabel("Email:"));
+        panel.add(emailField);
+
+        panel.add(new JLabel("Phone:"));
+        panel.add(phoneField);
+
+        panel.add(new JLabel("Password:"));
+        panel.add(passwordField);
+
+        panel.add(new JLabel("Role:"));
+        panel.add(roleBox);
+
+        int result = JOptionPane.showConfirmDialog(
+                this,
+                panel,
+                "Add New User",
+                JOptionPane.OK_CANCEL_OPTION,
+                JOptionPane.PLAIN_MESSAGE
+        );
+
+        if (result == JOptionPane.OK_OPTION) {
+
+            String name = nameField.getText().trim();
+            String email = emailField.getText().trim();
+            String phone = phoneField.getText().trim();
+            String password = new String(passwordField.getPassword()).trim();
+            String role = roleBox.getSelectedItem().toString();
+
+            // Validation
+            if (name.isEmpty() || email.isEmpty() || phone.isEmpty() || password.isEmpty()) {
+                JOptionPane.showMessageDialog(
+                        this,
+                        "All fields are required",
+                        "Validation Error",
+                        JOptionPane.ERROR_MESSAGE
+                );
+                return;
+            }
+
+            User newUser = new User(
+                    "U" + (userController.getAllUsers().size() + 1),
+                    name,
+                    email,
+                    phone,
+                    password,
+                    role
+            );
+
             userController.addUser(newUser);
             updateTable(userController.getAllUsers());
+
+            JOptionPane.showMessageDialog(
+                    this,
+                    "User added successfully",
+                    "Success",
+                    JOptionPane.INFORMATION_MESSAGE
+            );
         }
     }
 
@@ -280,4 +378,60 @@ public class AdminUserPanel extends JPanel {
 
         return card;
     }
+
+    private class ActionEditor extends AbstractCellEditor implements TableCellEditor {
+
+        private JPanel panel;
+        private int row;
+
+        public ActionEditor() {
+            panel = new JPanel(new FlowLayout(FlowLayout.CENTER, 15, 0));
+            panel.setBackground(Color.WHITE);
+
+            JButton viewBtn = new JButton("👁");
+            JButton editBtn = new JButton("✎");
+            JButton deleteBtn = new JButton("🗑");
+
+            viewBtn.setBorderPainted(false);
+            viewBtn.setContentAreaFilled(false);
+
+            editBtn.setBorderPainted(false);
+            editBtn.setContentAreaFilled(false);
+
+            deleteBtn.setBorderPainted(false);
+            deleteBtn.setContentAreaFilled(false);
+
+            viewBtn.addActionListener(e -> {
+                fireEditingStopped();
+                viewUser(row);
+            });
+
+            editBtn.addActionListener(e -> {
+                fireEditingStopped();
+                editUser(row);
+            });
+
+            deleteBtn.addActionListener(e -> {
+                fireEditingStopped();
+                deleteUser(row);
+            });
+
+            panel.add(viewBtn);
+            panel.add(editBtn);
+            panel.add(deleteBtn);
+        }
+
+        @Override
+        public Component getTableCellEditorComponent(
+                JTable table, Object value, boolean isSelected, int row, int column) {
+            this.row = row;
+            return panel;
+        }
+
+        @Override
+        public Object getCellEditorValue() {
+            return "";
+        }
+    }
+
 }

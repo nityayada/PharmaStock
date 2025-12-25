@@ -148,7 +148,7 @@ public class CashOrderPanel extends JPanel {
         bottomButtons.add(clearBtn);
 
         JButton placeOrderBtn = new JButton("Place Order");
-        placeOrderBtn.setBackground(new Color(46, 204, 113));
+        placeOrderBtn.setBackground(new Color(14, 40, 107));
         placeOrderBtn.setForeground(Color.WHITE);
         placeOrderBtn.setFont(new Font("InaiMathi", Font.BOLD, 16));
         placeOrderBtn.setPreferredSize(new Dimension(200, 50));
