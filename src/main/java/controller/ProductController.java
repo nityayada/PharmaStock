@@ -150,4 +150,12 @@ public class ProductController {
                 .filter(p -> p.getQuantity() == 0)
                 .collect(Collectors.toList());
     }
+
+    public List<Product> getExpiredProducts() {
+        LocalDate today = LocalDate.now();
+        return products.stream()
+                .filter(p -> p.getExpiryDate() != null && p.getExpiryDate().isBefore(today))
+                .collect(Collectors.toList());
+    }
+
 }

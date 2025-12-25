@@ -27,6 +27,10 @@ public class AdminProductPanel extends JPanel {
     private JTable table;
     private ProductController productController;
     private DefaultTableModel model;
+    private JLabel expiredLabel;
+    private JLabel totalProductLabel;
+    private JLabel lowStockLabel;
+    private JLabel outOfStockLabel;
 
     public AdminProductPanel() {
         setLayout(new BorderLayout());
@@ -51,14 +55,49 @@ public class AdminProductPanel extends JPanel {
         content.setLayout(new BoxLayout(content, BoxLayout.Y_AXIS));
         content.setBackground(new Color(217, 217, 217));
         content.setBorder(BorderFactory.createEmptyBorder(20, 50, 50, 50));
+        expiredLabel = new JLabel(); // initialize the label
+//
+
         // Top 3 Cards
-        JPanel cardsRow = new JPanel(new GridLayout(1, 3, 20, 20));
+        JPanel cardsRow = new JPanel(new GridLayout(1, 4, 20, 20));
         cardsRow.setBackground(new Color(217, 217, 217));
-        cardsRow.add(createIconCard("Total Product", String.valueOf(productController.getTotalProducts()), "product-icon.png", new Color(142, 68, 173)));
-        cardsRow.add(createIconCard("Low Stock Product", String.valueOf(productController.getLowStockProducts().size()), "lowstock-icon.png", new Color(230, 126, 34)));
-        cardsRow.add(createIconCard("Out of Stock Product", String.valueOf(productController.getOutOfStockProducts().size()), "outofstock-icon.png", new Color(231, 76, 60)));
+//        cardsRow.add(createIconCard("Total Product", String.valueOf(productController.getTotalProducts()), "product-icon.png", new Color(142, 68, 173)));
+//        cardsRow.add(createIconCard("Low Stock Product", String.valueOf(productController.getLowStockProducts().size()), "lowstock-icon.png", new Color(230, 126, 34)));
+//        cardsRow.add(createIconCard("Out of Stock Product", String.valueOf(productController.getOutOfStockProducts().size()), "outofstock-icon.png", new Color(231, 76, 60)));
+//        cardsRow.add(createIconCard(
+//                "Expired Product",
+//                String.valueOf(productController.getExpiredProducts().size()),
+//                "expired-icon.png", // you can create a new icon image
+//                new Color(192, 57, 43),
+//                expiredLabel // pass the label reference
+//        ));
+// Existing cards
+        totalProductLabel = new JLabel();
+        lowStockLabel = new JLabel();
+        outOfStockLabel = new JLabel();
+        expiredLabel = new JLabel();
+
+        cardsRow.add(createIconCard("Total Product",
+                String.valueOf(productController.getTotalProducts()),
+                "product-icon.png", new Color(142, 68, 173), totalProductLabel));
+
+        cardsRow.add(createIconCard("Low Stock Product",
+                String.valueOf(productController.getLowStockProducts().size()),
+                "lowstock-icon.png", new Color(230, 126, 34), lowStockLabel));
+
+        cardsRow.add(createIconCard("Out of Stock Product",
+                String.valueOf(productController.getOutOfStockProducts().size()),
+                "outofstock-icon.png", new Color(231, 76, 60), outOfStockLabel));
+
+        cardsRow.add(createIconCard("Expired Product",
+                String.valueOf(productController.getExpiredProducts().size()),
+                "expired-icon.png", new Color(192, 57, 43), expiredLabel));
+
         content.add(cardsRow);
         content.add(Box.createRigidArea(new Dimension(0, 40)));
+//         content.add(cardsRow);
+        content.add(Box.createRigidArea(new Dimension(0, 40)));
+
         // Search + Add New Button
         JPanel filterPanel = new JPanel(new BorderLayout());
         filterPanel.setBackground(new Color(217, 217, 217));
@@ -406,19 +445,53 @@ public class AdminProductPanel extends JPanel {
     }
 
     // Update top cards
+//    private void updateCards() {
+//        // Re-create or update card values here
+//        // For simplicity, show message (you can improve by storing card labels)
+    ////        JOptionPane.showMessageDialog(this, "Cards updated with new data!");
+//    }
     private void updateCards() {
-        // Re-create or update card values here
-        // For simplicity, show message (you can improve by storing card labels)
-//        JOptionPane.showMessageDialog(this, "Cards updated with new data!");
+        totalProductLabel.setText(String.valueOf(productController.getTotalProducts()));
+        lowStockLabel.setText(String.valueOf(productController.getLowStockProducts().size()));
+        outOfStockLabel.setText(String.valueOf(productController.getOutOfStockProducts().size()));
+        expiredLabel.setText(String.valueOf(productController.getExpiredProducts().size()));
     }
 
-    private JPanel createIconCard(String title, String value, String iconPath, Color color) {
+//    private JPanel createIconCard(String title, String value, String iconPath, Color color) {
+//        JPanel card = new JPanel(new BorderLayout());
+//        card.setBackground(Color.WHITE);
+//        card.setBorder(BorderFactory.createCompoundBorder(
+//                BorderFactory.createLineBorder(new Color(200, 200, 200)),
+//                BorderFactory.createEmptyBorder(20, 20, 20, 20)
+//        ));
+//        JLabel iconLabel = new JLabel();
+//        if (!java.beans.Beans.isDesignTime()) {
+//            java.net.URL url = getClass().getClassLoader().getResource("images/" + iconPath);
+//            if (url != null) {
+//                iconLabel.setIcon(new ImageIcon(url));
+//            }
+//        }
+//        card.add(iconLabel, BorderLayout.WEST);
+//        JPanel textPanel = new JPanel(new GridLayout(2, 1));
+//        textPanel.setBackground(Color.WHITE);
+//        JLabel titleLabel = new JLabel(title);
+//        titleLabel.setForeground(Color.GRAY);
+//        textPanel.add(titleLabel);
+//        JLabel valueLabel = new JLabel(value);
+//        valueLabel.setFont(new Font("InaiMathi", Font.BOLD, 32));
+//        valueLabel.setForeground(color);
+//        textPanel.add(valueLabel);
+//        card.add(textPanel, BorderLayout.CENTER);
+//        return card;
+//    }
+    private JPanel createIconCard(String title, String value, String iconPath, Color color, JLabel valueLabelRef) {
         JPanel card = new JPanel(new BorderLayout());
         card.setBackground(Color.WHITE);
         card.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createLineBorder(new Color(200, 200, 200)),
                 BorderFactory.createEmptyBorder(20, 20, 20, 20)
         ));
+
         JLabel iconLabel = new JLabel();
         if (!java.beans.Beans.isDesignTime()) {
             java.net.URL url = getClass().getClassLoader().getResource("images/" + iconPath);
@@ -427,15 +500,19 @@ public class AdminProductPanel extends JPanel {
             }
         }
         card.add(iconLabel, BorderLayout.WEST);
+
         JPanel textPanel = new JPanel(new GridLayout(2, 1));
         textPanel.setBackground(Color.WHITE);
+
         JLabel titleLabel = new JLabel(title);
         titleLabel.setForeground(Color.GRAY);
         textPanel.add(titleLabel);
-        JLabel valueLabel = new JLabel(value);
-        valueLabel.setFont(new Font("InaiMathi", Font.BOLD, 32));
-        valueLabel.setForeground(color);
-        textPanel.add(valueLabel);
+
+        valueLabelRef.setText(value);
+        valueLabelRef.setFont(new Font("InaiMathi", Font.BOLD, 32));
+        valueLabelRef.setForeground(color);
+        textPanel.add(valueLabelRef);
+
         card.add(textPanel, BorderLayout.CENTER);
         return card;
     }
