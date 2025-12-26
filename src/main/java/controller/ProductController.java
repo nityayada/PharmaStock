@@ -8,7 +8,7 @@ import java.util.stream.Collectors;
 
 public class ProductController {
 
-    private static final List<Product> products = new ArrayList<>();
+    private static final ArrayList<Product> products = new ArrayList<>();
 
     // Load sample data only once
     public ProductController() {
@@ -42,7 +42,6 @@ public class ProductController {
         }
     }
 
-    // ------------------ READ ------------------
     public List<Product> getAllProducts() {
         return new ArrayList<>(products);
     }
@@ -51,23 +50,6 @@ public class ProductController {
         return products.size();
     }
 
-    // ------------------ CREATE ------------------
-//    public void addProduct(Product product) {
-//
-//        // Validation
-//        if (product == null) {
-//            throw new IllegalArgumentException("Product cannot be null");
-//        }
-//
-//        if (product.getExpiryDate() == null
-//                || product.getExpiryDate().isBefore(LocalDate.now())) {
-//            throw new IllegalArgumentException(
-//                    "Expiry date must be a future date"
-//            );
-//        }
-//
-//        products.add(product);
-//    }
     public void addProduct(Product product, LocalDate expiryDate, String imagePath) {
         if (expiryDate == null || expiryDate.isBefore(LocalDate.now())) {
             throw new IllegalArgumentException("Expiry date must be a future date");
@@ -77,29 +59,6 @@ public class ProductController {
         products.add(product);
     }
 
-    // ------------------ UPDATE ------------------
-//    public void updateProduct(
-//            String id, Product name) {
-//
-//        for (Product p : products) {
-//            if (p.getProductId().equals(id)) {
-//
-//                if (expiryDate == null
-//                        || expiryDate.isBefore(LocalDate.now())) {
-//                    throw new IllegalArgumentException(
-//                            "Expiry date must be a future date"
-//                    );
-//                }
-//
-//                p.setName(name);
-//                p.setQuantity(quantity);
-//                p.setPrice(price);
-//                p.setExpiryDate(expiryDate);
-//                p.setImagePath(imagePath);
-//                return;
-//            }
-//        }
-//    }
     public void updateProduct(String id, String name, int quantity, double price, LocalDate expiryDate, String imagePath) {
         for (Product p : products) {
             if (p.getProductId().equals(id)) {
@@ -119,12 +78,10 @@ public class ProductController {
         }
     }
 
-    // ------------------ DELETE ------------------
     public void deleteProduct(String id) {
         products.removeIf(p -> p.getProductId().equals(id));
     }
 
-    // ------------------ SEARCH ------------------
     public List<Product> searchProducts(String keyword) {
         if (keyword == null || keyword.trim().isEmpty()) {
             return getAllProducts();
@@ -138,7 +95,6 @@ public class ProductController {
                 .collect(Collectors.toList());
     }
 
-    // ------------------ FILTERS ------------------
     public List<Product> getLowStockProducts() {
         return products.stream()
                 .filter(p -> p.getQuantity() > 0 && p.getQuantity() <= 50)

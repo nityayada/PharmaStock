@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package model;
 
 import java.time.LocalDate;
@@ -18,7 +14,7 @@ public class Product {
     private double price;
     private String status; // "Available", "Low Stock", "Empty"
     private LocalDate expiryDate;   // compulsory
-    private String imagePath;       // product image path
+    private String imagePath;       // product image path (optiona)
 
     public Product(
             String productId,

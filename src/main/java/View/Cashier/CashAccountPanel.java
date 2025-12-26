@@ -55,11 +55,11 @@ public class CashAccountPanel extends JPanel {
         headerPanel.setBorder(BorderFactory.createEmptyBorder(20, 0, 40, 0));
 
         JLabel headerLabel = new JLabel("My Account", SwingConstants.CENTER);
-        headerLabel.setFont(new Font("Segoe UI", Font.BOLD, 36));
+        headerLabel.setFont(new Font("InaiMathi", Font.BOLD, 36));
         headerLabel.setForeground(new Color(30, 41, 59));
 
         JLabel welcomeLabel = new JLabel("Welcome back, Silvia!", SwingConstants.CENTER);
-        welcomeLabel.setFont(new Font("Segoe UI", Font.PLAIN, 18));
+        welcomeLabel.setFont(new Font("InaiMathi", Font.PLAIN, 18));
         welcomeLabel.setForeground(new Color(100, 116, 139));
         welcomeLabel.setBorder(BorderFactory.createEmptyBorder(10, 0, 0, 0));
 
@@ -105,7 +105,7 @@ public class CashAccountPanel extends JPanel {
         avatarPanel.setLayout(new GridBagLayout());
 
         JLabel profilePic = new JLabel("👤");
-        profilePic.setFont(new Font("Segoe UI", Font.PLAIN, 70));
+        profilePic.setFont(new Font("InaiMathi", Font.PLAIN, 70));
         profilePic.setForeground(new Color(16, 185, 129));
         avatarPanel.add(profilePic);
 
@@ -117,13 +117,13 @@ public class CashAccountPanel extends JPanel {
         gbc.insets = new Insets(5, 0, 5, 0);
 
         JLabel nameLabel = new JLabel("Silvia Sharma");
-        nameLabel.setFont(new Font("Segoe UI", Font.BOLD, 28));
+        nameLabel.setFont(new Font("InaiMathi", Font.BOLD, 28));
         nameLabel.setForeground(new Color(30, 41, 59));
         gbc.gridy = 0;
         infoPanel.add(nameLabel, gbc);
 
         JLabel roleLabel = new JLabel("Cashier");
-        roleLabel.setFont(new Font("Segoe UI", Font.PLAIN, 20));
+        roleLabel.setFont(new Font("InaiMathi", Font.PLAIN, 20));
         roleLabel.setForeground(new Color(16, 185, 129));
         roleLabel.setBorder(BorderFactory.createEmptyBorder(15, 0, 0, 0));
         gbc.gridy++;
@@ -149,9 +149,9 @@ public class CashAccountPanel extends JPanel {
         emailPanel.setBackground(Color.WHITE);
         emailPanel.setBorder(BorderFactory.createEmptyBorder(0, 10, 0, 10));
         JLabel emailIcon = new JLabel("📧");
-        emailIcon.setFont(new Font("Segoe UI", Font.PLAIN, 22));
+        emailIcon.setFont(new Font("InaiMathi", Font.PLAIN, 22));
         JLabel emailLabel = new JLabel("silvia.sharma@pharmastock.com");
-        emailLabel.setFont(new Font("Segoe UI", Font.PLAIN, 17));
+        emailLabel.setFont(new Font("InaiMathi", Font.PLAIN, 17));
         emailLabel.setForeground(new Color(100, 116, 139));
         emailPanel.add(emailIcon, BorderLayout.WEST);
         emailPanel.add(emailLabel, BorderLayout.CENTER);
@@ -162,10 +162,10 @@ public class CashAccountPanel extends JPanel {
         JPanel phonePanel = new JPanel(new BorderLayout(15, 0));
         phonePanel.setBackground(Color.WHITE);
         phonePanel.setBorder(BorderFactory.createEmptyBorder(0, 10, 0, 10));
-        JLabel phoneIcon = new JLabel("📱");
-        phoneIcon.setFont(new Font("Segoe UI", Font.PLAIN, 22));
+        JLabel phoneIcon = new JLabel("Phone Number: ");
+        phoneIcon.setFont(new Font("InaiMathi", Font.PLAIN, 22));
         JLabel phoneLabel = new JLabel("+977 986 489 2021");
-        phoneLabel.setFont(new Font("Segoe UI", Font.PLAIN, 17));
+        phoneLabel.setFont(new Font("InaiMathi", Font.PLAIN, 17));
         phoneLabel.setForeground(new Color(100, 116, 139));
         phonePanel.add(phoneIcon, BorderLayout.WEST);
         phonePanel.add(phoneLabel, BorderLayout.CENTER);
@@ -177,9 +177,9 @@ public class CashAccountPanel extends JPanel {
         joinPanel.setBackground(Color.WHITE);
         joinPanel.setBorder(BorderFactory.createEmptyBorder(0, 10, 0, 10));
         JLabel joinIcon = new JLabel("📅");
-        joinIcon.setFont(new Font("Segoe UI", Font.PLAIN, 22));
+        joinIcon.setFont(new Font("InaiMathi", Font.PLAIN, 22));
         JLabel joinLabel = new JLabel("Joined: 15th March 2024");
-        joinLabel.setFont(new Font("Segoe UI", Font.PLAIN, 17));
+        joinLabel.setFont(new Font("InaiMathi", Font.PLAIN, 17));
         joinLabel.setForeground(new Color(100, 116, 139));
         joinPanel.add(joinIcon, BorderLayout.WEST);
         joinPanel.add(joinLabel, BorderLayout.CENTER);
@@ -215,8 +215,8 @@ public class CashAccountPanel extends JPanel {
     }
 
     private void stylePrimaryButton(JButton button) {
-        button.setFont(new Font("Segoe UI", Font.BOLD, 16));
-        button.setBackground(new Color(59, 130, 246));
+        button.setFont(new Font("InaiMathi", Font.BOLD, 16));
+        button.setBackground(new Color(14, 40, 107));
         button.setForeground(Color.WHITE);
         button.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createLineBorder(new Color(59, 130, 246), 1),
@@ -247,7 +247,7 @@ public class CashAccountPanel extends JPanel {
     }
 
     private void styleDangerButton(JButton button) {
-        button.setFont(new Font("Segoe UI", Font.BOLD, 16));
+        button.setFont(new Font("InaiMathi", Font.BOLD, 16));
         button.setBackground(new Color(239, 68, 68));
         button.setForeground(Color.WHITE);
         button.setBorder(BorderFactory.createCompoundBorder(

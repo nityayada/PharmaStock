@@ -20,7 +20,9 @@ public class Transaction {
     private LocalDate date;
     private LocalTime time;
     private double amount;
-    private List<String> productIds; // List of product IDs in this transaction
+    private List<String> productIds;
+    // List of product IDs in this transaction using list here 
+    //so it will be easy to change in the other list like linkedlist 
 
     public Transaction(String transactionId, String customerId, LocalDate date, LocalTime time, double amount) {
         this.transactionId = transactionId;
