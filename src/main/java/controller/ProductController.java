@@ -1,6 +1,7 @@
 package controller;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import model.Product;
 import java.util.ArrayList;
 import java.util.List;
@@ -10,17 +11,20 @@ public class ProductController {
 
     private static final ArrayList<Product> products = new ArrayList<>();
 
+    private static final java.util.Queue<String> recentActivities = new java.util.LinkedList<>();
+
     // Load sample data only once
     public ProductController() {
         if (products.isEmpty()) {
+            // ... (keep existing sample data logic) ...
+            logActivity("System Initialized with sample data");
             products.add(new Product(
                     "P0321",
                     "Paracetamol Kalbe 500mg",
                     789,
                     2000.0,
                     LocalDate.of(2026, 5, 20),
-                    "images/paracetamol.png"
-            ));
+                    "/images/paracetamol.png"));
 
             products.add(new Product(
                     "P0685",
@@ -28,8 +32,7 @@ public class ProductController {
                     540,
                     8000.0,
                     LocalDate.of(2027, 1, 15),
-                    "images/vitc.png"
-            ));
+                    "/images/vitc.png"));
 
             products.add(new Product(
                     "P0998",
@@ -37,9 +40,21 @@ public class ProductController {
                     48,
                     5000.0,
                     LocalDate.of(2025, 12, 30),
-                    "images/aloe.png"
-            ));
+                    "/images/aloe.png"));
         }
+    }
+
+    // Helper to log activity (Queue - FIFO)
+    private void logActivity(String activity) {
+        recentActivities.add(LocalTime.now().withNano(0) + ": " + activity);
+        // Keep only last 10 activities
+        if (recentActivities.size() > 10) {
+            recentActivities.poll();
+        }
+    }
+
+    public List<String> getRecentActivities() {
+        return new ArrayList<>(recentActivities);
     }
 
     public List<Product> getAllProducts() {
@@ -57,29 +72,53 @@ public class ProductController {
         product.setExpiryDate(expiryDate);
         product.setImagePath(imagePath); // optional
         products.add(product);
+        logActivity("Added product: " + product.getName());
     }
 
-    public void updateProduct(String id, String name, int quantity, double price, LocalDate expiryDate, String imagePath) {
+    public void updateProduct(String id, String name, int quantity, double price, LocalDate expiryDate,
+            String imagePath) {
         for (Product p : products) {
             if (p.getProductId().equals(id)) {
                 if (expiryDate == null
                         || expiryDate.isBefore(LocalDate.now())) {
                     throw new IllegalArgumentException(
-                            "Expiry date must be a future date"
-                    );
+                            "Expiry date must be a future date");
                 }
                 p.setName(name);
                 p.setQuantity(quantity);
                 p.setPrice(price);
                 p.setExpiryDate(expiryDate);
                 p.setImagePath(imagePath);
+                logActivity("Updated product: " + name);
                 break;
             }
         }
     }
 
+    private final java.util.Stack<Product> deletedProducts = new java.util.Stack<>();
+
     public void deleteProduct(String id) {
-        products.removeIf(p -> p.getProductId().equals(id));
+        // Find product to delete
+        Product toDelete = products.stream()
+                .filter(p -> p.getProductId().equals(id))
+                .findFirst()
+                .orElse(null);
+
+        if (toDelete != null) {
+            deletedProducts.push(toDelete); // Push to stack
+            products.remove(toDelete);
+            logActivity("Deleted product: " + toDelete.getName());
+        }
+    }
+
+    public boolean undoDelete() {
+        if (!deletedProducts.isEmpty()) {
+            Product restored = deletedProducts.pop(); // Pop from stack
+            products.add(restored);
+            logActivity("Undid deletion of: " + restored.getName());
+            return true;
+        }
+        return false;
     }
 
     public List<Product> searchProducts(String keyword) {
@@ -88,10 +127,8 @@ public class ProductController {
         }
 
         return products.stream()
-                .filter(p
-                        -> p.getName().toLowerCase().contains(keyword.toLowerCase())
-                || p.getProductId().toLowerCase().contains(keyword.toLowerCase())
-                )
+                .filter(p -> p.getName().toLowerCase().contains(keyword.toLowerCase())
+                        || p.getProductId().toLowerCase().contains(keyword.toLowerCase()))
                 .collect(Collectors.toList());
     }
 
@@ -112,6 +149,50 @@ public class ProductController {
         return products.stream()
                 .filter(p -> p.getExpiryDate() != null && p.getExpiryDate().isBefore(today))
                 .collect(Collectors.toList());
+    }
+
+    // === Sorting (Quick Sort Implementation) ===
+    public void sortProducts(String criteria) {
+        quickSort(products, 0, products.size() - 1, criteria);
+    }
+
+    private void quickSort(List<Product> list, int low, int high, String criteria) {
+        if (low < high) {
+            int pi = partition(list, low, high, criteria);
+            quickSort(list, low, pi - 1, criteria);
+            quickSort(list, pi + 1, high, criteria);
+        }
+    }
+
+    private int partition(List<Product> list, int low, int high, String criteria) {
+        Product pivot = list.get(high);
+        int i = (low - 1);
+        for (int j = low; j < high; j++) {
+            boolean condition = false;
+            switch (criteria) {
+                case "Price":
+                    condition = list.get(j).getPrice() < pivot.getPrice();
+                    break;
+                case "Quantity":
+                    condition = list.get(j).getQuantity() < pivot.getQuantity();
+                    break;
+                case "Name":
+                    condition = list.get(j).getName().compareToIgnoreCase(pivot.getName()) < 0;
+                    break;
+            }
+            if (condition) {
+                i++;
+                // Swap
+                Product temp = list.get(i);
+                list.set(i, list.get(j));
+                list.set(j, temp);
+            }
+        }
+        // Swap pivot
+        Product temp = list.get(i + 1);
+        list.set(i + 1, list.get(high));
+        list.set(high, temp);
+        return i + 1;
     }
 
 }

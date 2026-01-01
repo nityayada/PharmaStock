@@ -32,19 +32,6 @@ public class SidebarPanel extends JPanel {
         logoLabel.setFont(new Font("InaiMathi", Font.BOLD, 24));
         logoLabel.setForeground(Color.WHITE);
 
-        // Design-time safe image loading
-        if (!java.beans.Beans.isDesignTime()) {
-            java.net.URL iconUrl = getClass().getClassLoader().getResource("images/logo-icon.png");
-            if (iconUrl != null) {
-                logoLabel.setIcon(new ImageIcon(iconUrl));
-                logoLabel.setIconTextGap(10);
-            } else {
-                System.err.println("Logo icon not found: images/logo-icon.png");
-            }
-        }
-        logoPanel.add(logoLabel);
-        add(logoPanel, BorderLayout.NORTH);
-
         // Menu Items Panel
         JPanel menuPanel = new JPanel();
         menuPanel.setLayout(new BoxLayout(menuPanel, BoxLayout.Y_AXIS));
@@ -60,21 +47,17 @@ public class SidebarPanel extends JPanel {
         menuPanel.add(Box.createRigidArea(new Dimension(0, 15)));
 
         // Dashboard - now starts inactive (false)
-        dashboardBtn = createMenuItem("Dashboard", "dashboard-icon.png", false);
+        dashboardBtn = createMenuItem("Dashboard", false);
         menuPanel.add(dashboardBtn);
         menuPanel.add(Box.createRigidArea(new Dimension(0, 5)));
 
         // Products
-        productsBtn = createMenuItem("Products", "products-icon.png", false);
+        productsBtn = createMenuItem("Products", false);
         menuPanel.add(productsBtn);
         menuPanel.add(Box.createRigidArea(new Dimension(0, 5)));
 
-//        // Categories
-//        categoriesBtn = createMenuItem("Categories", "categories-icon.png", false);
-//        menuPanel.add(categoriesBtn);
-//        menuPanel.add(Box.createRigidArea(new Dimension(0, 5)));
         // Transactions
-        transactionsBtn = createMenuItem("Transactions", "transactions-icon.png", false);
+        transactionsBtn = createMenuItem("Transactions", false);
         menuPanel.add(transactionsBtn);
         menuPanel.add(Box.createRigidArea(new Dimension(0, 30)));
 
@@ -87,19 +70,19 @@ public class SidebarPanel extends JPanel {
         menuPanel.add(Box.createRigidArea(new Dimension(0, 15)));
 
         // Customer
-        Customerbtn = createMenuItem("Customer", "settings-icon.png", false);
+        Customerbtn = createMenuItem("Customer", false);
         menuPanel.add(Customerbtn);
         menuPanel.add(Box.createRigidArea(new Dimension(0, 5)));
 
         // User
-        UserBtn = createMenuItem("User", "User-icon.png", false);
+        UserBtn = createMenuItem("User", false);
         menuPanel.add(UserBtn);
 
         menuPanel.add(Box.createVerticalGlue()); // Push items up
         add(menuPanel, BorderLayout.CENTER);
 
         // Logout button at the bottom
-        JButton logoutBtn = createMenuItem("Log Out", "logout-icon.png", false);
+        JButton logoutBtn = createMenuItem("Log Out", false);
         logoutBtn.setForeground(new Color(231, 76, 60)); // Red color for logout
 
         menuPanel.add(Box.createRigidArea(new Dimension(0, 20))); // Extra space above logout
@@ -133,7 +116,7 @@ public class SidebarPanel extends JPanel {
         logoutBtn.addActionListener(e -> logout()); // If you have logout
     }
 
-    private JButton createMenuItem(String text, String iconPath, boolean isActive) {
+    private JButton createMenuItem(String text, boolean isActive) {
         JButton button = new JButton(text);
 
         button.setHorizontalAlignment(SwingConstants.LEFT);
@@ -147,16 +130,6 @@ public class SidebarPanel extends JPanel {
         button.setIconTextGap(15);
         button.setAlignmentX(Component.LEFT_ALIGNMENT);
         button.setCursor(new Cursor(Cursor.HAND_CURSOR));
-
-        // Design-time safe icon loading
-        if (!java.beans.Beans.isDesignTime()) {
-            java.net.URL iconUrl = getClass().getClassLoader().getResource("images/" + iconPath);
-            if (iconUrl != null) {
-                button.setIcon(new ImageIcon(iconUrl));
-            } else {
-                System.err.println("Icon not found: images/" + iconPath);
-            }
-        }
 
         if (isActive) {
             button.setBackground(HIGHLIGHT_BG);

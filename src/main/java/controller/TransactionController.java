@@ -7,7 +7,8 @@ package controller;
 import model.Transaction;
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.ArrayList;
+
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -16,7 +17,7 @@ import java.util.List;
  */
 public class TransactionController {
 
-    private static List<Transaction> transactions = new ArrayList<>();
+    private static List<Transaction> transactions = new LinkedList<>();
 
     public TransactionController() {
         if (transactions.isEmpty()) {
@@ -26,7 +27,7 @@ public class TransactionController {
     }
 
     public List<Transaction> getAllTransactions() {
-        return new ArrayList<>(transactions);
+        return new LinkedList<>(transactions);
     }
 
     public void addTransaction(Transaction transaction) {

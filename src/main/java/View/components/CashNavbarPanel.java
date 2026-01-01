@@ -61,41 +61,6 @@ public class CashNavbarPanel extends JPanel {
 
         add(leftPanel, BorderLayout.WEST);
 
-//        // Right: Search Bar
-//        JPanel rightPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 20, 10));
-//        rightPanel.setBackground(null);
-//
-//        JLabel searchIcon = new JLabel();
-//        if (!java.beans.Beans.isDesignTime()) {
-//            java.net.URL url = getClass().getClassLoader().getResource("images/search-icon.png");
-//            if (url != null) {
-//                searchIcon.setIcon(new ImageIcon(url));
-//            }
-//        }
-//
-//        searchField = new JTextField("Search anything");
-//        searchField.setPreferredSize(new Dimension(300, 40));
-//        searchField.setFont(new Font("InaiMathi", Font.PLAIN, 16));
-//        searchField.setForeground(Color.GRAY);
-//        searchField.setBorder(BorderFactory.createCompoundBorder(
-//                BorderFactory.createLineBorder(new Color(220, 220, 220), 1),
-//                BorderFactory.createEmptyBorder(0, 40, 0, 15)
-//        ));
-//        searchField.setBackground(Color.WHITE);
-//
-//        // Rounded corners
-//        searchField.setBorder(BorderFactory.createCompoundBorder(
-//                new RoundedBorder(new Color(220, 220, 220), 20),
-//                BorderFactory.createEmptyBorder(0, 40, 0, 15)
-//        ));
-//
-//        JPanel searchContainer = new JPanel(new BorderLayout());
-//        searchContainer.setBackground(null);
-//        searchContainer.add(searchIcon, BorderLayout.WEST);
-//        searchContainer.add(searchField, BorderLayout.CENTER);
-//
-//        rightPanel.add(searchContainer);
-//        add(rightPanel, BorderLayout.EAST);
     }
 
     public JTextField getSearchField() {

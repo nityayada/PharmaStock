@@ -55,15 +55,15 @@ public class CashSidebarPanel extends JPanel {
         logoLabel.setFont(new Font("InaiMathi", Font.BOLD, 24));
         logoLabel.setForeground(Color.WHITE);
         // Safe icon loading
-        if (!java.beans.Beans.isDesignTime()) {
-            java.net.URL iconUrl = getClass().getClassLoader().getResource("images/logo-icon.png");
-            if (iconUrl != null) {
-                logoLabel.setIcon(new ImageIcon(iconUrl));
-                logoLabel.setIconTextGap(10);
-            }
-        }
-        logoPanel.add(logoLabel);
-        add(logoPanel, BorderLayout.NORTH);
+//        if (!java.beans.Beans.isDesignTime()) {
+//            java.net.URL iconUrl = getClass().getClassLoader().getResource("images/logo-icon.png");
+//            if (iconUrl != null) {
+//                logoLabel.setIcon(new ImageIcon(iconUrl));
+//                logoLabel.setIconTextGap(10);
+//            }
+//        }
+//        logoPanel.add(logoLabel);
+//        add(logoPanel, BorderLayout.NORTH);
 
         // Menu Panel
         JPanel menuPanel = new JPanel();
@@ -80,26 +80,26 @@ public class CashSidebarPanel extends JPanel {
         menuPanel.add(Box.createRigidArea(new Dimension(0, 15)));
 
         // Dashboard (default active for cashier dashboard)
-        dashboardBtn = createMenuItem("Dashboard", "dashboard-icon.png", false);
+        dashboardBtn = createMenuItem("Dashboard", false);
         menuPanel.add(dashboardBtn);
         menuPanel.add(Box.createRigidArea(new Dimension(0, 5)));
 
-        productBtn = createMenuItem("Product", "products-icon.png", false);
+        productBtn = createMenuItem("Product", false);
         menuPanel.add(productBtn);
         menuPanel.add(Box.createRigidArea(new Dimension(0, 5)));
 
-        orderBtn = createMenuItem("Order", "order-icon.png", false);
+        orderBtn = createMenuItem("Order", false);
         menuPanel.add(orderBtn);
         menuPanel.add(Box.createRigidArea(new Dimension(0, 5)));
 
-        accountBtn = createMenuItem("Account", "account-icon.png", false);
+        accountBtn = createMenuItem("Account", false);
         menuPanel.add(accountBtn);
 
         menuPanel.add(Box.createVerticalGlue());
         add(menuPanel, BorderLayout.CENTER);
 
         // Logout button at the bottom
-        JButton logoutBtn = createMenuItem("Log Out", "logout-icon.png", false);
+        JButton logoutBtn = createMenuItem("Log Out", false);
         logoutBtn.setForeground(new Color(231, 76, 60)); // Red color for logout
 
         menuPanel.add(Box.createRigidArea(new Dimension(0, 20))); // Space above
@@ -127,7 +127,7 @@ public class CashSidebarPanel extends JPanel {
         logoutBtn.addActionListener(e -> logout()); // If you have logout
     }
 
-    private JButton createMenuItem(String text, String iconPath, boolean isActive) {
+    private JButton createMenuItem(String text, boolean isActive) {
         JButton button = new JButton(text);
         button.setHorizontalAlignment(SwingConstants.LEFT);
         button.setMaximumSize(new Dimension(Integer.MAX_VALUE, 50));
@@ -140,14 +140,6 @@ public class CashSidebarPanel extends JPanel {
         button.setIconTextGap(15);
         button.setAlignmentX(Component.LEFT_ALIGNMENT);
         button.setCursor(new Cursor(Cursor.HAND_CURSOR));
-
-        // Icon loading
-        if (!java.beans.Beans.isDesignTime()) {
-            java.net.URL iconUrl = getClass().getClassLoader().getResource("images/" + iconPath);
-            if (iconUrl != null) {
-                button.setIcon(new ImageIcon(iconUrl));
-            }
-        }
 
         if (isActive) {
             button.setBackground(HIGHLIGHT_BG);
