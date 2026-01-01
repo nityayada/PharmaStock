@@ -36,7 +36,7 @@ public class AdminUserPanel extends JPanel {
         JPanel panel = new JPanel(new BorderLayout());
         panel.setBackground(new Color(217, 217, 217));
 
-// Header
+        // Header
         JLabel headerLabel = new JLabel("User", SwingConstants.LEFT);
         headerLabel.setFont(new Font("InaiMathi", Font.BOLD, 32));
         headerLabel.setForeground(new Color(14, 40, 107));
@@ -62,7 +62,7 @@ public class AdminUserPanel extends JPanel {
         searchField.addActionListener(e -> updateTable(userController.searchUsers(searchField.getText())));
         leftFilters.add(searchField);
 
-        JComboBox<String> roleCombo = new JComboBox<>(new String[]{"Roles", "All", "Admin", "Cashier"});
+        JComboBox<String> roleCombo = new JComboBox<>(new String[] { "Roles", "All", "Admin", "Cashier" });
         roleCombo.setPreferredSize(new Dimension(180, 45));
         roleCombo.addActionListener(e -> {
             String role = (String) roleCombo.getSelectedItem();
@@ -92,7 +92,7 @@ public class AdminUserPanel extends JPanel {
         content.add(Box.createRigidArea(new Dimension(0, 30)));
 
         // === Table ===
-        String[] columns = {"Name", "Email", "Phone Number", "Role", "Action"};
+        String[] columns = { "Name", "Email", "Phone Number", "Role", "Action" };
         model = new DefaultTableModel(columns, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
@@ -169,12 +169,12 @@ public class AdminUserPanel extends JPanel {
     private void updateTable(List<User> userList) {
         model.setRowCount(0);
         for (User u : userList) {
-            model.addRow(new Object[]{
-                u.getName(),
-                u.getEmail(),
-                u.getPhoneNumber(),
-                u.getRole(),
-                "" // Action placeholder
+            model.addRow(new Object[] {
+                    u.getName(),
+                    u.getEmail(),
+                    u.getPhoneNumber(),
+                    u.getRole(),
+                    "" // Action placeholder
             });
         }
     }
@@ -188,17 +188,43 @@ public class AdminUserPanel extends JPanel {
                 .orElse(null);
 
         if (u != null) {
-            JOptionPane.showMessageDialog(this,
-                    "Name: " + u.getName() + "\n"
-                    + "Email: " + u.getEmail() + "\n"
-                    + "Phone: " + u.getPhoneNumber() + "\n"
-                    + "Role: " + u.getRole(),
-                    "User Details", JOptionPane.INFORMATION_MESSAGE);
+            JPanel panel = new JPanel(new BorderLayout(20, 20));
+            // Image
+            JLabel imageLabel = new JLabel();
+            imageLabel.setPreferredSize(new Dimension(120, 120));
+            imageLabel.setBorder(BorderFactory.createLineBorder(Color.GRAY));
+
+            if (u.getImagePath() != null && !u.getImagePath().isEmpty()) {
+                ImageIcon icon = loadImage(u.getImagePath());
+                if (icon != null) {
+                    Image img = icon.getImage().getScaledInstance(120, 120, Image.SCALE_SMOOTH);
+                    imageLabel.setIcon(new ImageIcon(img));
+                } else {
+                    imageLabel.setText("No Image");
+                    imageLabel.setHorizontalAlignment(SwingConstants.CENTER);
+                }
+            } else {
+                imageLabel.setText("No Image");
+                imageLabel.setHorizontalAlignment(SwingConstants.CENTER);
+            }
+            panel.add(imageLabel, BorderLayout.WEST);
+
+            // Details
+            String details = "<html><body style='width: 200px'>"
+                    + "<h2>" + u.getName() + "</h2>"
+                    + "<p><b>Email:</b> " + u.getEmail() + "</p>"
+                    + "<p><b>Phone:</b> " + u.getPhoneNumber() + "</p>"
+                    + "<p><b>Role:</b> " + u.getRole() + "</p>"
+                    + "</body></html>";
+
+            JLabel detailsLabel = new JLabel(details);
+            panel.add(detailsLabel, BorderLayout.CENTER);
+
+            JOptionPane.showMessageDialog(this, panel, "User Details", JOptionPane.PLAIN_MESSAGE);
         }
     }
 
     private void editUser(int row) {
-
         String email = model.getValueAt(row, 1).toString();
         User u = userController.getAllUsers().stream()
                 .filter(user -> user.getEmail().equals(email))
@@ -212,8 +238,24 @@ public class AdminUserPanel extends JPanel {
         JTextField nameField = new JTextField(u.getName());
         JTextField emailField = new JTextField(u.getEmail());
         JTextField phoneField = new JTextField(u.getPhoneNumber());
-        JComboBox<String> roleBox = new JComboBox<>(new String[]{"Admin", "Cashier"});
+        JComboBox<String> roleBox = new JComboBox<>(new String[] { "Admin", "Cashier" });
         roleBox.setSelectedItem(u.getRole());
+
+        // Image Upload
+        JLabel imagePathLabel = new JLabel(u.getImagePath() == null ? "No file selected" : u.getImagePath());
+        JButton browseBtn = new JButton("Browse");
+        final String[] selectedImagePath = { u.getImagePath() };
+
+        browseBtn.addActionListener(e -> {
+            JFileChooser fc = new JFileChooser();
+            javax.swing.filechooser.FileNameExtensionFilter filter = new javax.swing.filechooser.FileNameExtensionFilter(
+                    "Images", "jpg", "png", "jpeg");
+            fc.setFileFilter(filter);
+            if (fc.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
+                selectedImagePath[0] = fc.getSelectedFile().getAbsolutePath();
+                imagePathLabel.setText(selectedImagePath[0]);
+            }
+        });
 
         JPanel panel = new JPanel(new GridLayout(0, 2, 10, 10));
 
@@ -229,33 +271,50 @@ public class AdminUserPanel extends JPanel {
         panel.add(new JLabel("Role:"));
         panel.add(roleBox);
 
+        panel.add(new JLabel("Image (Optional):"));
+        JPanel imgPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
+        imgPanel.add(browseBtn);
+        panel.add(imgPanel);
+
+        panel.add(new JLabel("")); // Spacer
+        panel.add(imagePathLabel);
+
         int result = JOptionPane.showConfirmDialog(
                 this,
                 panel,
                 "Edit User",
                 JOptionPane.OK_CANCEL_OPTION,
-                JOptionPane.PLAIN_MESSAGE
-        );
+                JOptionPane.PLAIN_MESSAGE);
 
         if (result == JOptionPane.OK_OPTION) {
 
-            if (nameField.getText().trim().isEmpty()
-                    || emailField.getText().trim().isEmpty()
-                    || phoneField.getText().trim().isEmpty()) {
+            String name = nameField.getText().trim();
+            String newEmail = emailField.getText().trim();
+            String phone = phoneField.getText().trim();
 
-                JOptionPane.showMessageDialog(
-                        this,
-                        "Fields cannot be empty",
-                        "Validation Error",
-                        JOptionPane.ERROR_MESSAGE
-                );
+            if (name.isEmpty() || newEmail.isEmpty() || phone.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Fields cannot be empty", "Validation Error",
+                        JOptionPane.ERROR_MESSAGE);
                 return;
             }
 
-            u.setName(nameField.getText().trim());
-            u.setEmail(emailField.getText().trim());
-            u.setPhoneNumber(phoneField.getText().trim());
+            // Validation
+            if (!phone.matches("\\d{10}")) {
+                JOptionPane.showMessageDialog(this, "Phone number must be exactly 10 digits!", "Validation Error",
+                        JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            if (!newEmail.toLowerCase().endsWith("@gmail.com")) {
+                JOptionPane.showMessageDialog(this, "Email must be a valid @gmail.com address!", "Validation Error",
+                        JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            u.setName(name);
+            u.setEmail(newEmail);
+            u.setPhoneNumber(phone);
             u.setRole(roleBox.getSelectedItem().toString());
+            u.setImagePath(selectedImagePath[0]);
 
             userController.updateUser(u);
             updateTable(userController.getAllUsers());
@@ -265,7 +324,8 @@ public class AdminUserPanel extends JPanel {
     // Delete user
     private void deleteUser(int row) {
         String email = (String) model.getValueAt(row, 1);
-        int confirm = JOptionPane.showConfirmDialog(this, "Delete user " + email + "?", "Confirm Delete", JOptionPane.YES_NO_OPTION);
+        int confirm = JOptionPane.showConfirmDialog(this, "Delete user " + email + "?", "Confirm Delete",
+                JOptionPane.YES_NO_OPTION);
         if (confirm == JOptionPane.YES_OPTION) {
             userController.deleteUser(email); // Add this method to UserController
             updateTable(userController.getAllUsers());
@@ -279,7 +339,23 @@ public class AdminUserPanel extends JPanel {
         JTextField emailField = new JTextField();
         JTextField phoneField = new JTextField();
         JPasswordField passwordField = new JPasswordField();
-        JComboBox<String> roleBox = new JComboBox<>(new String[]{"Admin", "Cashier"});
+        JComboBox<String> roleBox = new JComboBox<>(new String[] { "Admin", "Cashier" });
+
+        // Image Upload
+        JLabel imagePathLabel = new JLabel("No file selected");
+        JButton browseBtn = new JButton("Browse");
+        final String[] selectedImagePath = { null };
+
+        browseBtn.addActionListener(e -> {
+            JFileChooser fc = new JFileChooser();
+            javax.swing.filechooser.FileNameExtensionFilter filter = new javax.swing.filechooser.FileNameExtensionFilter(
+                    "Images", "jpg", "png", "jpeg");
+            fc.setFileFilter(filter);
+            if (fc.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
+                selectedImagePath[0] = fc.getSelectedFile().getAbsolutePath();
+                imagePathLabel.setText(selectedImagePath[0]);
+            }
+        });
 
         JPanel panel = new JPanel(new GridLayout(0, 2, 10, 10));
 
@@ -298,13 +374,20 @@ public class AdminUserPanel extends JPanel {
         panel.add(new JLabel("Role:"));
         panel.add(roleBox);
 
+        panel.add(new JLabel("Image (Optional):"));
+        JPanel imgPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
+        imgPanel.add(browseBtn);
+        panel.add(imgPanel);
+
+        panel.add(new JLabel("")); // Spacer
+        panel.add(imagePathLabel);
+
         int result = JOptionPane.showConfirmDialog(
                 this,
                 panel,
                 "Add New User",
                 JOptionPane.OK_CANCEL_OPTION,
-                JOptionPane.PLAIN_MESSAGE
-        );
+                JOptionPane.PLAIN_MESSAGE);
 
         if (result == JOptionPane.OK_OPTION) {
 
@@ -316,12 +399,22 @@ public class AdminUserPanel extends JPanel {
 
             // Validation
             if (name.isEmpty() || email.isEmpty() || phone.isEmpty() || password.isEmpty()) {
-                JOptionPane.showMessageDialog(
-                        this,
-                        "All fields are required",
-                        "Validation Error",
-                        JOptionPane.ERROR_MESSAGE
-                );
+                JOptionPane.showMessageDialog(this, "All fields are required", "Validation Error",
+                        JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            // Phone validation
+            if (!phone.matches("\\d{10}")) {
+                JOptionPane.showMessageDialog(this, "Phone number must be exactly 10 digits!", "Validation Error",
+                        JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            // Email validation
+            if (!email.toLowerCase().endsWith("@gmail.com")) {
+                JOptionPane.showMessageDialog(this, "Email must be a valid @gmail.com address!", "Validation Error",
+                        JOptionPane.ERROR_MESSAGE);
                 return;
             }
 
@@ -331,8 +424,8 @@ public class AdminUserPanel extends JPanel {
                     email,
                     phone,
                     password,
-                    role
-            );
+                    role,
+                    selectedImagePath[0]);
 
             userController.addUser(newUser);
             updateTable(userController.getAllUsers());
@@ -341,8 +434,7 @@ public class AdminUserPanel extends JPanel {
                     this,
                     "User added successfully",
                     "Success",
-                    JOptionPane.INFORMATION_MESSAGE
-            );
+                    JOptionPane.INFORMATION_MESSAGE);
         }
     }
 
@@ -351,8 +443,7 @@ public class AdminUserPanel extends JPanel {
         card.setBackground(Color.WHITE);
         card.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createLineBorder(new Color(200, 200, 200)),
-                BorderFactory.createEmptyBorder(25, 30, 25, 30)
-        ));
+                BorderFactory.createEmptyBorder(25, 30, 25, 30)));
 
         JLabel iconLabel = new JLabel();
         if (!java.beans.Beans.isDesignTime()) {
@@ -434,4 +525,20 @@ public class AdminUserPanel extends JPanel {
         }
     }
 
+    private ImageIcon loadImage(String path) {
+        if (path == null || path.trim().isEmpty()) {
+            return null;
+        }
+        // 1. Try absolute/local file system path first
+        java.io.File f = new java.io.File(path);
+        if (f.exists()) {
+            return new ImageIcon(path);
+        }
+        // 2. Try as resource
+        java.net.URL imgUrl = getClass().getResource(path);
+        if (imgUrl != null) {
+            return new ImageIcon(imgUrl);
+        }
+        return null;
+    }
 }

@@ -14,16 +14,19 @@ public class User {
     private String name;
     private String email;
     private String phoneNumber;
-    private String password;     // Store hashed in real app
-    private String role;         // "Admin" or "Cashier"
+    private String password; // Store hashed in real app
+    private String role; // "Admin" or "Cashier"
+    private String imagePath;
 
-    public User(String userId, String name, String email, String phoneNumber, String password, String role) {
+    public User(String userId, String name, String email, String phoneNumber, String password, String role,
+            String imagePath) {
         this.userId = userId;
         this.name = name;
         this.email = email;
         this.phoneNumber = phoneNumber;
         this.password = password;
         this.role = role;
+        this.imagePath = imagePath;
     }
 
     // Getters and Setters
@@ -51,19 +54,27 @@ public class User {
         return password;
     } // For login check
 
+    public String getImagePath() {
+        return imagePath;
+    }
+
     public void setName(String newName) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        this.name = newName;
     }
 
     public void setEmail(String newEmail) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        this.email = newEmail;
     }
 
     public void setPhoneNumber(String newPhone) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        this.phoneNumber = newPhone;
     }
 
-    public void setRole(String toString) {
-        throw new UnsupportedOperationException("Not supported yet.");
+    public void setRole(String newRole) {
+        this.role = newRole;
+    }
+
+    public void setImagePath(String imagePath) {
+        this.imagePath = imagePath;
     }
 }
