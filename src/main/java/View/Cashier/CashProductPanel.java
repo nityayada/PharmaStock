@@ -41,6 +41,16 @@ public class CashProductPanel extends JPanel {
         setLayout(new BorderLayout());
         productController = new ProductController();
         add(createCashProductContent(), BorderLayout.CENTER);
+
+        // Auto-refresh when tab is shown
+        this.addComponentListener(new java.awt.event.ComponentAdapter() {
+            @Override
+            public void componentShown(java.awt.event.ComponentEvent e) {
+                if (model != null) {
+                    updateTable(productController.getAllProducts());
+                }
+            }
+        });
     }
 
     public JPanel getContentPanel() {
@@ -67,28 +77,48 @@ public class CashProductPanel extends JPanel {
         JPanel cardsRow = new JPanel(new GridLayout(1, 3, 25, 20));
         cardsRow.setBackground(new Color(245, 245, 245));
 
-        cardsRow.add(createIconCard("Total Products", String.valueOf(productController.getTotalProducts()), "product-icon.png", new Color(52, 152, 219)));
-        cardsRow.add(createIconCard("Low Stock Product", String.valueOf(productController.getLowStockProducts().size()), "lowstock-icon.png", new Color(230, 126, 34)));
-        cardsRow.add(createIconCard("Out of Stock Product", String.valueOf(productController.getOutOfStockProducts().size()), "outofstock-icon.png", new Color(231, 76, 60)));
+        cardsRow.add(createIconCard("Total Products", String.valueOf(productController.getTotalProducts()),
+                "product-icon.png", new Color(52, 152, 219)));
+        cardsRow.add(createIconCard("Low Stock Product", String.valueOf(productController.getLowStockProducts().size()),
+                "lowstock-icon.png", new Color(230, 126, 34)));
+        cardsRow.add(
+                createIconCard("Out of Stock Product", String.valueOf(productController.getOutOfStockProducts().size()),
+                        "outofstock-icon.png", new Color(231, 76, 60)));
 
         content.add(cardsRow);
         content.add(Box.createRigidArea(new Dimension(0, 40)));
 
-        // === Search Bar ===
+        // === Search Bar & Sort ===
         JPanel searchPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 10));
         searchPanel.setBackground(new Color(245, 245, 245));
 
         JTextField searchField = new JTextField("Search anything");
         searchField.setPreferredSize(new Dimension(400, 45));
         searchField.setFont(new Font("InaiMathi", Font.PLAIN, 16));
-        searchField.addActionListener(e -> updateTable(productController.searchProducts(searchField.getText()))); // Real search
+        searchField.addActionListener(e -> updateTable(productController.searchProducts(searchField.getText()))); // Real
+                                                                                                                  // search
         searchPanel.add(searchField);
+
+        searchPanel.add(Box.createRigidArea(new Dimension(20, 0)));
+
+        // Sort Combo
+        String[] sortOptions = { "Sort By...", "Price", "Quantity", "Name" };
+        javax.swing.JComboBox<String> sortCombo = new javax.swing.JComboBox<>(sortOptions);
+        sortCombo.setPreferredSize(new Dimension(150, 45));
+        sortCombo.addActionListener(e -> {
+            String selected = (String) sortCombo.getSelectedItem();
+            if (!"Sort By...".equals(selected)) {
+                productController.sortProducts(selected);
+                updateTable(productController.getAllProducts());
+            }
+        });
+        searchPanel.add(sortCombo);
 
         content.add(searchPanel);
         content.add(Box.createRigidArea(new Dimension(0, 30)));
 
         // === Table (connected to ProductController) ===
-        String[] columns = {"Product ID", "Product Name", "Items", "Price (Rs)", "Status", "Action"};
+        String[] columns = { "Product ID", "Product Name", "Items", "Price (Rs)", "Status", "Action" };
         model = new DefaultTableModel(columns, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
@@ -131,11 +161,13 @@ public class CashProductPanel extends JPanel {
             viewBtn.setForeground(new Color(41, 128, 185));
             viewBtn.setBorderPainted(false);
             viewBtn.setContentAreaFilled(false);
-            viewBtn.addActionListener(e -> viewProduct(row));
+            // viewBtn.addActionListener is handled by editor
 
             actionPanel.add(viewBtn);
             return actionPanel;
         });
+
+        table.getColumn("Action").setCellEditor(new ActionEditor());
 
         JScrollPane scrollPane = new JScrollPane(table);
         scrollPane.setBorder(BorderFactory.createLineBorder(new Color(200, 200, 200)));
@@ -147,22 +179,53 @@ public class CashProductPanel extends JPanel {
         return panel;
     }
 
+    // Custom Editor to handle button clicks
+    private class ActionEditor extends javax.swing.AbstractCellEditor implements javax.swing.table.TableCellEditor {
+        private JPanel panel;
+        private int row;
+
+        public ActionEditor() {
+            panel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 0));
+            panel.setBackground(Color.WHITE);
+            JButton viewBtn = new JButton("👁");
+            viewBtn.setBorderPainted(false);
+            viewBtn.setContentAreaFilled(false);
+            viewBtn.addActionListener(e -> {
+                fireEditingStopped();
+                viewProduct(row);
+            });
+            panel.add(viewBtn);
+        }
+
+        @Override
+        public java.awt.Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row,
+                int column) {
+            this.row = row;
+            return panel;
+        }
+
+        @Override
+        public Object getCellEditorValue() {
+            return "";
+        }
+    }
+
     // Load/update table with real products
     private void updateTable(List<Product> productList) {
         model.setRowCount(0); // Clear table
         for (Product p : productList) {
-            model.addRow(new Object[]{
-                p.getProductId(),
-                p.getName(),
-                p.getQuantity(),
-                p.getPrice(),
-                p.getStatus(),
-                "" // Action placeholder
+            model.addRow(new Object[] {
+                    p.getProductId(),
+                    p.getName(),
+                    p.getQuantity(),
+                    p.getPrice(),
+                    p.getStatus(),
+                    "" // Action placeholder
             });
         }
     }
 
-    // View product details (simple dialog)
+    // View product details with Image
     private void viewProduct(int row) {
         String id = (String) model.getValueAt(row, 0);
         Product p = productController.getAllProducts().stream()
@@ -171,14 +234,62 @@ public class CashProductPanel extends JPanel {
                 .orElse(null);
 
         if (p != null) {
-            JOptionPane.showMessageDialog(this,
-                    "Product ID: " + p.getProductId() + "\n"
-                    + "Name: " + p.getName() + "\n"
-                    + "Items: " + p.getQuantity() + "\n"
-                    + "Price: Rs. " + p.getPrice() + "\n"
-                    + "Status: " + p.getStatus(),
-                    "Product Details", JOptionPane.INFORMATION_MESSAGE);
+            JPanel viewPanel = new JPanel(new BorderLayout(20, 20)); // Gap
+
+            // Image Label
+            JLabel imageLabel = new JLabel();
+            imageLabel.setPreferredSize(new Dimension(150, 150));
+            imageLabel.setBorder(BorderFactory.createLineBorder(Color.GRAY));
+
+            if (p.getImagePath() != null && !p.getImagePath().isEmpty()) {
+                ImageIcon icon = loadImage(p.getImagePath());
+                if (icon != null) {
+                    // Resize for display
+                    java.awt.Image img = icon.getImage().getScaledInstance(150, 150, java.awt.Image.SCALE_SMOOTH);
+                    imageLabel.setIcon(new ImageIcon(img));
+                } else {
+                    imageLabel.setText("No Image");
+                    imageLabel.setHorizontalAlignment(SwingConstants.CENTER);
+                }
+            } else {
+                imageLabel.setText("No Image");
+                imageLabel.setHorizontalAlignment(SwingConstants.CENTER);
+            }
+            viewPanel.add(imageLabel, BorderLayout.WEST);
+
+            // Details Text
+            String details = "<html><body style='width: 200px'>"
+                    + "<h2>" + p.getName() + "</h2>"
+                    + "<p><b>ID:</b> " + p.getProductId() + "</p>"
+                    + "<p><b>Price:</b> Rs. " + p.getPrice() + "</p>"
+                    + "<p><b>Quantity:</b> " + p.getQuantity() + "</p>"
+                    + "<p><b>Status:</b> " + p.getStatus() + "</p>"
+                    + "<br><p><i>Expiry: " + p.getExpiryDate() + "</i></p>"
+                    + "</body></html>";
+
+            JLabel detailsLabel = new JLabel(details);
+            viewPanel.add(detailsLabel, BorderLayout.CENTER);
+
+            JOptionPane.showMessageDialog(this, viewPanel, "Product Details", JOptionPane.PLAIN_MESSAGE);
         }
+    }
+
+    // Helper to load image correctly
+    private ImageIcon loadImage(String path) {
+        if (path == null || path.isEmpty()) {
+            return null;
+        }
+        // 1. Try absolute path
+        java.io.File file = new java.io.File(path);
+        if (file.exists()) {
+            return new ImageIcon(path);
+        }
+        // 2. Try classpath resource
+        java.net.URL resource = getClass().getResource(path);
+        if (resource != null) {
+            return new ImageIcon(resource);
+        }
+        return null;
     }
 
     private JPanel createIconCard(String title, String value, String iconPath, Color color) {
@@ -186,8 +297,7 @@ public class CashProductPanel extends JPanel {
         card.setBackground(Color.WHITE);
         card.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createLineBorder(new Color(200, 200, 200)),
-                BorderFactory.createEmptyBorder(25, 30, 25, 30)
-        ));
+                BorderFactory.createEmptyBorder(25, 30, 25, 30)));
 
         JLabel iconLabel = new JLabel();
         if (!java.beans.Beans.isDesignTime()) {

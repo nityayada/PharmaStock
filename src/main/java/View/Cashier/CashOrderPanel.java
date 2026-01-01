@@ -4,16 +4,28 @@
  */
 package View.Cashier;
 
+import controller.ProductController;
+import controller.TransactionController;
+import model.Product;
+import model.Transaction;
+
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GridLayout;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.HashMap;
+import java.util.Map;
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
@@ -28,18 +40,53 @@ import javax.swing.table.DefaultTableModel;
  */
 public class CashOrderPanel extends JPanel {
 
+    private ProductController productController;
+    private TransactionController transactionController;
+    private controller.CustomerController customerController;
+
+    // Cart Data: ProductID -> Quantity
+    private Map<String, Integer> cartItems = new HashMap<>();
+
+    private DefaultTableModel cartModel;
+    private JLabel subTotalLabel;
+    private JLabel taxLabel;
+    private JLabel totalLabel;
+    private JPanel productGrid;
+
     public CashOrderPanel() {
+        // Initialize controllers (assuming they are stateless/singleton via internal
+        // static lists)
+        productController = new ProductController();
+        transactionController = new TransactionController();
+        customerController = new controller.CustomerController();
+
         setLayout(new BorderLayout());
         add(createCashOrderContent(), BorderLayout.CENTER);
+
+        // Load initial products
+        refreshProductGrid();
     }
 
     public JPanel getContentPanel() {
         return this;
     }
 
+    // Refresh grid (useful if products change)
+    public void refreshProductGrid() {
+        productGrid.removeAll();
+        for (Product p : productController.getAllProducts()) {
+            if ("Available".equals(p.getStatus()) || "Low Stock".equals(p.getStatus())) {
+                productGrid.add(createProductCard(p));
+            }
+        }
+        productGrid.revalidate();
+        productGrid.repaint();
+    }
+
     private JPanel createCashOrderContent() {
         JPanel panel = new JPanel(new BorderLayout());
         panel.setBackground(new Color(245, 245, 245));
+
         // Header
         JLabel headerLabel = new JLabel("New Order", SwingConstants.LEFT);
         headerLabel.setFont(new Font("InaiMathi", Font.BOLD, 32));
@@ -64,22 +111,31 @@ public class CashOrderPanel extends JPanel {
         JTextField searchField = new JTextField("Search product by name or ID");
         searchField.setPreferredSize(new Dimension(500, 45));
         searchField.setFont(new Font("InaiMathi", Font.PLAIN, 16));
+        // Add listener for search
+        searchField.addActionListener(e -> {
+            String keyword = searchField.getText().trim();
+            java.util.List<Product> results = productController.searchProducts(keyword);
+            refreshProductGrid(results);
+        });
+
+        // Add KeyListener for real-time search (optional but nice)
+        searchField.addKeyListener(new java.awt.event.KeyAdapter() {
+            @Override
+            public void keyReleased(java.awt.event.KeyEvent e) {
+                String keyword = searchField.getText().trim();
+                java.util.List<Product> results = productController.searchProducts(keyword);
+                refreshProductGrid(results);
+            }
+        });
+
         searchBarPanel.add(searchField);
 
         leftPanel.add(searchBarPanel, BorderLayout.NORTH);
 
-        // Product Grid (simple 3-column grid of product cards)
-        JPanel productGrid = new JPanel(new GridLayout(0, 3, 20, 20));
+        // Product Grid
+        productGrid = new JPanel(new GridLayout(0, 3, 20, 20));
         productGrid.setBackground(new Color(217, 217, 217));
-        productGrid.setBorder(BorderFactory.createEmptyBorder(20, 0, 20, 0));
-
-        // Sample products
-        productGrid.add(createProductCard("Paracetamol 500mg", "Rs. 120", "pain-icon.png"));
-        productGrid.add(createProductCard("Vitamin C 1000mg", "Rs. 850", "vitamin-icon.png"));
-        productGrid.add(createProductCard("Cough Syrup 100ml", "Rs. 450", "cough-icon.png"));
-        productGrid.add(createProductCard("Baby Oil 60ml", "Rs. 200", "babyoil-icon.png"));
-        productGrid.add(createProductCard("Aloe Vera Gel", "Rs. 600", "aloe-icon.png"));
-        productGrid.add(createProductCard("Fish Oil Omega 3", "Rs. 1,200", "fishoil-icon.png"));
+        productGrid.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
         JScrollPane productScroll = new JScrollPane(productGrid);
         productScroll.setBorder(null);
@@ -87,26 +143,34 @@ public class CashOrderPanel extends JPanel {
 
         splitPane.setLeftComponent(leftPanel);
 
-        // Right: Cart / Order Summary
+        // ... (rest of layout)
+
+        // ... (Right Panel handling) => No changes needed
+
+        // Return splitPane for layout not the whole method yet
+
+        // Re-assembling the SplitPane part to ensure context validity
         JPanel cartPanel = new JPanel(new BorderLayout());
         cartPanel.setBackground(Color.WHITE);
         cartPanel.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createLineBorder(new Color(220, 220, 220)),
-                BorderFactory.createEmptyBorder(20, 20, 20, 20)
-        ));
+                BorderFactory.createEmptyBorder(20, 20, 20, 20)));
 
         JLabel cartTitle = new JLabel("Order Summary");
         cartTitle.setFont(new Font("InaiMathi", Font.BOLD, 22));
         cartTitle.setBorder(BorderFactory.createEmptyBorder(0, 0, 15, 0));
         cartPanel.add(cartTitle, BorderLayout.NORTH);
 
-        // Cart Table (items added)
-        String[] cartColumns = {"Product", "Qty", "Price", "Subtotal"};
-        Object[][] cartData = {}; // Empty initially
-
-        DefaultTableModel cartModel = new DefaultTableModel(cartData, cartColumns);
+        // Cart Table
+        String[] cartColumns = { "Product", "Qty", "Price", "Subtotal" };
+        cartModel = new DefaultTableModel(new Object[][] {}, cartColumns) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false;
+            }
+        };
         JTable cartTable = new JTable(cartModel);
-        cartTable.setRowHeight(45);
+        cartTable.setRowHeight(35);
         cartTable.getTableHeader().setBackground(new Color(220, 220, 220));
 
         JScrollPane cartScroll = new JScrollPane(cartTable);
@@ -119,16 +183,18 @@ public class CashOrderPanel extends JPanel {
         totalsPanel.setBorder(BorderFactory.createEmptyBorder(20, 0, 0, 0));
 
         totalsPanel.add(new JLabel("Sub Total:"));
-        totalsPanel.add(new JLabel("Rs. 0.00", SwingConstants.RIGHT));
+        subTotalLabel = new JLabel("Rs. 0.00", SwingConstants.RIGHT);
+        totalsPanel.add(subTotalLabel);
 
         totalsPanel.add(new JLabel("Tax (10%):"));
-        totalsPanel.add(new JLabel("Rs. 0.00", SwingConstants.RIGHT));
+        taxLabel = new JLabel("Rs. 0.00", SwingConstants.RIGHT);
+        totalsPanel.add(taxLabel);
 
         totalsPanel.add(new JLabel("Discount:"));
         totalsPanel.add(new JLabel("Rs. 0.00", SwingConstants.RIGHT));
 
         totalsPanel.add(new JLabel("Total:"));
-        JLabel totalLabel = new JLabel("Rs. 0.00", SwingConstants.RIGHT);
+        totalLabel = new JLabel("Rs. 0.00", SwingConstants.RIGHT);
         totalLabel.setFont(new Font("InaiMathi", Font.BOLD, 18));
         totalLabel.setForeground(new Color(52, 152, 219));
         totalsPanel.add(totalLabel);
@@ -145,6 +211,7 @@ public class CashOrderPanel extends JPanel {
 
         JButton clearBtn = new JButton("Clear Cart");
         clearBtn.setPreferredSize(new Dimension(150, 45));
+        clearBtn.addActionListener(e -> clearCart());
         bottomButtons.add(clearBtn);
 
         JButton placeOrderBtn = new JButton("Place Order");
@@ -152,6 +219,7 @@ public class CashOrderPanel extends JPanel {
         placeOrderBtn.setForeground(Color.WHITE);
         placeOrderBtn.setFont(new Font("InaiMathi", Font.BOLD, 16));
         placeOrderBtn.setPreferredSize(new Dimension(200, 50));
+        placeOrderBtn.addActionListener(e -> placeOrder());
         bottomButtons.add(placeOrderBtn);
 
         panel.add(bottomButtons, BorderLayout.SOUTH);
@@ -159,30 +227,235 @@ public class CashOrderPanel extends JPanel {
         return panel;
     }
 
-    private JPanel createProductCard(String name, String price, String iconPath) {
+    // Overload refreshProductGrid to accept list
+    public void refreshProductGrid(java.util.List<Product> products) {
+        productGrid.removeAll();
+        for (Product p : products) {
+            if ("Available".equals(p.getStatus()) || "Low Stock".equals(p.getStatus())) {
+                productGrid.add(createProductCard(p));
+            }
+        }
+        productGrid.revalidate();
+        productGrid.repaint();
+    }
+
+    private JPanel createProductCard(Product product) {
         JPanel card = new JPanel(new BorderLayout(10, 10));
         card.setBackground(Color.WHITE);
         card.setBorder(BorderFactory.createLineBorder(new Color(220, 220, 220)));
+        card.setPreferredSize(new Dimension(150, 200)); // Increased height slightly
+
+        // Add Click Listener to Card
+        card.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                addToCart(product);
+            }
+        });
 
         JLabel icon = new JLabel();
-        if (!java.beans.Beans.isDesignTime()) {
-            java.net.URL url = getClass().getClassLoader().getResource("images/" + iconPath);
-            if (url != null) {
-                icon.setIcon(new ImageIcon(url));
-            }
-        }
-        icon.setHorizontalAlignment(SwingConstants.CENTER);
-        card.add(icon, BorderLayout.CENTER);
+        icon.setPreferredSize(new Dimension(100, 100)); // Fixed size for icon area
 
-        JLabel nameLabel = new JLabel(name, SwingConstants.CENTER);
+        // Load image or placeholder with scaling
+        if (product.getImagePath() != null && !product.getImagePath().isEmpty()) {
+            try {
+                // Try absolute path first
+                ImageIcon imgIcon = null;
+                java.io.File f = new java.io.File(product.getImagePath());
+                if (f.exists()) {
+                    imgIcon = new ImageIcon(product.getImagePath());
+                } else {
+                    // Try resource
+                    java.net.URL url = getClass().getResource(product.getImagePath());
+                    if (url != null) {
+                        imgIcon = new ImageIcon(url);
+                    }
+                }
+
+                if (imgIcon != null) {
+                    // Scale image smoothly
+                    java.awt.Image img = imgIcon.getImage().getScaledInstance(100, 100, java.awt.Image.SCALE_SMOOTH);
+                    icon.setIcon(new ImageIcon(img));
+                } else {
+                    icon.setText("[No Image]");
+                }
+            } catch (Exception ex) {
+                icon.setText("[Err]");
+            }
+        } else {
+            icon.setText("[No Image]");
+        }
+
+        icon.setHorizontalAlignment(SwingConstants.CENTER);
+        // Wrap icon in a panel to center inside the specific dimension
+        JPanel iconPanel = new JPanel(new java.awt.GridBagLayout());
+        iconPanel.setBackground(Color.WHITE);
+        iconPanel.add(icon);
+        card.add(iconPanel, BorderLayout.CENTER);
+
+        JLabel nameLabel = new JLabel("<html><center>" + product.getName() + "</center></html>", SwingConstants.CENTER);
         nameLabel.setFont(new Font("InaiMathi", Font.BOLD, 14));
+        // Limit height of name
+        nameLabel.setPreferredSize(new Dimension(140, 40));
         card.add(nameLabel, BorderLayout.NORTH);
 
-        JLabel priceLabel = new JLabel(price, SwingConstants.CENTER);
+        JLabel priceLabel = new JLabel("Rs. " + product.getPrice(), SwingConstants.CENTER);
         priceLabel.setFont(new Font("InaiMathi", Font.PLAIN, 14));
         priceLabel.setForeground(new Color(52, 152, 219));
-        card.add(priceLabel, BorderLayout.SOUTH);
+
+        JLabel stockLabel = new JLabel("Qty: " + product.getQuantity(), SwingConstants.CENTER);
+        stockLabel.setFont(new Font("InaiMathi", Font.PLAIN, 10));
+
+        JPanel bottomPanel = new JPanel(new BorderLayout());
+        bottomPanel.setBackground(Color.WHITE);
+        bottomPanel.setBorder(BorderFactory.createEmptyBorder(5, 0, 10, 0));
+        bottomPanel.add(priceLabel, BorderLayout.CENTER);
+        bottomPanel.add(stockLabel, BorderLayout.SOUTH);
+
+        card.add(bottomPanel, BorderLayout.SOUTH);
 
         return card;
+    }
+
+    private void addToCart(Product product) {
+        String pid = product.getProductId();
+        int currentQtyInCart = cartItems.getOrDefault(pid, 0);
+
+        if (currentQtyInCart + 1 > product.getQuantity()) {
+            JOptionPane.showMessageDialog(this, "Insufficient stock for " + product.getName(), "Stock Error",
+                    JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        cartItems.put(pid, currentQtyInCart + 1);
+        updateCartTable();
+    }
+
+    private void updateCartTable() {
+        cartModel.setRowCount(0);
+        double subtotal = 0;
+
+        for (Map.Entry<String, Integer> entry : cartItems.entrySet()) {
+            Product p = productController.getProduct(entry.getKey());
+            if (p != null) {
+                int qty = entry.getValue();
+                double lineTotal = p.getPrice() * qty;
+                subtotal += lineTotal;
+
+                cartModel.addRow(new Object[] {
+                        p.getName(),
+                        qty,
+                        p.getPrice(),
+                        lineTotal
+                });
+            }
+        }
+
+        double tax = subtotal * 0.10;
+        double total = subtotal + tax;
+
+        subTotalLabel.setText(String.format("Rs. %.2f", subtotal));
+        taxLabel.setText(String.format("Rs. %.2f", tax));
+        totalLabel.setText(String.format("Rs. %.2f", total));
+    }
+
+    private void clearCart() {
+        cartItems.clear();
+        updateCartTable();
+    }
+
+    private void placeOrder() {
+        if (cartItems.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Cart is empty!", "Error", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        // 0. Get Customer Details
+        JTextField nameField = new JTextField();
+        JTextField phoneField = new JTextField();
+        JTextField emailField = new JTextField();
+
+        Object[] message = {
+                "Customer Name (Required):", nameField,
+                "Phone Number:", phoneField,
+                "Email:", emailField
+        };
+
+        int option = JOptionPane.showConfirmDialog(null, message, "Enter Customer Details",
+                JOptionPane.OK_CANCEL_OPTION);
+        if (option != JOptionPane.OK_OPTION) {
+            return; // User cancelled
+        }
+
+        String custName = nameField.getText().trim();
+        String custPhone = phoneField.getText().trim();
+        String custEmail = emailField.getText().trim();
+
+        // 1. Validate Name
+        if (custName.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Customer Name is required!", "Validation Error",
+                    JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        // 2. Validate Phone (10 digits, numeric)
+        if (!custPhone.matches("\\d{10}")) {
+            JOptionPane.showMessageDialog(this, "Phone number must be exactly 10 digits and numeric!",
+                    "Validation Error",
+                    JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        // 3. Validate Email (Optional, but if present must be @gmail.com)
+        if (!custEmail.isEmpty()) {
+            if (!custEmail.toLowerCase().endsWith("@gmail.com")) {
+                JOptionPane.showMessageDialog(this, "Email must be a valid @gmail.com address!", "Validation Error",
+                        JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+        }
+
+        try {
+            // 4. Generate IDs (Format: TRX### and C###)
+            int randomTrx = (int) (100 + Math.random() * 900); // 100 to 999
+            int randomCust = (int) (100 + Math.random() * 900);
+
+            String txId = "TRX" + randomTrx;
+            String custId = "C" + randomCust;
+
+            // 2. Create & Save Customer
+            model.Customer customer = new model.Customer(custId, custName, custPhone, custEmail);
+            customerController.addCustomer(customer);
+
+            // 3. Calculate Total
+            double totalAmount = 0;
+            for (Map.Entry<String, Integer> entry : cartItems.entrySet()) {
+                Product p = productController.getProduct(entry.getKey());
+                totalAmount += p.getPrice() * entry.getValue();
+            }
+            double finalAmount = totalAmount * 1.10; // +10% tax
+
+            // 4. Create Transaction
+            Transaction trx = new Transaction(txId, custId, LocalDate.now(), LocalTime.now(), finalAmount);
+
+            // 5. Reduce Stock & Add to Transaction
+            for (Map.Entry<String, Integer> entry : cartItems.entrySet()) {
+                productController.sellProduct(entry.getKey(), entry.getValue());
+                trx.addProduct(entry.getKey());
+            }
+
+            // 6. Save Transaction
+            transactionController.addTransaction(trx);
+
+            JOptionPane.showMessageDialog(this, "Order placed successfully!\nTransaction ID: " + txId);
+
+            clearCart();
+            refreshProductGrid(); // Update stock display immediately
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Error placing order: " + e.getMessage(), "Error",
+                    JOptionPane.ERROR_MESSAGE);
+        }
     }
 }

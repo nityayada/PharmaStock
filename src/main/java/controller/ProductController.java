@@ -195,4 +195,25 @@ public class ProductController {
         return i + 1;
     }
 
+    // === Order Processing ===
+
+    public Product getProduct(String id) {
+        return products.stream()
+                .filter(p -> p.getProductId().equals(id))
+                .findFirst()
+                .orElse(null);
+    }
+
+    public synchronized void sellProduct(String id, int quantityToSell) {
+        Product p = getProduct(id);
+        if (p == null) {
+            throw new IllegalArgumentException("Product not found: " + id);
+        }
+        if (p.getQuantity() < quantityToSell) {
+            throw new IllegalArgumentException("Insufficient stock for product: " + p.getName());
+        }
+
+        p.setQuantity(p.getQuantity() - quantityToSell);
+        logActivity("Sold " + quantityToSell + " of " + p.getName());
+    }
 }

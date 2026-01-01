@@ -33,6 +33,17 @@ public class AdminProductPanel extends JPanel {
     public AdminProductPanel() {
         setLayout(new BorderLayout());
         productController = new ProductController();
+
+        // Auto-refresh when tab is shown
+        this.addComponentListener(new java.awt.event.ComponentAdapter() {
+            @Override
+            public void componentShown(java.awt.event.ComponentEvent e) {
+                if (model != null) {
+                    updateTable(productController.getAllProducts());
+                    updateCards();
+                }
+            }
+        });
     }
 
     public JPanel getContentPanel() {
