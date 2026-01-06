@@ -208,14 +208,14 @@ public class SidebarPanel extends JPanel {
     }
 
     private void logout() {
-        int confirm = JOptionPane.showConfirmDialog(null,
+        int confirm = JOptionPane.showConfirmDialog(null, // to center the joptionpanel
                 "Are you sure you want to log out?",
                 "Confirm Logout",
                 JOptionPane.YES_NO_OPTION);
 
         if (confirm == JOptionPane.YES_OPTION) {
-            SwingUtilities.getWindowAncestor(this).dispose();
-            new WelcomeView().setVisible(true);
+            SwingUtilities.getWindowAncestor(this).dispose(); // close the page where it called 
+            new WelcomeView().setVisible(true); //open the Welcome page 
         }
     }
 }

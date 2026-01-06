@@ -109,6 +109,7 @@ public class ProductController {
         if (toDelete != null) {
             deletedProducts.push(toDelete); //Push to stack
             products.remove(toDelete);
+
             logActivity("Deleted product: " + toDelete.getName());
         }
     }

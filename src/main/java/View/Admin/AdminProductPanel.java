@@ -41,6 +41,7 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
+import javax.swing.table.TableCellRenderer;
 
 /**
  *
@@ -50,7 +51,7 @@ public class AdminProductPanel extends JPanel {
 
     private JTable table;
     private ProductController productController;
-    private DefaultTableModel model;
+    private DefaultTableModel model; //acts as the data source for the JTable 
     private JLabel expiredLabel;
     private JLabel totalProductLabel;
     private JLabel lowStockLabel;
@@ -91,11 +92,10 @@ public class AdminProductPanel extends JPanel {
         content.setLayout(new BoxLayout(content, BoxLayout.Y_AXIS));
         content.setBackground(new Color(217, 217, 217));
         content.setBorder(BorderFactory.createEmptyBorder(20, 50, 50, 50));
-        expiredLabel = new JLabel(); // initialize the label
-        //
 
+        //
         // Top 3 Cards
-        JPanel cardsRow = new JPanel(new GridLayout(1, 4, 20, 20));
+        JPanel cardsRow = new JPanel(new GridLayout(1, 4, 20, 20));// GridLayout(rows, columns, hgap, vgap)
         cardsRow.setBackground(new Color(217, 217, 217));
 
         // Existing cards
@@ -121,7 +121,7 @@ public class AdminProductPanel extends JPanel {
                 "expired-icon.png", new Color(192, 57, 43), expiredLabel));
 
         content.add(cardsRow);
-        content.add(Box.createRigidArea(new Dimension(0, 40)));
+        content.add(Box.createRigidArea(new Dimension(0, 40))); //add 40 px vertical space
         // content.add(cardsRow);
         content.add(Box.createRigidArea(new Dimension(0, 40)));
 
@@ -185,12 +185,13 @@ public class AdminProductPanel extends JPanel {
         model = new DefaultTableModel(columns, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
-                return column == 5; // Only Action
+                return column == 5; //only Action will be editable 
             }
         };
         table = new JTable(model);
-        table.getColumn("Action").setCellRenderer(new ActionRenderer());
-        table.getColumn("Action").setCellEditor(new ActionEditor());
+        // cellRenderer determines how the each cell in JTable looks like
+        table.getColumn("Action").setCellRenderer(new ActionRenderer()); //how button looks 
+        table.getColumn("Action").setCellEditor(new ActionEditor());//how the button behaves which clicked 
 
         table.setRowHeight(50);
         table.getTableHeader().setBackground(new Color(220, 220, 220));
@@ -238,8 +239,9 @@ public class AdminProductPanel extends JPanel {
     // View product
     private void viewProduct(int row) {
 
-        String id = model.getValueAt(row, 0).toString();
+        String id = model.getValueAt(row, 0).toString(); // when the button clicked then row number is passed
 
+        // convert the list into stream and excute the different operations
         Product p = productController.getAllProducts().stream()
                 .filter(prod -> prod.getProductId().equals(id))
                 .findFirst()
@@ -566,7 +568,7 @@ public class AdminProductPanel extends JPanel {
     }
 
     private class ActionRenderer extends JPanel
-            implements javax.swing.table.TableCellRenderer {
+            implements TableCellRenderer {
 
         public ActionRenderer() {
             setLayout(new FlowLayout(FlowLayout.CENTER, 10, 0));
@@ -579,12 +581,13 @@ public class AdminProductPanel extends JPanel {
 
         private JButton createButton(String text) {
             JButton btn = new JButton(text);
-            btn.setBorderPainted(false);
-            btn.setContentAreaFilled(false);
-            return btn;
+            btn.setBorderPainted(false); // no border 
+            btn.setContentAreaFilled(false);// no background 
+            return btn; // Returns UNCLICKABLE button (no listeners)
         }
 
         @Override
+        // when action button is clicked which product to act 
         public Component getTableCellRendererComponent(
                 JTable table, Object value, boolean isSelected,
                 boolean hasFocus, int row, int column) {
@@ -652,21 +655,19 @@ public class AdminProductPanel extends JPanel {
             return null;
         }
 
-        // 1. Try absolute/local file system path first (for user-added images)
+        //Try absolute/local file system path first (for user-added images)
         File f = new File(path);
         if (f.exists()) {
             return new ImageIcon(path);
         }
 
-        // 2. Try as resource (for sample data like "/images/paracetamol.png")
-        // Note: getResource requires path starting with / if it's from root of
         // classpath
         java.net.URL imgUrl = getClass().getResource(path);
         if (imgUrl != null) {
             return new ImageIcon(imgUrl);
         }
 
-        // 3. Fallback: Try with added / if missing
+        // Fallback: Try with added / if missing
         if (!path.startsWith("/")) {
             imgUrl = getClass().getResource("/" + path);
         }
