@@ -9,6 +9,8 @@ import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
@@ -134,27 +136,27 @@ public class SidebarPanel extends JPanel {
     private JButton createMenuItem(String text, boolean isActive) {
         JButton button = new JButton(text);
 
-        button.setHorizontalAlignment(SwingConstants.LEFT);
-        button.setMaximumSize(new Dimension(Integer.MAX_VALUE, 50));
-        button.setPreferredSize(new Dimension(Integer.MAX_VALUE, 50));
-        button.setFocusPainted(false);
-        button.setBorderPainted(false);
-        button.setContentAreaFilled(false);
-        button.setForeground(TEXT_COLOR);
-        button.setFont(new Font("InaiMathi", Font.PLAIN, 16));
-        button.setIconTextGap(15);
-        button.setAlignmentX(Component.LEFT_ALIGNMENT);
-        button.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        button.setHorizontalAlignment(SwingConstants.LEFT);// Align text to left
+        button.setMaximumSize(new Dimension(Integer.MAX_VALUE, 50));// Full width, fixed height
+        button.setPreferredSize(new Dimension(Integer.MAX_VALUE, 50));// Same for preferred
+        button.setFocusPainted(false);// Remove focus border blue outline when clicked
+        button.setBorderPainted(false);// Remove default button border
+        button.setContentAreaFilled(false);// Remove default background fill
+        button.setForeground(TEXT_COLOR);  // Set text color likely dark gray/black
+        button.setFont(new Font("InaiMathi", Font.PLAIN, 16)); //Custom font, plain style, 16px
+        button.setIconTextGap(15);//Space between icon and text if icon added later
+        button.setAlignmentX(Component.LEFT_ALIGNMENT);//align button to left in container
+        button.setCursor(new Cursor(Cursor.HAND_CURSOR));//change cursor to hand on hover
 
         if (isActive) {
             button.setBackground(HIGHLIGHT_BG);
-            button.setOpaque(true);
-            button.setForeground(Color.WHITE);
+            button.setOpaque(true);  // Make background visible
+            button.setForeground(Color.WHITE); // White text on colored background
         } else {
-            // Hover effect - only apply to non-active buttons
-            button.addMouseListener(new java.awt.event.MouseAdapter() {
+            //hover effect - only apply to non-active buttons
+            button.addMouseListener(new MouseAdapter() {
                 @Override
-                public void mouseEntered(java.awt.event.MouseEvent evt) {
+                public void mouseEntered(MouseEvent evt) {
                     if (!isActive) {
                         button.setBackground(HOVER_BG);
                         button.setOpaque(true);
@@ -162,7 +164,7 @@ public class SidebarPanel extends JPanel {
                 }
 
                 @Override
-                public void mouseExited(java.awt.event.MouseEvent evt) {
+                public void mouseExited(MouseEvent evt) {
                     if (!isActive) {
                         button.setBackground(null);
                         button.setOpaque(false);
@@ -202,17 +204,6 @@ public class SidebarPanel extends JPanel {
             target.setBackground(HIGHLIGHT_BG);
             target.setOpaque(true);
             target.setForeground(Color.WHITE);
-        }
-    }
-
-    private void navigateTo(String pageName) {
-        SwingUtilities.getWindowAncestor(this).dispose(); // Close current frame
-        try {
-            Class<?> pageClass = Class.forName("View.Admin." + pageName);
-            JFrame newPage = (JFrame) pageClass.getDeclaredConstructor().newInstance();
-            newPage.setVisible(true);
-        } catch (Exception ex) {
-            JOptionPane.showMessageDialog(null, "Error opening page: " + ex.getMessage(), "Navigation Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 
