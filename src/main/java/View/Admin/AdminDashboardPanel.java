@@ -8,7 +8,6 @@ import controller.CustomerController;
 import controller.ProductController;
 import controller.TransactionController;
 import model.Product;
-
 import java.awt.Color;
 import javax.swing.JPanel;
 import java.awt.BorderLayout;

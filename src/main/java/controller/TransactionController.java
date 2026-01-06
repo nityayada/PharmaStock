@@ -21,8 +21,16 @@ public class TransactionController {
 
     public TransactionController() {
         if (transactions.isEmpty()) {
-            transactions.add(new Transaction("TRX988", "C324", LocalDate.now(), LocalTime.now(), 32000.0));
-            // Add more sample transactions...
+            transactions.add(new Transaction("TRX988", "C324", LocalDate.now(), LocalTime.now(), 550.0));
+
+            // Additional Transactions
+            transactions.add(
+                    new Transaction("TRX989", "C8584", LocalDate.now().minusDays(1), LocalTime.of(10, 30), 120.0));
+            transactions.add(
+                    new Transaction("TRX990", "C8585", LocalDate.now().minusDays(2), LocalTime.of(14, 15), 340.0));
+            transactions.add(new Transaction("TRX991", "C8583", LocalDate.now(), LocalTime.of(9, 45), 85.0));
+            transactions.add(
+                    new Transaction("TRX992", "C8586", LocalDate.now().minusDays(5), LocalTime.of(16, 20), 210.0));
         }
     }
 
