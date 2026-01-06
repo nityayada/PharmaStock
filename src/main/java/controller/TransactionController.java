@@ -41,4 +41,10 @@ public class TransactionController {
     public double getTotalSales() {
         return transactions.stream().mapToDouble(Transaction::getAmount).sum();
     }
+
+    public int getTotalQuantitySold() {
+        return transactions.stream()
+                .mapToInt(t -> t.getProductIds().size())
+                .sum();
+    }
 }

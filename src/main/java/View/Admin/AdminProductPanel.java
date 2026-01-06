@@ -106,19 +106,19 @@ public class AdminProductPanel extends JPanel {
 
         cardsRow.add(createIconCard("Total Product",
                 String.valueOf(productController.getTotalProducts()),
-                "product-icon.png", new Color(142, 68, 173), totalProductLabel));
+                new Color(142, 68, 173), totalProductLabel));
 
         cardsRow.add(createIconCard("Low Stock Product",
                 String.valueOf(productController.getLowStockProducts().size()),
-                "lowstock-icon.png", new Color(230, 126, 34), lowStockLabel));
+                new Color(230, 126, 34), lowStockLabel));
 
         cardsRow.add(createIconCard("Out of Stock Product",
                 String.valueOf(productController.getOutOfStockProducts().size()),
-                "outofstock-icon.png", new Color(231, 76, 60), outOfStockLabel));
+                new Color(231, 76, 60), outOfStockLabel));
 
         cardsRow.add(createIconCard("Expired Product",
                 String.valueOf(productController.getExpiredProducts().size()),
-                "expired-icon.png", new Color(192, 57, 43), expiredLabel));
+                new Color(192, 57, 43), expiredLabel));
 
         content.add(cardsRow);
         content.add(Box.createRigidArea(new Dimension(0, 40))); //add 40 px vertical space
@@ -529,21 +529,12 @@ public class AdminProductPanel extends JPanel {
         expiredLabel.setText(String.valueOf(productController.getExpiredProducts().size()));
     }
 
-    private JPanel createIconCard(String title, String value, String iconPath, Color color, JLabel valueLabelRef) {
+    private JPanel createIconCard(String title, String value, Color color, JLabel valueLabelRef) {
         JPanel card = new JPanel(new BorderLayout());
         card.setBackground(Color.WHITE);
         card.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createLineBorder(new Color(200, 200, 200)),
                 BorderFactory.createEmptyBorder(20, 20, 20, 20)));
-
-        JLabel iconLabel = new JLabel();
-        if (!java.beans.Beans.isDesignTime()) {
-            java.net.URL url = getClass().getClassLoader().getResource("images/" + iconPath);
-            if (url != null) {
-                iconLabel.setIcon(new ImageIcon(url));
-            }
-        }
-        card.add(iconLabel, BorderLayout.WEST);
 
         JPanel textPanel = new JPanel(new GridLayout(2, 1));
         textPanel.setBackground(Color.WHITE);
@@ -667,7 +658,7 @@ public class AdminProductPanel extends JPanel {
             return new ImageIcon(imgUrl);
         }
 
-        // Fallback: Try with added / if missing
+        //Try with added / if missing
         if (!path.startsWith("/")) {
             imgUrl = getClass().getResource("/" + path);
         }

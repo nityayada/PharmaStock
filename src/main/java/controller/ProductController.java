@@ -45,6 +45,26 @@ public class ProductController {
                     5000.0,
                     LocalDate.of(2025, 12, 30),
                     "/images/aloe.png"));
+
+            // Additional Sample Data (Total ~15)
+            products.add(new Product("P1001", "Amoxicillin 500mg", 100, 350.0, LocalDate.of(2025, 8, 10), null));
+            products.add(new Product("P1002", "Ibuprofen 400mg", 25, 200.0, LocalDate.of(2024, 5, 15), null)); // Low
+                                                                                                               // Stock
+            products.add(new Product("P1003", "Cetirizine 10mg", 200, 150.0, LocalDate.of(2026, 11, 20), null));
+            products.add(new Product("P1004", "Metformin 500mg", 80, 400.0, LocalDate.of(2025, 2, 28), null)); // Near
+                                                                                                               // Expiry
+                                                                                                               // potentially
+            products.add(new Product("P1005", "Amlodipine 5mg", 150, 300.0, LocalDate.of(2027, 3, 10), null));
+            products.add(new Product("P1006", "Omeprazole 20mg", 40, 500.0, LocalDate.of(2025, 12, 5), null)); // Low
+                                                                                                               // Stock
+            products.add(new Product("P1007", "Simvastatin 20mg", 90, 600.0, LocalDate.of(2026, 6, 15), null));
+            products.add(new Product("P1008", "Losartan 50mg", 120, 450.0, LocalDate.of(2025, 9, 30), null));
+            products.add(new Product("P1009", "Azithromycin 500mg", 60, 800.0, LocalDate.of(2025, 3, 1), null)); // Near
+                                                                                                                 // Expiry
+            products.add(new Product("P1010", "Ciprofloxacin 500mg", 110, 350.0, LocalDate.of(2026, 8, 20), null));
+            products.add(new Product("P1011", "Doxycycline 100mg", 30, 250.0, LocalDate.of(2024, 7, 10), null)); // Low
+                                                                                                                 // Stock
+            products.add(new Product("P1012", "Gabapentin 300mg", 75, 550.0, LocalDate.of(2025, 11, 15), null));
         }
     }
 
@@ -107,7 +127,7 @@ public class ProductController {
                 .orElse(null);
 
         if (toDelete != null) {
-            deletedProducts.push(toDelete); //Push to stack
+            deletedProducts.push(toDelete); // Push to stack
             products.remove(toDelete);
 
             logActivity("Deleted product: " + toDelete.getName());
@@ -116,7 +136,7 @@ public class ProductController {
 
     public boolean undoDelete() {
         if (!deletedProducts.isEmpty()) {
-            Product restored = deletedProducts.pop(); //pop from stack
+            Product restored = deletedProducts.pop(); // pop from stack
             products.add(restored);
             logActivity("Undid deletion of: " + restored.getName());
             return true;
@@ -131,7 +151,7 @@ public class ProductController {
 
         return products.stream()
                 .filter(p -> p.getName().toLowerCase().contains(keyword.toLowerCase())
-                || p.getProductId().toLowerCase().contains(keyword.toLowerCase()))
+                        || p.getProductId().toLowerCase().contains(keyword.toLowerCase()))
                 .collect(Collectors.toList());
     }
 
@@ -151,6 +171,16 @@ public class ProductController {
         LocalDate today = LocalDate.now();
         return products.stream()
                 .filter(p -> p.getExpiryDate() != null && p.getExpiryDate().isBefore(today))
+                .collect(Collectors.toList());
+    }
+
+    public List<Product> getNearExpiryProducts(int days) {
+        LocalDate today = LocalDate.now();
+        LocalDate thresholdDate = today.plusDays(days);
+        return products.stream()
+                .filter(p -> p.getExpiryDate() != null
+                        && !p.getExpiryDate().isBefore(today)
+                        && p.getExpiryDate().isBefore(thresholdDate))
                 .collect(Collectors.toList());
     }
 
