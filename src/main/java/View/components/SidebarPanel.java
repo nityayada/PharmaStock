@@ -2,8 +2,23 @@ package View.components;
 
 import View.Admin.AdminMainFrame;
 import View.WelcomeView;
-import java.awt.*;
-import javax.swing.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Cursor;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.Font;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
+
 import javax.swing.border.EmptyBorder;
 
 public class SidebarPanel extends JPanel {
@@ -18,7 +33,7 @@ public class SidebarPanel extends JPanel {
     private JButton dashboardBtn, productsBtn, categoriesBtn, transactionsBtn, Customerbtn, UserBtn;
 
     public SidebarPanel(AdminMainFrame mainFrame) {
-        this.mainFrame = mainFrame;
+        this.mainFrame = mainFrame; // The instance variable 
         setLayout(new BorderLayout());
         setBackground(SIDEBAR_BG);
         setPreferredSize(new Dimension(240, 400));
@@ -88,7 +103,7 @@ public class SidebarPanel extends JPanel {
         menuPanel.add(Box.createRigidArea(new Dimension(0, 20))); // Extra space above logout
         menuPanel.add(logoutBtn);
 
-        // Navigation listeners - use mainFrame.switchPage instead of opening new frames
+        // Navigation listeners - use mainFrame.switchPage to switch between the panel
         dashboardBtn.addActionListener(e -> {
             mainFrame.switchPage("Dashboard");
             setActiveButton("Dashboard");

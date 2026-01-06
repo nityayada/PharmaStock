@@ -5,16 +5,42 @@
 package View.Admin;
 
 import controller.ProductController;
-import java.awt.*;
-import javax.swing.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Cursor;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.Font;
+import java.awt.GridLayout;
+import java.awt.Image;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import javax.swing.table.DefaultTableModel;
 import model.Product;
 import java.time.LocalDate;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import java.io.File;
-
 import java.util.List;
+import javax.swing.AbstractCellEditor;
+import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JDialog;
+import javax.swing.JFileChooser;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.JTextArea;
+import javax.swing.JTextField;
+import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
 
 /**
  *
@@ -34,10 +60,11 @@ public class AdminProductPanel extends JPanel {
         setLayout(new BorderLayout());
         productController = new ProductController();
 
-        // Auto-refresh when tab is shown
-        this.addComponentListener(new java.awt.event.ComponentAdapter() {
+        //auto-refresh when tab is shown
+        // ComponentListener
+        this.addComponentListener(new ComponentAdapter() {
             @Override
-            public void componentShown(java.awt.event.ComponentEvent e) {
+            public void componentShown(ComponentEvent e) { // make the componenet visible with auto refresh 
                 if (model != null) {
                     updateTable(productController.getAllProducts());
                     updateCards();
@@ -70,22 +97,7 @@ public class AdminProductPanel extends JPanel {
         // Top 3 Cards
         JPanel cardsRow = new JPanel(new GridLayout(1, 4, 20, 20));
         cardsRow.setBackground(new Color(217, 217, 217));
-        // cardsRow.add(createIconCard("Total Product",
-        // String.valueOf(productController.getTotalProducts()), "product-icon.png", new
-        // Color(142, 68, 173)));
-        // cardsRow.add(createIconCard("Low Stock Product",
-        // String.valueOf(productController.getLowStockProducts().size()),
-        // "lowstock-icon.png", new Color(230, 126, 34)));
-        // cardsRow.add(createIconCard("Out of Stock Product",
-        // String.valueOf(productController.getOutOfStockProducts().size()),
-        // "outofstock-icon.png", new Color(231, 76, 60)));
-        // cardsRow.add(createIconCard(
-        // "Expired Product",
-        // String.valueOf(productController.getExpiredProducts().size()),
-        // "expired-icon.png", // you can create a new icon image
-        // new Color(192, 57, 43),
-        // expiredLabel // pass the label reference
-        // ));
+
         // Existing cards
         totalProductLabel = new JLabel();
         lowStockLabel = new JLabel();
@@ -124,7 +136,7 @@ public class AdminProductPanel extends JPanel {
         leftFilters.add(searchField);
 
         // Sort Combo
-        String[] sortOptions = { "Sort By...", "Price", "Quantity", "Name" };
+        String[] sortOptions = {"Sort By...", "Price", "Quantity", "Name"};
         JComboBox<String> sortCombo = new JComboBox<>(sortOptions);
         sortCombo.setPreferredSize(new Dimension(120, 40));
         sortCombo.addActionListener(e -> {
@@ -169,7 +181,7 @@ public class AdminProductPanel extends JPanel {
         content.add(filterPanel);
         content.add(Box.createRigidArea(new Dimension(0, 30)));
         // Table
-        String[] columns = { "Product ID", "Product Name", "Items", "Price (Rs)", "Status", "Action" };
+        String[] columns = {"Product ID", "Product Name", "Items", "Price (Rs)", "Status", "Action"};
         model = new DefaultTableModel(columns, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
@@ -212,13 +224,13 @@ public class AdminProductPanel extends JPanel {
     private void updateTable(List<Product> productList) {
         model.setRowCount(0);
         for (Product p : productList) {
-            model.addRow(new Object[] {
-                    p.getProductId(),
-                    p.getName(),
-                    p.getQuantity(),
-                    p.getPrice(),
-                    p.getStatus(),
-                    ""
+            model.addRow(new Object[]{
+                p.getProductId(),
+                p.getName(),
+                p.getQuantity(),
+                p.getPrice(),
+                p.getStatus(),
+                ""
             });
         }
     }
@@ -243,11 +255,11 @@ public class AdminProductPanel extends JPanel {
         // Text info
         JTextArea info = new JTextArea(
                 "Product ID: " + p.getProductId() + "\n"
-                        + "Name: " + p.getName() + "\n"
-                        + "Quantity: " + p.getQuantity() + "\n"
-                        + "Price: Rs. " + p.getPrice() + "\n"
-                        + "Status: " + p.getStatus() + "\n"
-                        + "Expiry Date: " + p.getExpiryDate());
+                + "Name: " + p.getName() + "\n"
+                + "Quantity: " + p.getQuantity() + "\n"
+                + "Price: Rs. " + p.getPrice() + "\n"
+                + "Status: " + p.getStatus() + "\n"
+                + "Expiry Date: " + p.getExpiryDate());
         info.setEditable(false);
         info.setBackground(null);
 
@@ -289,7 +301,7 @@ public class AdminProductPanel extends JPanel {
 
         JLabel imageLabel = new JLabel(p.getImagePath() == null ? "No image selected" : p.getImagePath());
         JButton browseBtn = new JButton("Browse");
-        final String[] imagePath = { p.getImagePath() };
+        final String[] imagePath = {p.getImagePath()};
 
         browseBtn.addActionListener(e -> {
             JFileChooser fc = new JFileChooser();
@@ -421,7 +433,7 @@ public class AdminProductPanel extends JPanel {
         JButton browseBtn = new JButton("Browse");
         formPanel.add(browseBtn);
 
-        final String[] imagePath = { null };
+        final String[] imagePath = {null};
         browseBtn.addActionListener(e -> {
             JFileChooser fc = new JFileChooser();
             fc.setFileFilter(new FileNameExtensionFilter("Images", "jpg", "png", "jpeg"));
@@ -515,35 +527,6 @@ public class AdminProductPanel extends JPanel {
         expiredLabel.setText(String.valueOf(productController.getExpiredProducts().size()));
     }
 
-    // private JPanel createIconCard(String title, String value, String iconPath,
-    // Color color) {
-    // JPanel card = new JPanel(new BorderLayout());
-    // card.setBackground(Color.WHITE);
-    // card.setBorder(BorderFactory.createCompoundBorder(
-    // BorderFactory.createLineBorder(new Color(200, 200, 200)),
-    // BorderFactory.createEmptyBorder(20, 20, 20, 20)
-    // ));
-    // JLabel iconLabel = new JLabel();
-    // if (!java.beans.Beans.isDesignTime()) {
-    // java.net.URL url = getClass().getClassLoader().getResource("images/" +
-    // iconPath);
-    // if (url != null) {
-    // iconLabel.setIcon(new ImageIcon(url));
-    // }
-    // }
-    // card.add(iconLabel, BorderLayout.WEST);
-    // JPanel textPanel = new JPanel(new GridLayout(2, 1));
-    // textPanel.setBackground(Color.WHITE);
-    // JLabel titleLabel = new JLabel(title);
-    // titleLabel.setForeground(Color.GRAY);
-    // textPanel.add(titleLabel);
-    // JLabel valueLabel = new JLabel(value);
-    // valueLabel.setFont(new Font("InaiMathi", Font.BOLD, 32));
-    // valueLabel.setForeground(color);
-    // textPanel.add(valueLabel);
-    // card.add(textPanel, BorderLayout.CENTER);
-    // return card;
-    // }
     private JPanel createIconCard(String title, String value, String iconPath, Color color, JLabel valueLabelRef) {
         JPanel card = new JPanel(new BorderLayout());
         card.setBackground(Color.WHITE);

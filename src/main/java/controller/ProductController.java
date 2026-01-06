@@ -4,19 +4,23 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import model.Product;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Queue;
+import java.util.Stack;
 import java.util.stream.Collectors;
 
 public class ProductController {
 
     private static final ArrayList<Product> products = new ArrayList<>();
 
-    private static final java.util.Queue<String> recentActivities = new java.util.LinkedList<>();
+    private static final Queue<String> recentActivities = new LinkedList<>();
+
+    private final Stack<Product> deletedProducts = new Stack<>();
 
     // Load sample data only once
     public ProductController() {
         if (products.isEmpty()) {
-            // ... (keep existing sample data logic) ...
             logActivity("System Initialized with sample data");
             products.add(new Product(
                     "P0321",
@@ -95,8 +99,6 @@ public class ProductController {
         }
     }
 
-    private final java.util.Stack<Product> deletedProducts = new java.util.Stack<>();
-
     public void deleteProduct(String id) {
         // Find product to delete
         Product toDelete = products.stream()
@@ -105,7 +107,7 @@ public class ProductController {
                 .orElse(null);
 
         if (toDelete != null) {
-            deletedProducts.push(toDelete); // Push to stack
+            deletedProducts.push(toDelete); //Push to stack
             products.remove(toDelete);
             logActivity("Deleted product: " + toDelete.getName());
         }
@@ -113,7 +115,7 @@ public class ProductController {
 
     public boolean undoDelete() {
         if (!deletedProducts.isEmpty()) {
-            Product restored = deletedProducts.pop(); // Pop from stack
+            Product restored = deletedProducts.pop(); //pop from stack
             products.add(restored);
             logActivity("Undid deletion of: " + restored.getName());
             return true;
@@ -128,7 +130,7 @@ public class ProductController {
 
         return products.stream()
                 .filter(p -> p.getName().toLowerCase().contains(keyword.toLowerCase())
-                        || p.getProductId().toLowerCase().contains(keyword.toLowerCase()))
+                || p.getProductId().toLowerCase().contains(keyword.toLowerCase()))
                 .collect(Collectors.toList());
     }
 
@@ -196,7 +198,6 @@ public class ProductController {
     }
 
     // === Order Processing ===
-
     public Product getProduct(String id) {
         return products.stream()
                 .filter(p -> p.getProductId().equals(id))
