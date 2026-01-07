@@ -58,10 +58,19 @@ public class UserController {
         if (keyword == null || keyword.trim().isEmpty()) {
             return getAllUsers();
         }
-        List<User> result = users.stream()
-                .filter(u -> u.getName().toLowerCase().contains(keyword.toLowerCase())
-                        || u.getEmail().toLowerCase().contains(keyword.toLowerCase()))
-                .collect(Collectors.toList());
+
+        // Manual Linear Search O(N)
+        List<User> result = new ArrayList<>();
+        String lowerKeyword = keyword.toLowerCase();
+
+        for (int i = 0; i < users.size(); i++) {
+            User u = users.get(i);
+            if (u.getName().toLowerCase().contains(lowerKeyword)
+                    || u.getEmail().toLowerCase().contains(lowerKeyword)) {
+                result.add(u);
+            }
+        }
+
         sortUsersByName(result); // Sort search results too
         return result;
     }

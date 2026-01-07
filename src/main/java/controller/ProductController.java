@@ -150,15 +150,24 @@ public class ProductController {
         return false;
     }
 
+    // === Linear Search Implementation (Explicit Loop) ===
     public List<Product> searchProducts(String keyword) {
         if (keyword == null || keyword.trim().isEmpty()) {
             return getAllProducts();
         }
 
-        return products.stream()
-                .filter(p -> p.getName().toLowerCase().contains(keyword.toLowerCase())
-                        || p.getProductId().toLowerCase().contains(keyword.toLowerCase()))
-                .collect(Collectors.toList());
+        List<Product> results = new ArrayList<>();
+        String lowerKeyword = keyword.toLowerCase();
+
+        //Linear Search O(N)
+        for (int i = 0; i < products.size(); i++) {
+            Product p = products.get(i);
+            if (p.getName().toLowerCase().contains(lowerKeyword)
+                    || p.getProductId().toLowerCase().contains(lowerKeyword)) {
+                results.add(p);
+            }
+        }
+        return results;
     }
 
     public List<Product> getLowStockProducts() {
@@ -185,8 +194,8 @@ public class ProductController {
         LocalDate thresholdDate = today.plusDays(days);
         return products.stream()
                 .filter(p -> p.getExpiryDate() != null
-                        && !p.getExpiryDate().isBefore(today)
-                        && p.getExpiryDate().isBefore(thresholdDate))
+                && !p.getExpiryDate().isBefore(today)
+                && p.getExpiryDate().isBefore(thresholdDate))
                 .collect(Collectors.toList());
     }
 
@@ -306,16 +315,18 @@ public class ProductController {
         List<Product> L = new ArrayList<>();
         List<Product> R = new ArrayList<>();
 
-        for (int i = 0; i < n1; ++i)
+        for (int i = 0; i < n1; ++i) {
             L.add(list.get(left + i));
-        for (int j = 0; j < n2; ++j)
+        }
+        for (int j = 0; j < n2; ++j) {
             R.add(list.get(mid + 1 + j));
+        }
 
         int i = 0, j = 0;
         int k = left;
         while (i < n1 && j < n2) {
             if (!shouldSwap(L.get(i), R.get(j), criteria)) { // If L <= R (depends on criteria logic "shouldSwap" is
-                                                             // effectively "isGreater")
+                // effectively "isGreater")
                 // Wait, shouldSwap logic: returns true if (left > key).
                 // Merge sort needs (L <= R). So if !shouldSwap, then L <= R.
                 list.set(k, L.get(i));
@@ -350,6 +361,8 @@ public class ProductController {
                 return p1.getQuantity() > p2.getQuantity();
             case "Name":
                 return p1.getName().compareToIgnoreCase(p2.getName()) > 0;
+            case "Product ID":
+                return p1.getProductId().compareToIgnoreCase(p2.getProductId()) > 0;
             default:
                 return false;
         }
@@ -363,8 +376,8 @@ public class ProductController {
                 .orElse(null);
     }
 
-    public synchronized void sellProduct(String id, int quantityToSell) {
-        Product p = getProduct(id);
+    public void sellProduct(String id, int quantityToSell) {
+        Product p = binarySearchProduct(id); // Use Binary Search for lookup
         if (p == null) {
             throw new IllegalArgumentException("Product not found: " + id);
         }
@@ -374,5 +387,36 @@ public class ProductController {
 
         p.setQuantity(p.getQuantity() - quantityToSell);
         logActivity("Sold " + quantityToSell + " of " + p.getName());
+    }
+
+    //Binary Search Algorithms O(n) time complexity 
+    // Used for finding a product by explicit ID (requires sorting first)
+    public Product binarySearchProduct(String productId) {
+        // Ensure the list is sorted by Product ID before searching
+        // We use our existing QuickSort for efficiency O(N log N)
+        sortProducts("Product ID", "Quick Sort");
+
+        int low = 0;
+        int high = products.size() - 1;
+
+        while (low <= high) {
+            int mid = low + (high - low) / 2;
+            Product midProduct = products.get(mid);
+            int res = midProduct.getProductId().compareToIgnoreCase(productId);
+
+            // Check if productId is present at mid
+            if (res == 0) {
+                return midProduct;
+            }
+
+            // If productId is greater, ignore left half
+            if (res < 0) {
+                low = mid + 1;
+            } // If productId is smaller, ignore right half
+            else {
+                high = mid - 1;
+            }
+        }
+        return null; // Not found
     }
 }
