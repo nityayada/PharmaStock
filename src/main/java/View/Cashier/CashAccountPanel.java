@@ -13,17 +13,20 @@ import java.awt.Font;
 import java.awt.Frame;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-import java.awt.GridLayout;
+import java.awt.Image;
 import java.awt.Insets;
+import java.awt.FlowLayout;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
+import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
+import javax.swing.ImageIcon;
 
 /**
  *
@@ -34,14 +37,15 @@ public class CashAccountPanel extends JPanel {
     private User currentUser;
     private UserController userController;
 
-    // UI Components to need dynamic updates
+    //ui Components to need dynamic updates
     private JLabel welcomeLabel;
     private JLabel profilePic;
     private JLabel nameLabel;
+    private JLabel userIdLabel;
     private JLabel roleLabel;
     private JLabel emailLabel;
     private JLabel phoneLabel;
-    private JLabel joinLabel; // If we add join date to User model later
+    private JLabel joinLabel;
 
     public CashAccountPanel(User user) {
         this.currentUser = user;
@@ -130,9 +134,9 @@ public class CashAccountPanel extends JPanel {
         avatarPanel.setBorder(BorderFactory.createLineBorder(new Color(167, 243, 208), 3));
         avatarPanel.setLayout(new GridBagLayout());
 
-        profilePic = new JLabel("👤");
-        profilePic.setFont(new Font("InaiMathi", Font.PLAIN, 70));
-        profilePic.setForeground(new Color(16, 185, 129));
+        profilePic = new JLabel();
+        profilePic.setHorizontalAlignment(SwingConstants.CENTER);
+        updateProfileImage(); // Load image logic
         avatarPanel.add(profilePic);
 
         // Profile info
@@ -148,10 +152,16 @@ public class CashAccountPanel extends JPanel {
         gbc.gridy = 0;
         infoPanel.add(nameLabel, gbc);
 
+        userIdLabel = new JLabel("ID: " + currentUser.getUserId());
+        userIdLabel.setFont(new Font("InaiMathi", Font.PLAIN, 16));
+        userIdLabel.setForeground(Color.GRAY);
+        gbc.gridy++;
+        infoPanel.add(userIdLabel, gbc);
+
         roleLabel = new JLabel(currentUser.getRole());
         roleLabel.setFont(new Font("InaiMathi", Font.PLAIN, 20));
         roleLabel.setForeground(new Color(16, 185, 129));
-        roleLabel.setBorder(BorderFactory.createEmptyBorder(15, 0, 0, 0));
+        roleLabel.setBorder(BorderFactory.createEmptyBorder(10, 0, 0, 0));
         gbc.gridy++;
         infoPanel.add(roleLabel, gbc);
 
@@ -184,21 +194,25 @@ public class CashAccountPanel extends JPanel {
         gbc.gridy = 0;
         contactPanel.add(emailPanel, gbc);
 
-        // Phone
+        // Phone - NO ICON, just Text
         JPanel phonePanel = new JPanel(new BorderLayout(15, 0));
         phonePanel.setBackground(Color.WHITE);
         phonePanel.setBorder(BorderFactory.createEmptyBorder(0, 10, 0, 10));
-        JLabel phoneIcon = new JLabel("📱"); // Changed to mobile icon
-        phoneIcon.setFont(new Font("InaiMathi", Font.PLAIN, 22));
+
+        JLabel phoneTextLabel = new JLabel("Phone: ");
+        phoneTextLabel.setFont(new Font("InaiMathi", Font.PLAIN, 17));
+        phoneTextLabel.setForeground(new Color(100, 116, 139));
+
         phoneLabel = new JLabel(currentUser.getPhoneNumber());
         phoneLabel.setFont(new Font("InaiMathi", Font.PLAIN, 17));
         phoneLabel.setForeground(new Color(100, 116, 139));
-        phonePanel.add(phoneIcon, BorderLayout.WEST);
+
+        phonePanel.add(phoneTextLabel, BorderLayout.WEST);
         phonePanel.add(phoneLabel, BorderLayout.CENTER);
         gbc.gridy++;
         contactPanel.add(phonePanel, gbc);
 
-        // Join Date (Static for now as User model doesn't have it)
+        // Join Date
         JPanel joinPanel = new JPanel(new BorderLayout(15, 0));
         joinPanel.setBackground(Color.WHITE);
         joinPanel.setBorder(BorderFactory.createEmptyBorder(0, 10, 0, 10));
@@ -242,11 +256,47 @@ public class CashAccountPanel extends JPanel {
         return card;
     }
 
+    private void updateProfileImage() {
+        if (currentUser.getImagePath() != null && !currentUser.getImagePath().isEmpty()) {
+            ImageIcon icon = loadImage(currentUser.getImagePath());
+            if (icon != null) {
+                Image img = icon.getImage().getScaledInstance(120, 120, Image.SCALE_SMOOTH);
+                profilePic.setIcon(new ImageIcon(img));
+                profilePic.setText("");
+            } else {
+                profilePic.setIcon(null);
+                profilePic.setText("👤");
+                profilePic.setFont(new Font("InaiMathi", Font.PLAIN, 70));
+                profilePic.setForeground(new Color(16, 185, 129));
+            }
+        } else {
+            profilePic.setIcon(null);
+            profilePic.setText("👤");
+            profilePic.setFont(new Font("InaiMathi", Font.PLAIN, 70));
+            profilePic.setForeground(new Color(16, 185, 129));
+        }
+    }
+
+    private ImageIcon loadImage(String path) {
+        if (path == null || path.trim().isEmpty()) {
+            return null;
+        }
+        java.io.File f = new java.io.File(path);
+        if (f.exists()) {
+            return new ImageIcon(path);
+        }
+        java.net.URL imgUrl = getClass().getResource(path);
+        if (imgUrl != null) {
+            return new ImageIcon(imgUrl);
+        }
+        return null;
+    }
+
     private void showEditProfileDialog() {
         JDialog dialog = new JDialog((Frame) SwingUtilities.getWindowAncestor(this), "Edit Profile", true);
         dialog.setLayout(new GridBagLayout());
         dialog.getContentPane().setBackground(Color.WHITE);
-        dialog.setSize(400, 400);
+        dialog.setSize(460, 450); // Increased size slightly
         dialog.setLocationRelativeTo(this);
 
         GridBagConstraints gbc = new GridBagConstraints();
@@ -257,9 +307,33 @@ public class CashAccountPanel extends JPanel {
 
         JTextField txtName = new JTextField(currentUser.getName(), 20);
         JTextField txtPhone = new JTextField(currentUser.getPhoneNumber(), 20);
-        JTextField txtEmail = new JTextField(currentUser.getEmail(), 20); // Generally email shouldn't be editable if
-                                                                          // ID, but user asks for details
+        JTextField txtEmail = new JTextField(currentUser.getEmail(), 20);
 
+        // Image Selection Logic
+        JLabel imagePathLabel = new JLabel("No file selected");
+        imagePathLabel.setPreferredSize(new Dimension(200, 20));
+        String initialPath = currentUser.getImagePath();
+        if (initialPath != null) {
+            imagePathLabel.setText(new java.io.File(initialPath).getName());
+            imagePathLabel.setToolTipText(initialPath);
+        }
+
+        JButton browseBtn = new JButton("Browse");
+        final String[] selectedImagePath = {currentUser.getImagePath()};
+
+        browseBtn.addActionListener(e -> {
+            JFileChooser fc = new JFileChooser();
+            javax.swing.filechooser.FileNameExtensionFilter filter = new javax.swing.filechooser.FileNameExtensionFilter(
+                    "Images", "jpg", "png", "jpeg");
+            fc.setFileFilter(filter);
+            if (fc.showOpenDialog(dialog) == JFileChooser.APPROVE_OPTION) {
+                selectedImagePath[0] = fc.getSelectedFile().getAbsolutePath();
+                imagePathLabel.setText(fc.getSelectedFile().getName());
+                imagePathLabel.setToolTipText(selectedImagePath[0]);
+            }
+        });
+
+        // Add components to dialog
         dialog.add(new JLabel("Full Name:"), gbc);
         gbc.gridy++;
         dialog.add(txtName, gbc);
@@ -274,11 +348,23 @@ public class CashAccountPanel extends JPanel {
         gbc.gridy++;
         dialog.add(txtEmail, gbc);
 
+        gbc.gridy++;
+        dialog.add(new JLabel("Profile Image:"), gbc);
+        gbc.gridy++;
+        JPanel imgPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
+        imgPanel.setBackground(Color.WHITE);
+        imgPanel.add(browseBtn);
+        dialog.add(imgPanel, gbc);
+
+        gbc.gridy++;
+        dialog.add(imagePathLabel, gbc);
+
+        // Save Button
         JPanel btnPanel = new JPanel();
         btnPanel.setBackground(Color.WHITE);
         JButton saveBtn = new JButton("Save Changes");
         stylePrimaryButton(saveBtn);
-        saveBtn.setPreferredSize(new Dimension(150, 40));
+        saveBtn.setPreferredSize(new Dimension(195, 40));
 
         saveBtn.addActionListener(e -> {
             String newName = txtName.getText().trim();
@@ -290,10 +376,22 @@ public class CashAccountPanel extends JPanel {
                 return;
             }
 
+            if (!newPhone.matches("\\d{10}")) {
+                JOptionPane.showMessageDialog(dialog, "Phone number must be exactly 10 digits!", "Validation Error",
+                        JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            if (!newEmail.toLowerCase().endsWith("@gmail.com")) {
+                JOptionPane.showMessageDialog(dialog, "Email must be a valid @gmail.com address!", "Validation Error",
+                        JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
             // Update User Object
             currentUser.setName(newName);
             currentUser.setPhoneNumber(newPhone);
             currentUser.setEmail(newEmail);
+            currentUser.setImagePath(selectedImagePath[0]);
 
             // Persist Update
             userController.updateUser(currentUser);
@@ -306,9 +404,10 @@ public class CashAccountPanel extends JPanel {
             dialog.dispose();
         });
 
-        btnPanel.add(saveBtn);
         gbc.gridy++;
+        gbc.insets = new Insets(20, 10, 10, 10);
         dialog.add(btnPanel, gbc);
+        btnPanel.add(saveBtn);
 
         dialog.setVisible(true);
     }
@@ -319,6 +418,7 @@ public class CashAccountPanel extends JPanel {
         emailLabel.setText(currentUser.getEmail());
         phoneLabel.setText(currentUser.getPhoneNumber());
         roleLabel.setText(currentUser.getRole());
+        updateProfileImage(); // Refresh image
         revalidate();
         repaint();
     }
