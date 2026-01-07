@@ -51,7 +51,7 @@ public class AdminProductPanel extends JPanel {
 
     private JTable table;
     private ProductController productController;
-    private DefaultTableModel model; //acts as the data source for the JTable 
+    private DefaultTableModel model; // acts as the data source for the JTable
     private JLabel expiredLabel;
     private JLabel totalProductLabel;
     private JLabel lowStockLabel;
@@ -61,11 +61,11 @@ public class AdminProductPanel extends JPanel {
         setLayout(new BorderLayout());
         productController = new ProductController();
 
-        //auto-refresh when tab is shown
+        // auto-refresh when tab is shown
         // ComponentListener
         this.addComponentListener(new ComponentAdapter() {
             @Override
-            public void componentShown(ComponentEvent e) { // make the componenet visible with auto refresh 
+            public void componentShown(ComponentEvent e) { // make the componenet visible with auto refresh
                 if (model != null) {
                     updateTable(productController.getAllProducts());
                     updateCards();
@@ -121,7 +121,7 @@ public class AdminProductPanel extends JPanel {
                 new Color(192, 57, 43), expiredLabel));
 
         content.add(cardsRow);
-        content.add(Box.createRigidArea(new Dimension(0, 40))); //add 40 px vertical space
+        content.add(Box.createRigidArea(new Dimension(0, 40))); // add 40 px vertical space
         // content.add(cardsRow);
         content.add(Box.createRigidArea(new Dimension(0, 40)));
 
@@ -136,17 +136,26 @@ public class AdminProductPanel extends JPanel {
         leftFilters.add(searchField);
 
         // Sort Combo
-        String[] sortOptions = {"Sort By...", "Price", "Quantity", "Name"};
+        String[] sortOptions = { "Sort By...", "Price", "Quantity", "Name" };
         JComboBox<String> sortCombo = new JComboBox<>(sortOptions);
         sortCombo.setPreferredSize(new Dimension(120, 40));
+
+        // Algorithm Combo
+        String[] algoOptions = { "Quick Sort", "Merge Sort", "Insertion Sort", "Selection Sort" };
+        JComboBox<String> algoCombo = new JComboBox<>(algoOptions);
+        algoCombo.setPreferredSize(new Dimension(120, 40));
+
         sortCombo.addActionListener(e -> {
             String selected = (String) sortCombo.getSelectedItem();
+            String algo = (String) algoCombo.getSelectedItem();
             if (!"Sort By...".equals(selected)) {
-                productController.sortProducts(selected);
+                productController.sortProducts(selected, algo);
                 updateTable(productController.getAllProducts());
             }
         });
+
         leftFilters.add(sortCombo);
+        leftFilters.add(algoCombo); // Add algo dropdown
 
         filterPanel.add(leftFilters, BorderLayout.WEST);
         JButton addNewBtn = new JButton("+ Add New");
@@ -181,17 +190,17 @@ public class AdminProductPanel extends JPanel {
         content.add(filterPanel);
         content.add(Box.createRigidArea(new Dimension(0, 30)));
         // Table
-        String[] columns = {"Product ID", "Product Name", "Items", "Price (Rs)", "Status", "Action"};
+        String[] columns = { "Product ID", "Product Name", "Items", "Price (Rs)", "Status", "Action" };
         model = new DefaultTableModel(columns, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
-                return column == 5; //only Action will be editable 
+                return column == 5; // only Action will be editable
             }
         };
         table = new JTable(model);
         // cellRenderer determines how the each cell in JTable looks like
-        table.getColumn("Action").setCellRenderer(new ActionRenderer()); //how button looks 
-        table.getColumn("Action").setCellEditor(new ActionEditor());//how the button behaves which clicked 
+        table.getColumn("Action").setCellRenderer(new ActionRenderer()); // how button looks
+        table.getColumn("Action").setCellEditor(new ActionEditor());// how the button behaves which clicked
 
         table.setRowHeight(50);
         table.getTableHeader().setBackground(new Color(220, 220, 220));
@@ -225,13 +234,13 @@ public class AdminProductPanel extends JPanel {
     private void updateTable(List<Product> productList) {
         model.setRowCount(0);
         for (Product p : productList) {
-            model.addRow(new Object[]{
-                p.getProductId(),
-                p.getName(),
-                p.getQuantity(),
-                p.getPrice(),
-                p.getStatus(),
-                ""
+            model.addRow(new Object[] {
+                    p.getProductId(),
+                    p.getName(),
+                    p.getQuantity(),
+                    p.getPrice(),
+                    p.getStatus(),
+                    ""
             });
         }
     }
@@ -257,11 +266,11 @@ public class AdminProductPanel extends JPanel {
         // Text info
         JTextArea info = new JTextArea(
                 "Product ID: " + p.getProductId() + "\n"
-                + "Name: " + p.getName() + "\n"
-                + "Quantity: " + p.getQuantity() + "\n"
-                + "Price: Rs. " + p.getPrice() + "\n"
-                + "Status: " + p.getStatus() + "\n"
-                + "Expiry Date: " + p.getExpiryDate());
+                        + "Name: " + p.getName() + "\n"
+                        + "Quantity: " + p.getQuantity() + "\n"
+                        + "Price: Rs. " + p.getPrice() + "\n"
+                        + "Status: " + p.getStatus() + "\n"
+                        + "Expiry Date: " + p.getExpiryDate());
         info.setEditable(false);
         info.setBackground(null);
 
@@ -303,7 +312,7 @@ public class AdminProductPanel extends JPanel {
 
         JLabel imageLabel = new JLabel(p.getImagePath() == null ? "No image selected" : p.getImagePath());
         JButton browseBtn = new JButton("Browse");
-        final String[] imagePath = {p.getImagePath()};
+        final String[] imagePath = { p.getImagePath() };
 
         browseBtn.addActionListener(e -> {
             JFileChooser fc = new JFileChooser();
@@ -435,7 +444,7 @@ public class AdminProductPanel extends JPanel {
         JButton browseBtn = new JButton("Browse");
         formPanel.add(browseBtn);
 
-        final String[] imagePath = {null};
+        final String[] imagePath = { null };
         browseBtn.addActionListener(e -> {
             JFileChooser fc = new JFileChooser();
             fc.setFileFilter(new FileNameExtensionFilter("Images", "jpg", "png", "jpeg"));
@@ -572,13 +581,13 @@ public class AdminProductPanel extends JPanel {
 
         private JButton createButton(String text) {
             JButton btn = new JButton(text);
-            btn.setBorderPainted(false); // no border 
-            btn.setContentAreaFilled(false);// no background 
+            btn.setBorderPainted(false); // no border
+            btn.setContentAreaFilled(false);// no background
             return btn; // Returns UNCLICKABLE button (no listeners)
         }
 
         @Override
-        // when action button is clicked which product to act 
+        // when action button is clicked which product to act
         public Component getTableCellRendererComponent(
                 JTable table, Object value, boolean isSelected,
                 boolean hasFocus, int row, int column) {
@@ -646,7 +655,7 @@ public class AdminProductPanel extends JPanel {
             return null;
         }
 
-        //Try absolute/local file system path first (for user-added images)
+        // Try absolute/local file system path first (for user-added images)
         File f = new File(path);
         if (f.exists()) {
             return new ImageIcon(path);
@@ -658,7 +667,7 @@ public class AdminProductPanel extends JPanel {
             return new ImageIcon(imgUrl);
         }
 
-        //Try with added / if missing
+        // Try with added / if missing
         if (!path.startsWith("/")) {
             imgUrl = getClass().getResource("/" + path);
         }

@@ -20,7 +20,8 @@ public class UserController {
 
     public UserController() {
         if (users.isEmpty()) {
-            users.add(new User("U001", "Silvia Sharma", "silvia@gmail.com", "9864892021", "cashier123", "Cashier", null));
+            users.add(
+                    new User("U001", "Silvia Sharma", "silvia@gmail.com", "9864892021", "cashier123", "Cashier", null));
             users.add(new User("U002", "Admin User", "admin@gmail.com", "9801234567", "admin123", "Admin", null));
         }
     }
@@ -57,18 +58,82 @@ public class UserController {
         if (keyword == null || keyword.trim().isEmpty()) {
             return getAllUsers();
         }
-        return users.stream()
+        List<User> result = users.stream()
                 .filter(u -> u.getName().toLowerCase().contains(keyword.toLowerCase())
-                || u.getEmail().toLowerCase().contains(keyword.toLowerCase()))
+                        || u.getEmail().toLowerCase().contains(keyword.toLowerCase()))
                 .collect(Collectors.toList());
+        sortUsersByName(result); // Sort search results too
+        return result;
     }
 
     public List<User> getUsersByRole(String role) {
+        List<User> result;
         if (role.equals("All")) {
-            return getAllUsers();
+            result = getAllUsers();
+        } else {
+            result = users.stream()
+                    .filter(u -> u.getRole().equals(role))
+                    .collect(Collectors.toList());
         }
-        return users.stream()
-                .filter(u -> u.getRole().equals(role))
-                .collect(Collectors.toList());
+        sortUsersByName(result); // Sort filtered results
+        return result;
+    }
+
+    // === Merge Sort Implementation for Users (Sort by Name) ===
+    public void sortUsersByName(List<User> userList) {
+        if (userList.size() <= 1) {
+            return;
+        }
+        mergeSort(userList, 0, userList.size() - 1);
+    }
+
+    private void mergeSort(List<User> list, int left, int right) {
+        if (left < right) {
+            int mid = left + (right - left) / 2;
+
+            mergeSort(list, left, mid);
+            mergeSort(list, mid + 1, right);
+
+            merge(list, left, mid, right);
+        }
+    }
+
+    private void merge(List<User> list, int left, int mid, int right) {
+        int n1 = mid - left + 1;
+        int n2 = right - mid;
+
+        List<User> L = new ArrayList<>();
+        List<User> R = new ArrayList<>();
+
+        for (int i = 0; i < n1; ++i)
+            L.add(list.get(left + i));
+        for (int j = 0; j < n2; ++j)
+            R.add(list.get(mid + 1 + j));
+
+        int i = 0, j = 0;
+        int k = left;
+        while (i < n1 && j < n2) {
+            // Compare Names (Case Insensitive)
+            if (L.get(i).getName().compareToIgnoreCase(R.get(j).getName()) <= 0) {
+                list.set(k, L.get(i));
+                i++;
+            } else {
+                list.set(k, R.get(j));
+                j++;
+            }
+            k++;
+        }
+
+        while (i < n1) {
+            list.set(k, L.get(i));
+            i++;
+            k++;
+        }
+
+        while (j < n2) {
+            list.set(k, R.get(j));
+            j++;
+            k++;
+        }
     }
 }

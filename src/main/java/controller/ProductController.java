@@ -46,16 +46,22 @@ public class ProductController {
                     LocalDate.of(2025, 12, 30),
                     "/images/aloe.png"));
 
-            //Additional Sample Data
-            products.add(new Product("P1001", "Amoxicillin 500mg", 100, 35.0, LocalDate.of(2025, 8, 10), "/images/amoxicillin.png"));
-            products.add(new Product("P1002", "Ibuprofen 400mg", 25, 20.0, LocalDate.of(2024, 5, 15), "/images/ibuprofen.png")); // Low
+            // Additional Sample Data
+            products.add(new Product("P1001", "Amoxicillin 500mg", 100, 35.0, LocalDate.of(2025, 8, 10),
+                    "/images/amoxicillin.png"));
+            products.add(new Product("P1002", "Ibuprofen 400mg", 25, 20.0, LocalDate.of(2024, 5, 15),
+                    "/images/ibuprofen.png")); // Low
             // Stock
-            products.add(new Product("P1003", "Cetirizine 10mg", 200, 15.0, LocalDate.of(2026, 11, 20), "/images/cetirizine.png"));
-            products.add(new Product("P1004", "Metformin 500mg", 80, 40.0, LocalDate.of(2025, 2, 28), "/images/metformin.png")); // Near
+            products.add(new Product("P1003", "Cetirizine 10mg", 200, 15.0, LocalDate.of(2026, 11, 20),
+                    "/images/cetirizine.png"));
+            products.add(new Product("P1004", "Metformin 500mg", 80, 40.0, LocalDate.of(2025, 2, 28),
+                    "/images/metformin.png")); // Near
             // Expiry
             // potentially
-            products.add(new Product("P1005", "Amlodipine 5mg", 150, 30.0, LocalDate.of(2027, 3, 10), "/images/amlodipine.png"));
-            products.add(new Product("P1006", "Omeprazole 20mg", 40, 50.0, LocalDate.of(2025, 12, 5), "/images/omeprazole.png")); // Low
+            products.add(new Product("P1005", "Amlodipine 5mg", 150, 30.0, LocalDate.of(2027, 3, 10),
+                    "/images/amlodipine.png"));
+            products.add(new Product("P1006", "Omeprazole 20mg", 40, 50.0, LocalDate.of(2025, 12, 5),
+                    "/images/omeprazole.png")); // Low
             // Stock
             products.add(new Product("P1007", "Simvastatin 20mg", 90, 60.0, LocalDate.of(2026, 1, 30), null));
             products.add(new Product("P1008", "Losartan 50mg", 120, 45.0, LocalDate.of(2025, 9, 30), null));
@@ -151,7 +157,7 @@ public class ProductController {
 
         return products.stream()
                 .filter(p -> p.getName().toLowerCase().contains(keyword.toLowerCase())
-                || p.getProductId().toLowerCase().contains(keyword.toLowerCase()))
+                        || p.getProductId().toLowerCase().contains(keyword.toLowerCase()))
                 .collect(Collectors.toList());
     }
 
@@ -179,16 +185,37 @@ public class ProductController {
         LocalDate thresholdDate = today.plusDays(days);
         return products.stream()
                 .filter(p -> p.getExpiryDate() != null
-                && !p.getExpiryDate().isBefore(today)
-                && p.getExpiryDate().isBefore(thresholdDate))
+                        && !p.getExpiryDate().isBefore(today)
+                        && p.getExpiryDate().isBefore(thresholdDate))
                 .collect(Collectors.toList());
     }
 
-    // === Sorting (Quick Sort Implementation) ===
-    public void sortProducts(String criteria) {
-        quickSort(products, 0, products.size() - 1, criteria);
+    // === Sorting (Multiple Algorithms) ===
+    public void sortProducts(String criteria, String algorithm) {
+        switch (algorithm) {
+            case "Quick Sort":
+                quickSort(products, 0, products.size() - 1, criteria);
+                break;
+            case "Insertion Sort":
+                insertionSort(products, criteria);
+                break;
+            case "Selection Sort":
+                selectionSort(products, criteria);
+                break;
+            case "Merge Sort":
+                mergeSort(products, 0, products.size() - 1, criteria);
+                break;
+            default:
+                quickSort(products, 0, products.size() - 1, criteria);
+        }
     }
 
+    public void sortProducts(String criteria) {
+        // Default to Quick Sort for backward compatibility
+        sortProducts(criteria, "Quick Sort");
+    }
+
+    // --- Quick Sort ---
     private void quickSort(List<Product> list, int low, int high, String criteria) {
         if (low < high) {
             int pi = partition(list, low, high, criteria);
@@ -226,6 +253,106 @@ public class ProductController {
         list.set(i + 1, list.get(high));
         list.set(high, temp);
         return i + 1;
+    }
+
+    // --- Insertion Sort ---
+    private void insertionSort(List<Product> list, String criteria) {
+        int n = list.size();
+        for (int i = 1; i < n; ++i) {
+            Product key = list.get(i);
+            int j = i - 1;
+
+            while (j >= 0 && shouldSwap(list.get(j), key, criteria)) {
+                list.set(j + 1, list.get(j));
+                j = j - 1;
+            }
+            list.set(j + 1, key);
+        }
+    }
+
+    // --- Selection Sort ---
+    private void selectionSort(List<Product> list, String criteria) {
+        int n = list.size();
+        for (int i = 0; i < n - 1; i++) {
+            int min_idx = i;
+            for (int j = i + 1; j < n; j++) {
+                if (shouldSwap(list.get(min_idx), list.get(j), criteria)) {
+                    min_idx = j;
+                }
+            }
+            // Swap
+            Product temp = list.get(min_idx);
+            list.set(min_idx, list.get(i));
+            list.set(i, temp);
+        }
+    }
+
+    // --- Merge Sort ---
+    private void mergeSort(List<Product> list, int left, int right, String criteria) {
+        if (left < right) {
+            int mid = left + (right - left) / 2;
+
+            mergeSort(list, left, mid, criteria);
+            mergeSort(list, mid + 1, right, criteria);
+
+            merge(list, left, mid, right, criteria);
+        }
+    }
+
+    private void merge(List<Product> list, int left, int mid, int right, String criteria) {
+        int n1 = mid - left + 1;
+        int n2 = right - mid;
+
+        List<Product> L = new ArrayList<>();
+        List<Product> R = new ArrayList<>();
+
+        for (int i = 0; i < n1; ++i)
+            L.add(list.get(left + i));
+        for (int j = 0; j < n2; ++j)
+            R.add(list.get(mid + 1 + j));
+
+        int i = 0, j = 0;
+        int k = left;
+        while (i < n1 && j < n2) {
+            if (!shouldSwap(L.get(i), R.get(j), criteria)) { // If L <= R (depends on criteria logic "shouldSwap" is
+                                                             // effectively "isGreater")
+                // Wait, shouldSwap logic: returns true if (left > key).
+                // Merge sort needs (L <= R). So if !shouldSwap, then L <= R.
+                list.set(k, L.get(i));
+                i++;
+            } else {
+                list.set(k, R.get(j));
+                j++;
+            }
+            k++;
+        }
+
+        while (i < n1) {
+            list.set(k, L.get(i));
+            i++;
+            k++;
+        }
+
+        while (j < n2) {
+            list.set(k, R.get(j));
+            j++;
+            k++;
+        }
+    }
+
+    // Helper to compare two products based on criteria
+    // Returns true if p1 > p2 (for ascending order logic this means we swap/move)
+    private boolean shouldSwap(Product p1, Product p2, String criteria) {
+        switch (criteria) {
+            case "Price":
+                return p1.getPrice() > p2.getPrice();
+            case "Quantity":
+                return p1.getQuantity() > p2.getQuantity();
+            case "Name":
+                return p1.getName().compareToIgnoreCase(p2.getName()) > 0;
+            default:
+                return false;
+        }
     }
 
     // === Order Processing ===
