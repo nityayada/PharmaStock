@@ -4,6 +4,9 @@
  */
 package View.Cashier;
 
+import controller.CustomerController;
+import controller.ProductController;
+import controller.TransactionController;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -16,6 +19,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
+import javax.swing.Timer;
 
 /**
  *
@@ -23,9 +27,41 @@ import javax.swing.SwingConstants;
  */
 public class CashDashboardPanel extends JPanel {
 
+    // Controllers
+    private ProductController productController;
+    private TransactionController transactionController;
+    private CustomerController customerController;
+
+    // Dynamic Labels
+    private JLabel lblTotalProducts;
+    private JLabel lblTotalCustomers;
+    private JLabel lblTotalTransactions;
+    private JLabel lblTotalSales;
+
+    // Dynamic Panels
+    private JPanel productsGrid;
+
+    // Summary Labels
+    private JLabel lblPendingOrders;
+    private JLabel lblTodaySales;
+    private JLabel lblCashInDrawer;
+    private JLabel lblLowStockAlerts;
+
     public CashDashboardPanel() {
+        // Initialize Controllers
+        productController = new ProductController();
+        transactionController = new TransactionController();
+        customerController = new CustomerController();
+
         setLayout(new BorderLayout());
         add(createCashDashboardContent(), BorderLayout.CENTER);
+
+        // Timer to refresh data every 5 seconds
+        Timer timer = new Timer(5000, e -> refreshData());
+        timer.start();
+
+        // Initial Refresh
+        refreshData();
     }
 
     public JPanel getContentPanel() {
@@ -36,13 +72,7 @@ public class CashDashboardPanel extends JPanel {
         JPanel panel = new JPanel(new BorderLayout());
         panel.setBackground(new Color(217, 217, 217));
 
-//        // Your original dashboard content here (cards, header, etc.)
-//        JLabel header = new JLabel("Cashier Dashboard", SwingConstants.CENTER);
-//        header.setFont(new Font("Segoe UI", Font.BOLD, 32));
-//        panel.add(header, BorderLayout.NORTH);
-//
-//        // Add your cards, charts, etc.
-//      Header
+        // Header
         JLabel headerLabel = new JLabel("Cashier Dashboard", SwingConstants.CENTER);
         headerLabel.setFont(new Font("InaiMathi", Font.BOLD, 32));
         headerLabel.setForeground(new Color(44, 62, 80));
@@ -55,14 +85,20 @@ public class CashDashboardPanel extends JPanel {
         content.setBackground(new Color(217, 217, 217));
         content.setBorder(BorderFactory.createEmptyBorder(20, 60, 60, 60));
 
-        // === Top 4 Cards (keep as is) ===
+        // === Top 4 Cards ===
         JPanel cardsRow = new JPanel(new GridLayout(1, 4, 25, 25));
         cardsRow.setBackground(new Color(217, 217, 217));
 
-        cardsRow.add(createSimpleCard("Total Products", "6,553", new Color(52, 152, 219)));
-        cardsRow.add(createSimpleCard("Total Customers", "7,986", new Color(46, 204, 113)));
-        cardsRow.add(createSimpleCard("Total Transactions", "5,120", new Color(155, 89, 182)));
-        cardsRow.add(createSimpleCard("Total Sales", "28,786", new Color(230, 126, 34)));
+        // Initialize Top Labels
+        lblTotalProducts = new JLabel("0");
+        lblTotalCustomers = new JLabel("0");
+        lblTotalTransactions = new JLabel("0");
+        lblTotalSales = new JLabel("Rs. 0");
+
+        cardsRow.add(createSimpleCard("Total Products", lblTotalProducts, new Color(52, 152, 219)));
+        cardsRow.add(createSimpleCard("Total Customers", lblTotalCustomers, new Color(46, 204, 113)));
+        cardsRow.add(createSimpleCard("Total Transactions", lblTotalTransactions, new Color(155, 89, 182)));
+        cardsRow.add(createSimpleCard("Total Sales", lblTotalSales, new Color(230, 126, 34)));
 
         content.add(cardsRow);
         content.add(Box.createRigidArea(new Dimension(0, 40)));
@@ -76,35 +112,25 @@ public class CashDashboardPanel extends JPanel {
         productsSection.setBackground(Color.WHITE);
         productsSection.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createLineBorder(new Color(220, 220, 220)),
-                BorderFactory.createEmptyBorder(20, 20, 20, 20)
-        ));
+                BorderFactory.createEmptyBorder(20, 20, 20, 20)));
 
         JLabel productsTitle = new JLabel("Popular Products Today");
         productsTitle.setFont(new Font("InaiMathi", Font.BOLD, 20));
         productsTitle.setBorder(BorderFactory.createEmptyBorder(0, 0, 15, 0));
         productsSection.add(productsTitle, BorderLayout.NORTH);
 
-        JPanel productsGrid = new JPanel(new GridLayout(2, 3, 15, 15));
+        productsGrid = new JPanel(new GridLayout(2, 3, 15, 15));
         productsGrid.setBackground(Color.WHITE);
-
-        // Sample products (you can replace with real images later)
-        productsGrid.add(createProductCard("Vitamin C", "Rs. 850", "vitamin-icon.png"));
-        productsGrid.add(createProductCard("Paracetamol", "Rs. 120", "paracetamol-icon.png"));
-        productsGrid.add(createProductCard("Cough Syrup", "Rs. 450", "cough-icon.png"));
-        productsGrid.add(createProductCard("Fish Oil", "Rs. 1,200", "fishoil-icon.png"));
-        productsGrid.add(createProductCard("Baby Oil", "Rs. 300", "babyoil-icon.png"));
-        productsGrid.add(createProductCard("Aloe Vera Gel", "Rs. 600", "aloe-icon.png"));
 
         productsSection.add(productsGrid, BorderLayout.CENTER);
         lowerSection.add(productsSection);
 
-        // Right: Quick Order Summary (simple card)
+        // Right: Quick Order Summary
         JPanel orderSummary = new JPanel(new BorderLayout());
         orderSummary.setBackground(Color.WHITE);
         orderSummary.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createLineBorder(new Color(220, 220, 220)),
-                BorderFactory.createEmptyBorder(20, 20, 20, 20)
-        ));
+                BorderFactory.createEmptyBorder(20, 20, 20, 20)));
 
         JLabel summaryTitle = new JLabel("Today's Quick Summary");
         summaryTitle.setFont(new Font("InaiMathi", Font.BOLD, 20));
@@ -114,17 +140,23 @@ public class CashDashboardPanel extends JPanel {
         JPanel summaryContent = new JPanel(new GridLayout(4, 2, 10, 10));
         summaryContent.setBackground(Color.WHITE);
 
+        // Initialize Summary Labels
+        lblPendingOrders = new JLabel("0", SwingConstants.RIGHT);
+        lblTodaySales = new JLabel("Rs. 0", SwingConstants.RIGHT);
+        lblCashInDrawer = new JLabel("Rs. 0", SwingConstants.RIGHT);
+        lblLowStockAlerts = new JLabel("0 items", SwingConstants.RIGHT);
+
         summaryContent.add(new JLabel("Pending Orders:"));
-        summaryContent.add(new JLabel("12", SwingConstants.RIGHT));
+        summaryContent.add(lblPendingOrders);
 
         summaryContent.add(new JLabel("Today's Sales:"));
-        summaryContent.add(new JLabel("Rs. 15,420", SwingConstants.RIGHT));
+        summaryContent.add(lblTodaySales);
 
         summaryContent.add(new JLabel("Cash in Drawer:"));
-        summaryContent.add(new JLabel("Rs. 8,500", SwingConstants.RIGHT));
+        summaryContent.add(lblCashInDrawer);
 
         summaryContent.add(new JLabel("Low Stock Alerts:"));
-        summaryContent.add(new JLabel("3 items", SwingConstants.RIGHT));
+        summaryContent.add(lblLowStockAlerts);
 
         orderSummary.add(summaryContent, BorderLayout.CENTER);
         lowerSection.add(orderSummary);
@@ -135,18 +167,22 @@ public class CashDashboardPanel extends JPanel {
 
         return panel;
     }
-    // Reusable small product card
 
+    // Reusable small product card
     private JPanel createProductCard(String name, String price, String iconPath) {
         JPanel card = new JPanel(new BorderLayout(10, 10));
         card.setBackground(Color.WHITE);
         card.setBorder(BorderFactory.createLineBorder(new Color(220, 220, 220)));
 
         JLabel icon = new JLabel();
-        if (!java.beans.Beans.isDesignTime()) {
+        if (iconPath != null && !iconPath.isEmpty()) {
+            // Try loading from classpath first
             java.net.URL url = getClass().getClassLoader().getResource("images/" + iconPath);
             if (url != null) {
                 icon.setIcon(new ImageIcon(url));
+            } else {
+                // Try absolute path (for uploaded images)
+                icon.setIcon(new ImageIcon(iconPath));
             }
         }
         icon.setHorizontalAlignment(SwingConstants.CENTER);
@@ -164,20 +200,19 @@ public class CashDashboardPanel extends JPanel {
         return card;
     }
 
-    // Reusable simple card (already in your code)
-    private JPanel createSimpleCard(String title, String value, Color color) {
+    // UPDATED: Now accepts JLabel instead of String for value
+    private JPanel createSimpleCard(String title, JLabel valueLabel, Color color) {
         JPanel card = new JPanel(new BorderLayout());
         card.setBackground(Color.WHITE);
         card.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createLineBorder(new Color(220, 220, 220)),
-                BorderFactory.createEmptyBorder(25, 30, 25, 30)
-        ));
+                BorderFactory.createEmptyBorder(25, 30, 25, 30)));
 
         JLabel titleLabel = new JLabel(title);
         titleLabel.setFont(new Font("InaiMathi", Font.PLAIN, 16));
         titleLabel.setForeground(Color.GRAY);
 
-        JLabel valueLabel = new JLabel(value);
+        // Customize the passed label
         valueLabel.setFont(new Font("InaiMathi", Font.BOLD, 36));
         valueLabel.setForeground(color);
 
@@ -191,4 +226,52 @@ public class CashDashboardPanel extends JPanel {
         return card;
     }
 
+    private void refreshData() {
+        try {
+            // Fetch data
+            int totalProducts = productController.getTotalProducts();
+            int totalCustomers = customerController.getTotalCustomers();
+            int totalTx = transactionController.getTotalTransactions();
+            double totalSales = transactionController.getTotalSales();
+
+            // Fetch Summary Data
+            double todaySales = transactionController.getTodaySales();
+            int lowStockCount = productController.getLowStockProducts().size();
+
+            // Update Top Cards
+            lblTotalProducts.setText(String.format("%,d", totalProducts));
+            lblTotalCustomers.setText(String.format("%,d", totalCustomers));
+            lblTotalTransactions.setText(String.format("%,d", totalTx));
+            lblTotalSales.setText("Rs. " + String.format("%,.0f", totalSales));
+
+            // Update Summary
+            lblPendingOrders.setText("0"); // No pending logic yet
+            lblTodaySales.setText("Rs. " + String.format("%,.2f", todaySales));
+            lblCashInDrawer.setText("Rs. " + String.format("%,.2f", todaySales)); // Assuming Cash in Drawer = Today's
+                                                                                  // Sales
+            lblLowStockAlerts.setText(lowStockCount + " items");
+
+            // Update Popular Products
+            productsGrid.removeAll();
+            java.util.List<String> topProductIds = transactionController.getTopSellingProductIds(6);
+
+            if (topProductIds.isEmpty()) {
+                JLabel noData = new JLabel("No sales today yet.", SwingConstants.CENTER);
+                noData.setForeground(Color.GRAY);
+                productsGrid.add(noData);
+            } else {
+                for (String pID : topProductIds) {
+                    model.Product p = productController.getProduct(pID);
+                    if (p != null) {
+                        productsGrid.add(createProductCard(p.getName(), "Rs. " + p.getPrice(), p.getImagePath()));
+                    }
+                }
+            }
+            productsGrid.revalidate();
+            productsGrid.repaint();
+
+        } catch (Exception e) {
+            System.err.println("Error refreshing cashier dashboard: " + e.getMessage());
+        }
+    }
 }

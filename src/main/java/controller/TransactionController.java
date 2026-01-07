@@ -55,4 +55,29 @@ public class TransactionController {
                 .mapToInt(t -> t.getProductIds().size())
                 .sum();
     }
+
+    public double getTodaySales() {
+        return transactions.stream()
+                .filter(t -> t.getDate().equals(LocalDate.now()))
+                .mapToDouble(Transaction::getAmount)
+                .sum();
+    }
+
+    public int getTodayTransactionsCount() {
+        return (int) transactions.stream()
+                .filter(t -> t.getDate().equals(LocalDate.now()))
+                .count();
+    }
+
+    public List<String> getTopSellingProductIds(int limit) {
+        return transactions.stream()
+                .filter(t -> t.getDate().equals(LocalDate.now()))
+                .flatMap(t -> t.getProductIds().stream())
+                .collect(java.util.stream.Collectors.groupingBy(id -> id, java.util.stream.Collectors.counting()))
+                .entrySet().stream()
+                .sorted((e1, e2) -> Long.compare(e2.getValue(), e1.getValue()))
+                .limit(limit)
+                .map(java.util.Map.Entry::getKey)
+                .collect(java.util.stream.Collectors.toList());
+    }
 }

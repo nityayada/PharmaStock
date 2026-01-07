@@ -57,7 +57,7 @@ public class ProductController {
             products.add(new Product("P1005", "Amlodipine 5mg", 150, 30.0, LocalDate.of(2027, 3, 10), "/images/amlodipine.png"));
             products.add(new Product("P1006", "Omeprazole 20mg", 40, 50.0, LocalDate.of(2025, 12, 5), "/images/omeprazole.png")); // Low
             // Stock
-            products.add(new Product("P1007", "Simvastatin 20mg", 90, 60.0, LocalDate.of(2026, 6, 15), null));
+            products.add(new Product("P1007", "Simvastatin 20mg", 90, 60.0, LocalDate.of(2026, 1, 30), null));
             products.add(new Product("P1008", "Losartan 50mg", 120, 45.0, LocalDate.of(2025, 9, 30), null));
             products.add(new Product("P1009", "Azithromycin 500mg", 60, 80.0, LocalDate.of(2025, 3, 1), null)); // Near
             // Expiry
