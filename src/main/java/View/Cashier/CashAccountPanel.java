@@ -4,18 +4,26 @@
  */
 package View.Cashier;
 
+import controller.UserController;
+import model.User;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.Frame;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.GridLayout;
 import java.awt.Insets;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
+import javax.swing.JDialog;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JTextField;
 import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
 
 /**
  *
@@ -23,9 +31,29 @@ import javax.swing.SwingConstants;
  */
 public class CashAccountPanel extends JPanel {
 
-    public CashAccountPanel() {
+    private User currentUser;
+    private UserController userController;
+
+    // UI Components to need dynamic updates
+    private JLabel welcomeLabel;
+    private JLabel profilePic;
+    private JLabel nameLabel;
+    private JLabel roleLabel;
+    private JLabel emailLabel;
+    private JLabel phoneLabel;
+    private JLabel joinLabel; // If we add join date to User model later
+
+    public CashAccountPanel(User user) {
+        this.currentUser = user;
+        this.userController = new UserController();
+
         setLayout(new BorderLayout());
-        add(createAccountContent(), BorderLayout.CENTER);
+        if (currentUser == null) {
+            // Fallback for testing if no user passed
+            add(new JLabel("No user logged in (Testing Mode)", SwingConstants.CENTER), BorderLayout.CENTER);
+        } else {
+            add(createAccountContent(), BorderLayout.CENTER);
+        }
     }
 
     public JPanel getContentPanel() {
@@ -35,9 +63,8 @@ public class CashAccountPanel extends JPanel {
     private JPanel createAccountContent() {
         JPanel panel = new JPanel(new BorderLayout());
         panel.setBackground(new Color(248, 250, 252));
-        panel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20)); // Add padding to main panel
+        panel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
-        // Main container with centered content
         JPanel container = new JPanel(new GridBagLayout());
         container.setBackground(new Color(248, 250, 252));
 
@@ -58,7 +85,7 @@ public class CashAccountPanel extends JPanel {
         headerLabel.setFont(new Font("InaiMathi", Font.BOLD, 36));
         headerLabel.setForeground(new Color(30, 41, 59));
 
-        JLabel welcomeLabel = new JLabel("Welcome back, Silvia!", SwingConstants.CENTER);
+        welcomeLabel = new JLabel("Welcome back, " + currentUser.getName() + "!", SwingConstants.CENTER);
         welcomeLabel.setFont(new Font("InaiMathi", Font.PLAIN, 18));
         welcomeLabel.setForeground(new Color(100, 116, 139));
         welcomeLabel.setBorder(BorderFactory.createEmptyBorder(10, 0, 0, 0));
@@ -88,9 +115,8 @@ public class CashAccountPanel extends JPanel {
         card.setBackground(Color.WHITE);
         card.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createLineBorder(new Color(226, 232, 240), 1),
-                BorderFactory.createEmptyBorder(50, 80, 50, 80) // Increased padding
-        ));
-        card.setMinimumSize(new Dimension(700, 700)); // Set minimum size
+                BorderFactory.createEmptyBorder(50, 80, 50, 80)));
+        card.setMinimumSize(new Dimension(700, 700));
 
         // Profile header with avatar
         JPanel profileHeader = new JPanel(new BorderLayout(30, 0));
@@ -104,7 +130,7 @@ public class CashAccountPanel extends JPanel {
         avatarPanel.setBorder(BorderFactory.createLineBorder(new Color(167, 243, 208), 3));
         avatarPanel.setLayout(new GridBagLayout());
 
-        JLabel profilePic = new JLabel("👤");
+        profilePic = new JLabel("👤");
         profilePic.setFont(new Font("InaiMathi", Font.PLAIN, 70));
         profilePic.setForeground(new Color(16, 185, 129));
         avatarPanel.add(profilePic);
@@ -116,13 +142,13 @@ public class CashAccountPanel extends JPanel {
         gbc.anchor = GridBagConstraints.WEST;
         gbc.insets = new Insets(5, 0, 5, 0);
 
-        JLabel nameLabel = new JLabel("Silvia Sharma");
+        nameLabel = new JLabel(currentUser.getName());
         nameLabel.setFont(new Font("InaiMathi", Font.BOLD, 28));
         nameLabel.setForeground(new Color(30, 41, 59));
         gbc.gridy = 0;
         infoPanel.add(nameLabel, gbc);
 
-        JLabel roleLabel = new JLabel("Cashier");
+        roleLabel = new JLabel(currentUser.getRole());
         roleLabel.setFont(new Font("InaiMathi", Font.PLAIN, 20));
         roleLabel.setForeground(new Color(16, 185, 129));
         roleLabel.setBorder(BorderFactory.createEmptyBorder(15, 0, 0, 0));
@@ -137,20 +163,20 @@ public class CashAccountPanel extends JPanel {
         // Contact info
         JPanel contactPanel = new JPanel(new GridBagLayout());
         contactPanel.setBackground(Color.WHITE);
-        contactPanel.setBorder(BorderFactory.createEmptyBorder(50, 20, 50, 20)); // Added padding
+        contactPanel.setBorder(BorderFactory.createEmptyBorder(50, 20, 50, 20));
 
         gbc = new GridBagConstraints();
         gbc.anchor = GridBagConstraints.WEST;
         gbc.insets = new Insets(20, 0, 20, 0);
         gbc.fill = GridBagConstraints.HORIZONTAL;
 
-        // Email with icon
+        // Email
         JPanel emailPanel = new JPanel(new BorderLayout(15, 0));
         emailPanel.setBackground(Color.WHITE);
         emailPanel.setBorder(BorderFactory.createEmptyBorder(0, 10, 0, 10));
         JLabel emailIcon = new JLabel("📧");
         emailIcon.setFont(new Font("InaiMathi", Font.PLAIN, 22));
-        JLabel emailLabel = new JLabel("silvia.sharma@pharmastock.com");
+        emailLabel = new JLabel(currentUser.getEmail());
         emailLabel.setFont(new Font("InaiMathi", Font.PLAIN, 17));
         emailLabel.setForeground(new Color(100, 116, 139));
         emailPanel.add(emailIcon, BorderLayout.WEST);
@@ -158,13 +184,13 @@ public class CashAccountPanel extends JPanel {
         gbc.gridy = 0;
         contactPanel.add(emailPanel, gbc);
 
-        // Phone with icon
+        // Phone
         JPanel phonePanel = new JPanel(new BorderLayout(15, 0));
         phonePanel.setBackground(Color.WHITE);
         phonePanel.setBorder(BorderFactory.createEmptyBorder(0, 10, 0, 10));
-        JLabel phoneIcon = new JLabel("Phone Number: ");
+        JLabel phoneIcon = new JLabel("📱"); // Changed to mobile icon
         phoneIcon.setFont(new Font("InaiMathi", Font.PLAIN, 22));
-        JLabel phoneLabel = new JLabel("+977 986 489 2021");
+        phoneLabel = new JLabel(currentUser.getPhoneNumber());
         phoneLabel.setFont(new Font("InaiMathi", Font.PLAIN, 17));
         phoneLabel.setForeground(new Color(100, 116, 139));
         phonePanel.add(phoneIcon, BorderLayout.WEST);
@@ -172,13 +198,13 @@ public class CashAccountPanel extends JPanel {
         gbc.gridy++;
         contactPanel.add(phonePanel, gbc);
 
-        // Join date with icon
+        // Join Date (Static for now as User model doesn't have it)
         JPanel joinPanel = new JPanel(new BorderLayout(15, 0));
         joinPanel.setBackground(Color.WHITE);
         joinPanel.setBorder(BorderFactory.createEmptyBorder(0, 10, 0, 10));
         JLabel joinIcon = new JLabel("📅");
         joinIcon.setFont(new Font("InaiMathi", Font.PLAIN, 22));
-        JLabel joinLabel = new JLabel("Joined: 15th March 2024");
+        joinLabel = new JLabel("Joined: March 2024");
         joinLabel.setFont(new Font("InaiMathi", Font.PLAIN, 17));
         joinLabel.setForeground(new Color(100, 116, 139));
         joinPanel.add(joinIcon, BorderLayout.WEST);
@@ -191,7 +217,7 @@ public class CashAccountPanel extends JPanel {
         // Buttons panel
         JPanel buttonPanel = new JPanel(new GridBagLayout());
         buttonPanel.setBackground(Color.WHITE);
-        buttonPanel.setBorder(BorderFactory.createEmptyBorder(40, 50, 0, 50)); // Added padding
+        buttonPanel.setBorder(BorderFactory.createEmptyBorder(40, 50, 0, 50));
 
         gbc = new GridBagConstraints();
         gbc.fill = GridBagConstraints.NONE;
@@ -201,11 +227,13 @@ public class CashAccountPanel extends JPanel {
 
         JButton editBtn = new JButton("Edit Profile");
         stylePrimaryButton(editBtn);
+        editBtn.addActionListener(e -> showEditProfileDialog());
         gbc.gridy = 0;
         buttonPanel.add(editBtn, gbc);
 
         JButton logoutBtn = new JButton("Log Out");
         styleDangerButton(logoutBtn);
+        logoutBtn.addActionListener(e -> performLogout());
         gbc.gridy++;
         buttonPanel.add(logoutBtn, gbc);
 
@@ -214,14 +242,103 @@ public class CashAccountPanel extends JPanel {
         return card;
     }
 
+    private void showEditProfileDialog() {
+        JDialog dialog = new JDialog((Frame) SwingUtilities.getWindowAncestor(this), "Edit Profile", true);
+        dialog.setLayout(new GridBagLayout());
+        dialog.getContentPane().setBackground(Color.WHITE);
+        dialog.setSize(400, 400);
+        dialog.setLocationRelativeTo(this);
+
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(10, 10, 10, 10);
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+
+        JTextField txtName = new JTextField(currentUser.getName(), 20);
+        JTextField txtPhone = new JTextField(currentUser.getPhoneNumber(), 20);
+        JTextField txtEmail = new JTextField(currentUser.getEmail(), 20); // Generally email shouldn't be editable if
+                                                                          // ID, but user asks for details
+
+        dialog.add(new JLabel("Full Name:"), gbc);
+        gbc.gridy++;
+        dialog.add(txtName, gbc);
+
+        gbc.gridy++;
+        dialog.add(new JLabel("Phone Number:"), gbc);
+        gbc.gridy++;
+        dialog.add(txtPhone, gbc);
+
+        gbc.gridy++;
+        dialog.add(new JLabel("Email Address:"), gbc);
+        gbc.gridy++;
+        dialog.add(txtEmail, gbc);
+
+        JPanel btnPanel = new JPanel();
+        btnPanel.setBackground(Color.WHITE);
+        JButton saveBtn = new JButton("Save Changes");
+        stylePrimaryButton(saveBtn);
+        saveBtn.setPreferredSize(new Dimension(150, 40));
+
+        saveBtn.addActionListener(e -> {
+            String newName = txtName.getText().trim();
+            String newPhone = txtPhone.getText().trim();
+            String newEmail = txtEmail.getText().trim();
+
+            if (newName.isEmpty() || newPhone.isEmpty() || newEmail.isEmpty()) {
+                JOptionPane.showMessageDialog(dialog, "All fields are required.", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            // Update User Object
+            currentUser.setName(newName);
+            currentUser.setPhoneNumber(newPhone);
+            currentUser.setEmail(newEmail);
+
+            // Persist Update
+            userController.updateUser(currentUser);
+
+            // Refresh UI
+            refreshDisplay();
+
+            JOptionPane.showMessageDialog(dialog, "Profile updated successfully!", "Success",
+                    JOptionPane.INFORMATION_MESSAGE);
+            dialog.dispose();
+        });
+
+        btnPanel.add(saveBtn);
+        gbc.gridy++;
+        dialog.add(btnPanel, gbc);
+
+        dialog.setVisible(true);
+    }
+
+    private void refreshDisplay() {
+        nameLabel.setText(currentUser.getName());
+        welcomeLabel.setText("Welcome back, " + currentUser.getName() + "!");
+        emailLabel.setText(currentUser.getEmail());
+        phoneLabel.setText(currentUser.getPhoneNumber());
+        roleLabel.setText(currentUser.getRole());
+        revalidate();
+        repaint();
+    }
+
+    private void performLogout() {
+        int confirm = JOptionPane.showConfirmDialog(this, "Are you sure you want to logout?", "Logout",
+                JOptionPane.YES_NO_OPTION);
+        if (confirm == JOptionPane.YES_OPTION) {
+            SwingUtilities.getWindowAncestor(this).dispose();
+            new View.WelcomeView().setVisible(true);
+        }
+    }
+
     private void stylePrimaryButton(JButton button) {
         button.setFont(new Font("InaiMathi", Font.BOLD, 16));
         button.setBackground(new Color(14, 40, 107));
         button.setForeground(Color.WHITE);
         button.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createLineBorder(new Color(59, 130, 246), 1),
-                BorderFactory.createEmptyBorder(15, 40, 15, 40)
-        ));
+                BorderFactory.createEmptyBorder(15, 40, 15, 40)));
         button.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         button.setFocusPainted(false);
         button.setMinimumSize(new Dimension(250, 50));
@@ -232,16 +349,14 @@ public class CashAccountPanel extends JPanel {
                 button.setBackground(new Color(37, 99, 235));
                 button.setBorder(BorderFactory.createCompoundBorder(
                         BorderFactory.createLineBorder(new Color(37, 99, 235), 1),
-                        BorderFactory.createEmptyBorder(15, 40, 15, 40)
-                ));
+                        BorderFactory.createEmptyBorder(15, 40, 15, 40)));
             }
 
             public void mouseExited(java.awt.event.MouseEvent evt) {
                 button.setBackground(new Color(59, 130, 246));
                 button.setBorder(BorderFactory.createCompoundBorder(
                         BorderFactory.createLineBorder(new Color(59, 130, 246), 1),
-                        BorderFactory.createEmptyBorder(15, 40, 15, 40)
-                ));
+                        BorderFactory.createEmptyBorder(15, 40, 15, 40)));
             }
         });
     }
@@ -252,8 +367,7 @@ public class CashAccountPanel extends JPanel {
         button.setForeground(Color.WHITE);
         button.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createLineBorder(new Color(239, 68, 68), 1),
-                BorderFactory.createEmptyBorder(15, 40, 15, 40)
-        ));
+                BorderFactory.createEmptyBorder(15, 40, 15, 40)));
         button.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         button.setFocusPainted(false);
         button.setMinimumSize(new Dimension(250, 50));
@@ -264,16 +378,14 @@ public class CashAccountPanel extends JPanel {
                 button.setBackground(new Color(220, 38, 38));
                 button.setBorder(BorderFactory.createCompoundBorder(
                         BorderFactory.createLineBorder(new Color(220, 38, 38), 1),
-                        BorderFactory.createEmptyBorder(15, 40, 15, 40)
-                ));
+                        BorderFactory.createEmptyBorder(15, 40, 15, 40)));
             }
 
             public void mouseExited(java.awt.event.MouseEvent evt) {
                 button.setBackground(new Color(239, 68, 68));
                 button.setBorder(BorderFactory.createCompoundBorder(
                         BorderFactory.createLineBorder(new Color(239, 68, 68), 1),
-                        BorderFactory.createEmptyBorder(15, 40, 15, 40)
-                ));
+                        BorderFactory.createEmptyBorder(15, 40, 15, 40)));
             }
         });
     }

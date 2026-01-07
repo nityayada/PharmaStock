@@ -62,7 +62,7 @@ public class AdminUserPanel extends JPanel {
         searchField.addActionListener(e -> updateTable(userController.searchUsers(searchField.getText())));
         leftFilters.add(searchField);
 
-        JComboBox<String> roleCombo = new JComboBox<>(new String[] { "Roles", "All", "Admin", "Cashier" });
+        JComboBox<String> roleCombo = new JComboBox<>(new String[]{"Roles", "All", "Admin", "Cashier"});
         roleCombo.setPreferredSize(new Dimension(180, 45));
         roleCombo.addActionListener(e -> {
             String role = (String) roleCombo.getSelectedItem();
@@ -92,7 +92,7 @@ public class AdminUserPanel extends JPanel {
         content.add(Box.createRigidArea(new Dimension(0, 30)));
 
         // === Table ===
-        String[] columns = { "Name", "Email", "Phone Number", "Role", "Action" };
+        String[] columns = {"Name", "Email", "Phone Number", "Role", "Action"};
         model = new DefaultTableModel(columns, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
@@ -169,12 +169,12 @@ public class AdminUserPanel extends JPanel {
     private void updateTable(List<User> userList) {
         model.setRowCount(0);
         for (User u : userList) {
-            model.addRow(new Object[] {
-                    u.getName(),
-                    u.getEmail(),
-                    u.getPhoneNumber(),
-                    u.getRole(),
-                    "" // Action placeholder
+            model.addRow(new Object[]{
+                u.getName(),
+                u.getEmail(),
+                u.getPhoneNumber(),
+                u.getRole(),
+                "" // Action placeholder
             });
         }
     }
@@ -212,6 +212,7 @@ public class AdminUserPanel extends JPanel {
             // Details
             String details = "<html><body style='width: 200px'>"
                     + "<h2>" + u.getName() + "</h2>"
+                    + "<p><b>User ID:</b> " + u.getUserId() + "</p>"
                     + "<p><b>Email:</b> " + u.getEmail() + "</p>"
                     + "<p><b>Phone:</b> " + u.getPhoneNumber() + "</p>"
                     + "<p><b>Role:</b> " + u.getRole() + "</p>"
@@ -238,13 +239,26 @@ public class AdminUserPanel extends JPanel {
         JTextField nameField = new JTextField(u.getName());
         JTextField emailField = new JTextField(u.getEmail());
         JTextField phoneField = new JTextField(u.getPhoneNumber());
-        JComboBox<String> roleBox = new JComboBox<>(new String[] { "Admin", "Cashier" });
+        JComboBox<String> roleBox = new JComboBox<>(new String[]{"Admin", "Cashier"});
         roleBox.setSelectedItem(u.getRole());
+        roleBox.setEnabled(false); // Prevent role change during edit if desired, or keep enabled.
+        // User didn't strictly say disable edit role, but to be safe with "Admin"
+        // restriction logic
+        // I will leave it enabled but restrict adding "Admin". Actually,
+        // "Add only cashier" implies we shouldn't create new Admins.
+        // Existing admins can probably remain admins.
 
         // Image Upload
-        JLabel imagePathLabel = new JLabel(u.getImagePath() == null ? "No file selected" : u.getImagePath());
+        // Fix: Use a shorter text representation for the path to prevent dialog
+        // expansion
+        JLabel imagePathLabel = new JLabel();
+        imagePathLabel.setPreferredSize(new Dimension(200, 20)); // Fixed size constraint
+        String initialPath = u.getImagePath();
+        imagePathLabel.setText(initialPath != null ? new java.io.File(initialPath).getName() : "No file selected");
+        imagePathLabel.setToolTipText(initialPath); // Show full path on hover
+
         JButton browseBtn = new JButton("Browse");
-        final String[] selectedImagePath = { u.getImagePath() };
+        final String[] selectedImagePath = {u.getImagePath()};
 
         browseBtn.addActionListener(e -> {
             JFileChooser fc = new JFileChooser();
@@ -253,7 +267,8 @@ public class AdminUserPanel extends JPanel {
             fc.setFileFilter(filter);
             if (fc.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
                 selectedImagePath[0] = fc.getSelectedFile().getAbsolutePath();
-                imagePathLabel.setText(selectedImagePath[0]);
+                imagePathLabel.setText(fc.getSelectedFile().getName()); // Show only filename
+                imagePathLabel.setToolTipText(selectedImagePath[0]);
             }
         });
 
@@ -324,10 +339,18 @@ public class AdminUserPanel extends JPanel {
     // Delete user
     private void deleteUser(int row) {
         String email = (String) model.getValueAt(row, 1);
+        String role = (String) model.getValueAt(row, 3); // Get role from table
+
+        if ("Admin".equalsIgnoreCase(role)) {
+            JOptionPane.showMessageDialog(this, "Cannot delete Admin user!", "Action Denied",
+                    JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
         int confirm = JOptionPane.showConfirmDialog(this, "Delete user " + email + "?", "Confirm Delete",
                 JOptionPane.YES_NO_OPTION);
         if (confirm == JOptionPane.YES_OPTION) {
-            userController.deleteUser(email); // Add this method to UserController
+            userController.deleteUser(email);
             updateTable(userController.getAllUsers());
         }
     }
@@ -339,12 +362,15 @@ public class AdminUserPanel extends JPanel {
         JTextField emailField = new JTextField();
         JTextField phoneField = new JTextField();
         JPasswordField passwordField = new JPasswordField();
-        JComboBox<String> roleBox = new JComboBox<>(new String[] { "Admin", "Cashier" });
+
+        // RESTRICTED: Only Cashier allowed
+        JComboBox<String> roleBox = new JComboBox<>(new String[]{"Cashier"});
 
         // Image Upload
         JLabel imagePathLabel = new JLabel("No file selected");
+        imagePathLabel.setPreferredSize(new Dimension(200, 20)); // Constraint size
         JButton browseBtn = new JButton("Browse");
-        final String[] selectedImagePath = { null };
+        final String[] selectedImagePath = {null};
 
         browseBtn.addActionListener(e -> {
             JFileChooser fc = new JFileChooser();
@@ -353,7 +379,8 @@ public class AdminUserPanel extends JPanel {
             fc.setFileFilter(filter);
             if (fc.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
                 selectedImagePath[0] = fc.getSelectedFile().getAbsolutePath();
-                imagePathLabel.setText(selectedImagePath[0]);
+                imagePathLabel.setText(fc.getSelectedFile().getName()); // Show only filename
+                imagePathLabel.setToolTipText(selectedImagePath[0]);
             }
         });
 

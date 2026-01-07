@@ -20,8 +20,7 @@ public class UserController {
 
     public UserController() {
         if (users.isEmpty()) {
-            users.add(
-                    new User("U001", "Silvia Sharma", "silvia@gmail.com", "9864892021", "cashier123", "Cashier", null));
+            users.add(new User("U001", "Silvia Sharma", "silvia@gmail.com", "9864892021", "cashier123", "Cashier", null));
             users.add(new User("U002", "Admin User", "admin@gmail.com", "9801234567", "admin123", "Admin", null));
         }
     }
@@ -60,7 +59,7 @@ public class UserController {
         }
         return users.stream()
                 .filter(u -> u.getName().toLowerCase().contains(keyword.toLowerCase())
-                        || u.getEmail().toLowerCase().contains(keyword.toLowerCase()))
+                || u.getEmail().toLowerCase().contains(keyword.toLowerCase()))
                 .collect(Collectors.toList());
     }
 
