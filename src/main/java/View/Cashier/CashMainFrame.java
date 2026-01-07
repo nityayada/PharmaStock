@@ -44,9 +44,9 @@ public class CashMainFrame extends javax.swing.JFrame {
         getContentPane().setLayout(new BorderLayout());
 
         setTitle("PharmaStock Pro - Cashier");
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setExtendedState(JFrame.MAXIMIZED_BOTH);
-        setMinimumSize(new Dimension(1200, 800));
+        setDefaultCloseOperation(javax.swing.JFrame.EXIT_ON_CLOSE);
+        setExtendedState(javax.swing.JFrame.MAXIMIZED_BOTH);
+        setMinimumSize(new java.awt.Dimension(1200, 800));
 
         // Fixed Sidebar (pass 'this' for navigation)
         cashSidebarPanel = new CashSidebarPanel(this);
@@ -115,11 +115,7 @@ public class CashMainFrame extends javax.swing.JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String args[]) {
+  public static void main(String args[]) {
         /* Set the Nimbus look and feel */
         // <editor-fold defaultstate="collapsed" desc=" Look and feel setting code
         // (optional) ">
@@ -145,7 +141,4 @@ public class CashMainFrame extends javax.swing.JFrame {
             new CashMainFrame().setVisible(true);
         });
     }
-
-    // Variables declaration - do not modify//GEN-BEGIN:variables
-    // End of variables declaration//GEN-END:variables
 }
