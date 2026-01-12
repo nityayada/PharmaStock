@@ -1,6 +1,6 @@
 package View.components;
 
-import View.Admin.AdminMainFrame;
+//import View.Admin.AdminMainFrame;
 import View.WelcomeView;
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -29,13 +29,14 @@ public class SidebarPanel extends JPanel {
     private final Color TEXT_COLOR = Color.WHITE;
     private final Color HIGHLIGHT_BG = new Color(0, 123, 255); // Bootstrap blue for active
     private final Color HOVER_BG = new Color(73, 80, 87);
-    private AdminMainFrame mainFrame;
+    // private AdminMainFrame mainFrame;
+    private WelcomeView parentFrame;
 
     // Add these private fields to access buttons later
     private JButton dashboardBtn, productsBtn, categoriesBtn, transactionsBtn, Customerbtn, UserBtn;
 
-    public SidebarPanel(AdminMainFrame mainFrame) {
-        this.mainFrame = mainFrame; // The instance variable 
+    public SidebarPanel(WelcomeView parentFrame) {
+        this.parentFrame = parentFrame; // The instance variable
         setLayout(new BorderLayout());
         setBackground(SIDEBAR_BG);
         setPreferredSize(new Dimension(240, 400));
@@ -107,29 +108,30 @@ public class SidebarPanel extends JPanel {
 
         // Navigation listeners - use mainFrame.switchPage to switch between the panel
         dashboardBtn.addActionListener(e -> {
-            mainFrame.switchPage("Dashboard");
+            parentFrame.switchPage("Dashboard"); // ← change mainFrame → parentFrame
             setActiveButton("Dashboard");
         });
 
         productsBtn.addActionListener(e -> {
-            mainFrame.switchPage("Products");
+            parentFrame.switchPage("Products");
             setActiveButton("Products");
         });
 
         transactionsBtn.addActionListener(e -> {
-            mainFrame.switchPage("Transactions");
+            parentFrame.switchPage("Transactions");
             setActiveButton("Transactions");
         });
 
         Customerbtn.addActionListener(e -> {
-            mainFrame.switchPage("Customer");
+            parentFrame.switchPage("Customer");
             setActiveButton("Customer");
         });
 
         UserBtn.addActionListener(e -> {
-            mainFrame.switchPage("User");
+            parentFrame.switchPage("User");
             setActiveButton("User");
         });
+
         logoutBtn.addActionListener(e -> logout()); // If you have logout
     }
 
@@ -142,18 +144,18 @@ public class SidebarPanel extends JPanel {
         button.setFocusPainted(false);// Remove focus border blue outline when clicked
         button.setBorderPainted(false);// Remove default button border
         button.setContentAreaFilled(false);// Remove default background fill
-        button.setForeground(TEXT_COLOR);  // Set text color likely dark gray/black
-        button.setFont(new Font("InaiMathi", Font.PLAIN, 16)); //Custom font, plain style, 16px
-        button.setIconTextGap(15);//Space between icon and text if icon added later
-        button.setAlignmentX(Component.LEFT_ALIGNMENT);//align button to left in container
-        button.setCursor(new Cursor(Cursor.HAND_CURSOR));//change cursor to hand on hover
+        button.setForeground(TEXT_COLOR); // Set text color likely dark gray/black
+        button.setFont(new Font("InaiMathi", Font.PLAIN, 16)); // Custom font, plain style, 16px
+        button.setIconTextGap(15);// Space between icon and text if icon added later
+        button.setAlignmentX(Component.LEFT_ALIGNMENT);// align button to left in container
+        button.setCursor(new Cursor(Cursor.HAND_CURSOR));// change cursor to hand on hover
 
         if (isActive) {
             button.setBackground(HIGHLIGHT_BG);
-            button.setOpaque(true);  // Make background visible
+            button.setOpaque(true); // Make background visible
             button.setForeground(Color.WHITE); // White text on colored background
         } else {
-            //hover effect - only apply to non-active buttons
+            // hover effect - only apply to non-active buttons
             button.addMouseListener(new MouseAdapter() {
                 @Override
                 public void mouseEntered(MouseEvent evt) {
@@ -177,7 +179,7 @@ public class SidebarPanel extends JPanel {
     }
 
     public void setActiveButton(String buttonName) {
-        JButton[] allButtons = {dashboardBtn, productsBtn, categoriesBtn, transactionsBtn, Customerbtn, UserBtn};
+        JButton[] allButtons = { dashboardBtn, productsBtn, categoriesBtn, transactionsBtn, Customerbtn, UserBtn };
         for (JButton btn : allButtons) {
             if (btn != null) {
                 btn.setBackground(null);
@@ -207,15 +209,28 @@ public class SidebarPanel extends JPanel {
         }
     }
 
+    // private void logout() {
+    // int confirm = JOptionPane.showConfirmDialog(null, // to center the
+    // joptionpanel
+    // "Are you sure you want to log out?",
+    // "Confirm Logout",
+    // JOptionPane.YES_NO_OPTION);
+    //
+    // if (confirm == JOptionPane.YES_OPTION) {
+    // SwingUtilities.getWindowAncestor(this).dispose(); // close the page where it
+    // called
+    // new WelcomeView().setVisible(true); //open the Welcome page
+    // }
+    // }
     private void logout() {
-        int confirm = JOptionPane.showConfirmDialog(null, // to center the joptionpanel
+        int confirm = JOptionPane.showConfirmDialog(parentFrame,
                 "Are you sure you want to log out?",
                 "Confirm Logout",
                 JOptionPane.YES_NO_OPTION);
 
         if (confirm == JOptionPane.YES_OPTION) {
-            SwingUtilities.getWindowAncestor(this).dispose(); // close the page where it called 
-            new WelcomeView().setVisible(true); //open the Welcome page 
+            // Very important: tell WelcomeView to go back to login screen
+            parentFrame.showLoginScreen(); // ← You will create this method in WelcomeView
         }
     }
 }

@@ -4,7 +4,7 @@
  */
 package View.components;
 
-import View.Cashier.CashMainFrame;
+//import View.Cashier.CashMainFrame;
 import View.WelcomeView;
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -35,13 +35,14 @@ public class CashSidebarPanel extends JPanel {
     private final Color TEXT_COLOR = Color.WHITE;
     private final Color HIGHLIGHT_BG = new Color(52, 152, 219); // Friendly blue
     private final Color HOVER_BG = new Color(73, 80, 87);
-    private CashMainFrame mainFrame;
+    // private CashMainFrame mainFrame;
+    private WelcomeView parentFrame;
 
     // Fields for buttons
     private JButton dashboardBtn, productBtn, orderBtn, accountBtn;
 
-    public CashSidebarPanel(CashMainFrame mainFrame) {
-        this.mainFrame = mainFrame;
+    public CashSidebarPanel(WelcomeView parentFrame) {
+        this.parentFrame = parentFrame;
         setLayout(new BorderLayout());
         setBackground(SIDEBAR_BG);
         setPreferredSize(new Dimension(240, 400));
@@ -55,15 +56,16 @@ public class CashSidebarPanel extends JPanel {
         logoLabel.setFont(new Font("InaiMathi", Font.BOLD, 24));
         logoLabel.setForeground(Color.WHITE);
         // Safe icon loading
-//        if (!java.beans.Beans.isDesignTime()) {
-//            java.net.URL iconUrl = getClass().getClassLoader().getResource("images/logo-icon.png");
-//            if (iconUrl != null) {
-//                logoLabel.setIcon(new ImageIcon(iconUrl));
-//                logoLabel.setIconTextGap(10);
-//            }
-//        }
-//        logoPanel.add(logoLabel);
-//        add(logoPanel, BorderLayout.NORTH);
+        // if (!java.beans.Beans.isDesignTime()) {
+        // java.net.URL iconUrl =
+        // getClass().getClassLoader().getResource("images/logo-icon.png");
+        // if (iconUrl != null) {
+        // logoLabel.setIcon(new ImageIcon(iconUrl));
+        // logoLabel.setIconTextGap(10);
+        // }
+        // }
+        // logoPanel.add(logoLabel);
+        // add(logoPanel, BorderLayout.NORTH);
 
         // Menu Panel
         JPanel menuPanel = new JPanel();
@@ -105,26 +107,48 @@ public class CashSidebarPanel extends JPanel {
         menuPanel.add(Box.createRigidArea(new Dimension(0, 20))); // Space above
         menuPanel.add(logoutBtn);
 
+        // dashboardBtn.addActionListener(e -> {
+        // mainFrame.switchPage("Dashboard");
+        // setActiveButton("Dashboard");
+        // });
+        //
+        // productBtn.addActionListener(e -> {
+        // mainFrame.switchPage("Product");
+        // setActiveButton("Product");
+        // });
+        //
+        // orderBtn.addActionListener(e -> {
+        // mainFrame.switchPage("Order");
+        // setActiveButton("Order");
+        // });
+        //
+        // accountBtn.addActionListener(e -> {
+        // mainFrame.switchPage("Account");
+        // setActiveButton("Account");
+        // });
+        // logoutBtn.addActionListener(e -> logout()); // If you have logout
+        // Change listeners:
         dashboardBtn.addActionListener(e -> {
-            mainFrame.switchPage("Dashboard");
+            parentFrame.switchPage("Dashboard");
             setActiveButton("Dashboard");
         });
 
         productBtn.addActionListener(e -> {
-            mainFrame.switchPage("Product");
+            parentFrame.switchPage("Product");
             setActiveButton("Product");
         });
 
         orderBtn.addActionListener(e -> {
-            mainFrame.switchPage("Order");
+            parentFrame.switchPage("Order");
             setActiveButton("Order");
         });
 
         accountBtn.addActionListener(e -> {
-            mainFrame.switchPage("Account");
+            parentFrame.switchPage("Account");
             setActiveButton("Account");
         });
-        logoutBtn.addActionListener(e -> logout()); // If you have logout
+
+        logoutBtn.addActionListener(e -> logout());
     }
 
     private JButton createMenuItem(String text, boolean isActive) {
@@ -166,7 +190,7 @@ public class CashSidebarPanel extends JPanel {
 
     // Public method to highlight active menu from pages
     public void setActiveButton(String buttonName) {
-        JButton[] allButtons = {dashboardBtn, productBtn, orderBtn, accountBtn};
+        JButton[] allButtons = { dashboardBtn, productBtn, orderBtn, accountBtn };
         for (JButton btn : allButtons) {
             if (btn != null) {
                 btn.setBackground(null);
@@ -201,19 +225,30 @@ public class CashSidebarPanel extends JPanel {
             JFrame newPage = (JFrame) pageClass.getDeclaredConstructor().newInstance();
             newPage.setVisible(true);
         } catch (Exception ex) {
-            JOptionPane.showMessageDialog(null, "Error opening page: " + ex.getMessage(), "Navigation Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Error opening page: " + ex.getMessage(), "Navigation Error",
+                    JOptionPane.ERROR_MESSAGE);
         }
     }
 
+    // private void logout() {
+    // int confirm = JOptionPane.showConfirmDialog(null,
+    // "Are you sure you want to log out?",
+    // "Confirm Logout",
+    // JOptionPane.YES_NO_OPTION);
+    //
+    // if (confirm == JOptionPane.YES_OPTION) {
+    // SwingUtilities.getWindowAncestor(this).dispose();
+    // new WelcomeView().setVisible(true);
+    // }
+    // }
     private void logout() {
-        int confirm = JOptionPane.showConfirmDialog(null,
+        int confirm = JOptionPane.showConfirmDialog(parentFrame,
                 "Are you sure you want to log out?",
                 "Confirm Logout",
                 JOptionPane.YES_NO_OPTION);
 
         if (confirm == JOptionPane.YES_OPTION) {
-            SwingUtilities.getWindowAncestor(this).dispose();
-            new WelcomeView().setVisible(true);
+            parentFrame.showLoginScreen(); // ← Same important call
         }
     }
 }

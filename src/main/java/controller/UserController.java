@@ -54,12 +54,12 @@ public class UserController {
         users.removeIf(u -> u.getEmail().equals(email));
     }
 
+    //Linear Search O(N)
     public List<User> searchUsers(String keyword) {
         if (keyword == null || keyword.trim().isEmpty()) {
             return getAllUsers();
         }
 
-        // Manual Linear Search O(N)
         List<User> result = new ArrayList<>();
         String lowerKeyword = keyword.toLowerCase();
 
@@ -114,10 +114,12 @@ public class UserController {
         List<User> L = new ArrayList<>();
         List<User> R = new ArrayList<>();
 
-        for (int i = 0; i < n1; ++i)
+        for (int i = 0; i < n1; ++i) {
             L.add(list.get(left + i));
-        for (int j = 0; j < n2; ++j)
+        }
+        for (int j = 0; j < n2; ++j) {
             R.add(list.get(mid + 1 + j));
+        }
 
         int i = 0, j = 0;
         int k = left;
