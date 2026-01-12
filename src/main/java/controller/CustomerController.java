@@ -7,7 +7,6 @@ package controller;
 import model.Customer;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  *
@@ -39,7 +38,20 @@ public class CustomerController {
     }
 
     public void deleteCustomer(String id) {
-        customers.removeIf(c -> c.getCustomerId().equals(id));
+        int index = -1;
+        for (int i = 0; i < customers.size(); i++) {
+            if (customers.get(i).getCustomerId().equals(id)) {
+                index = i;
+                break;
+            }
+        }
+        if (index != -1) {
+            // Manual Shift
+            for (int i = index; i < customers.size() - 1; i++) {
+                customers.set(i, customers.get(i + 1));
+            }
+            customers.remove(customers.size() - 1);
+        }
     }
 
     public int getTotalCustomers() {
@@ -50,10 +62,16 @@ public class CustomerController {
         if (keyword == null || keyword.trim().isEmpty()) {
             return getAllCustomers();
         }
-        return customers.stream()
-                .filter(c -> c.getName().toLowerCase().contains(keyword.toLowerCase())
-                        || c.getPhoneNumber().contains(keyword)
-                        || c.getEmail().toLowerCase().contains(keyword.toLowerCase()))
-                .collect(Collectors.toList());
+        List<Customer> results = new ArrayList<>();
+        String lowerKeyword = keyword.toLowerCase();
+        for (int i = 0; i < customers.size(); i++) {
+            Customer c = customers.get(i);
+            if (c.getName().toLowerCase().contains(lowerKeyword)
+                    || c.getPhoneNumber().contains(keyword)
+                    || c.getEmail().toLowerCase().contains(lowerKeyword)) {
+                results.add(c);
+            }
+        }
+        return results;
     }
 }

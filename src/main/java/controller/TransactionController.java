@@ -7,9 +7,11 @@ package controller;
 import model.Transaction;
 import java.time.LocalDate;
 import java.time.LocalTime;
-
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 /**
  *
@@ -47,37 +49,84 @@ public class TransactionController {
     }
 
     public double getTotalSales() {
-        return transactions.stream().mapToDouble(Transaction::getAmount).sum();
+        double total = 0;
+        for (int i = 0; i < transactions.size(); i++) {
+            total += transactions.get(i).getAmount();
+        }
+        return total;
     }
 
     public int getTotalQuantitySold() {
-        return transactions.stream()
-                .mapToInt(t -> t.getProductIds().size())
-                .sum();
+        int total = 0;
+        for (int i = 0; i < transactions.size(); i++) {
+            total += transactions.get(i).getProductIds().size();
+        }
+        return total;
     }
 
     public double getTodaySales() {
-        return transactions.stream()
-                .filter(t -> t.getDate().equals(LocalDate.now()))
-                .mapToDouble(Transaction::getAmount)
-                .sum();
+        double total = 0;
+        LocalDate today = LocalDate.now();
+        for (int i = 0; i < transactions.size(); i++) {
+            Transaction t = transactions.get(i);
+            if (t.getDate().equals(today)) {
+                total += t.getAmount();
+            }
+        }
+        return total;
     }
 
     public int getTodayTransactionsCount() {
-        return (int) transactions.stream()
-                .filter(t -> t.getDate().equals(LocalDate.now()))
-                .count();
+        int count = 0;
+        LocalDate today = LocalDate.now();
+        for (int i = 0; i < transactions.size(); i++) {
+            if (transactions.get(i).getDate().equals(today)) {
+                count++;
+            }
+        }
+        return count;
     }
 
     public List<String> getTopSellingProductIds(int limit) {
-        return transactions.stream()
-                .filter(t -> t.getDate().equals(LocalDate.now()))
-                .flatMap(t -> t.getProductIds().stream())
-                .collect(java.util.stream.Collectors.groupingBy(id -> id, java.util.stream.Collectors.counting()))
-                .entrySet().stream()
-                .sorted((e1, e2) -> Long.compare(e2.getValue(), e1.getValue()))
-                .limit(limit)
-                .map(java.util.Map.Entry::getKey)
-                .collect(java.util.stream.Collectors.toList());
+        Map<String, Long> counts = new HashMap<>();
+        LocalDate today = LocalDate.now();
+
+        // Count occurrences manually
+        for (int i = 0; i < transactions.size(); i++) {
+            Transaction t = transactions.get(i);
+            if (t.getDate().equals(today)) {
+                List<String> productIds = t.getProductIds();
+                for (int j = 0; j < productIds.size(); j++) {
+                    String id = productIds.get(j);
+                    counts.put(id, counts.getOrDefault(id, 0L) + 1);
+                }
+            }
+        }
+
+        // Sort manually
+        List<Map.Entry<String, Long>> list = new ArrayList<>(counts.entrySet());
+        // Selection Sort O(N^2) - demonstrating manual algorithm
+        for (int i = 0; i < list.size() - 1; i++) {
+            int maxIdx = i;
+            for (int k = i + 1; k < list.size(); k++) {
+                if (list.get(k).getValue() > list.get(maxIdx).getValue()) {
+                    maxIdx = k;
+                }
+            }
+            // Swap
+            Map.Entry<String, Long> temp = list.get(maxIdx);
+            list.set(maxIdx, list.get(i));
+            list.set(i, temp);
+        }
+
+        // Limit results
+        List<String> result = new ArrayList<>();
+        int count = 0;
+        for (int i = 0; i < list.size() && count < limit; i++) {
+            result.add(list.get(i).getKey());
+            count++;
+        }
+
+        return result;
     }
 }

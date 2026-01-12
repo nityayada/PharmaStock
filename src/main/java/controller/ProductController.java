@@ -4,19 +4,17 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import model.Product;
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Queue;
-import java.util.Stack;
-import java.util.stream.Collectors;
 
 public class ProductController {
 
     private static final ArrayList<Product> products = new ArrayList<>();
 
-    private static final Queue<String> recentActivities = new LinkedList<>();
+    // Manual Queue implementation using ArrayList for recent activities
+    private static final ArrayList<String> recentActivities = new ArrayList<>();
 
-    private final Stack<Product> deletedProducts = new Stack<>();
+    // Manual Stack implementation using ArrayList for deleted products
+    private final ArrayList<Product> deletedProducts = new ArrayList<>();
 
     // Load sample data only once
     public ProductController() {
@@ -74,12 +72,17 @@ public class ProductController {
         }
     }
 
-    // Helper to log activity (Queue - FIFO)
+    // Helper to log activity (Manual Queue management)
     private void logActivity(String activity) {
         recentActivities.add(LocalTime.now().withNano(0) + ": " + activity);
-        // Keep only last 10 activities
+        // Keep only last 10 activities - Manual removal of first element (Queue FIFO)
         if (recentActivities.size() > 10) {
-            recentActivities.poll();
+            // Manual Shift items for removal at index 0
+            for (int i = 0; i < recentActivities.size() - 1; i++) {
+                recentActivities.set(i, recentActivities.get(i + 1));
+            }
+            // Remove the last duplicate after shift
+            recentActivities.remove(recentActivities.size() - 1);
         }
     }
 
@@ -126,15 +129,27 @@ public class ProductController {
     }
 
     public void deleteProduct(String id) {
-        // Find product to delete
-        Product toDelete = products.stream()
-                .filter(p -> p.getProductId().equals(id))
-                .findFirst()
-                .orElse(null);
+        // Find product to delete - Manual Search
+        Product toDelete = null;
+        int deleteIndex = -1;
+
+        for (int i = 0; i < products.size(); i++) {
+            if (products.get(i).getProductId().equals(id)) {
+                toDelete = products.get(i);
+                deleteIndex = i;
+                break;
+            }
+        }
 
         if (toDelete != null) {
-            deletedProducts.push(toDelete); // Push to stack
-            products.remove(toDelete);
+            // Push to manual stack (add to end)
+            deletedProducts.add(toDelete);
+
+            // Manual removal from ArrayList with shifting
+            for (int i = deleteIndex; i < products.size() - 1; i++) {
+                products.set(i, products.get(i + 1));
+            }
+            products.remove(products.size() - 1);
 
             logActivity("Deleted product: " + toDelete.getName());
         }
@@ -142,7 +157,8 @@ public class ProductController {
 
     public boolean undoDelete() {
         if (!deletedProducts.isEmpty()) {
-            Product restored = deletedProducts.pop(); // pop from stack
+            // Pop from manual stack (remove from end)
+            Product restored = deletedProducts.remove(deletedProducts.size() - 1);
             products.add(restored);
             logActivity("Undid deletion of: " + restored.getName());
             return true;
@@ -159,7 +175,7 @@ public class ProductController {
         List<Product> results = new ArrayList<>();
         String lowerKeyword = keyword.toLowerCase();
 
-        //Linear Search O(N)
+        // Linear Search O(N)
         for (int i = 0; i < products.size(); i++) {
             Product p = products.get(i);
             if (p.getName().toLowerCase().contains(lowerKeyword)
@@ -171,32 +187,52 @@ public class ProductController {
     }
 
     public List<Product> getLowStockProducts() {
-        return products.stream()
-                .filter(p -> p.getQuantity() > 0 && p.getQuantity() <= 50)
-                .collect(Collectors.toList());
+        List<Product> results = new ArrayList<>();
+        for (int i = 0; i < products.size(); i++) {
+            Product p = products.get(i);
+            if (p.getQuantity() > 0 && p.getQuantity() <= 50) {
+                results.add(p);
+            }
+        }
+        return results;
     }
 
     public List<Product> getOutOfStockProducts() {
-        return products.stream()
-                .filter(p -> p.getQuantity() == 0)
-                .collect(Collectors.toList());
+        List<Product> results = new ArrayList<>();
+        for (int i = 0; i < products.size(); i++) {
+            Product p = products.get(i);
+            if (p.getQuantity() == 0) {
+                results.add(p);
+            }
+        }
+        return results;
     }
 
     public List<Product> getExpiredProducts() {
         LocalDate today = LocalDate.now();
-        return products.stream()
-                .filter(p -> p.getExpiryDate() != null && p.getExpiryDate().isBefore(today))
-                .collect(Collectors.toList());
+        List<Product> results = new ArrayList<>();
+        for (int i = 0; i < products.size(); i++) {
+            Product p = products.get(i);
+            if (p.getExpiryDate() != null && p.getExpiryDate().isBefore(today)) {
+                results.add(p);
+            }
+        }
+        return results;
     }
 
     public List<Product> getNearExpiryProducts(int days) {
         LocalDate today = LocalDate.now();
         LocalDate thresholdDate = today.plusDays(days);
-        return products.stream()
-                .filter(p -> p.getExpiryDate() != null
-                && !p.getExpiryDate().isBefore(today)
-                && p.getExpiryDate().isBefore(thresholdDate))
-                .collect(Collectors.toList());
+        List<Product> results = new ArrayList<>();
+        for (int i = 0; i < products.size(); i++) {
+            Product p = products.get(i);
+            if (p.getExpiryDate() != null
+                    && !p.getExpiryDate().isBefore(today)
+                    && p.getExpiryDate().isBefore(thresholdDate)) {
+                results.add(p);
+            }
+        }
+        return results;
     }
 
     // === Sorting (Multiple Algorithms) ===
@@ -247,6 +283,9 @@ public class ProductController {
                     break;
                 case "Name":
                     condition = list.get(j).getName().compareToIgnoreCase(pivot.getName()) < 0;
+                    break;
+                case "Product ID":
+                    condition = list.get(j).getProductId().compareToIgnoreCase(pivot.getProductId()) < 0;
                     break;
             }
             if (condition) {
@@ -370,10 +409,12 @@ public class ProductController {
 
     // === Order Processing ===
     public Product getProduct(String id) {
-        return products.stream()
-                .filter(p -> p.getProductId().equals(id))
-                .findFirst()
-                .orElse(null);
+        for (int i = 0; i < products.size(); i++) {
+            if (products.get(i).getProductId().equals(id)) {
+                return products.get(i);
+            }
+        }
+        return null;
     }
 
     public void sellProduct(String id, int quantityToSell) {
@@ -389,7 +430,7 @@ public class ProductController {
         logActivity("Sold " + quantityToSell + " of " + p.getName());
     }
 
-    //Binary Search Algorithms O(n) time complexity 
+    // Binary Search Algorithms O(n) time complexity
     // Used for finding a product by explicit ID (requires sorting first)
     public Product binarySearchProduct(String productId) {
         // Ensure the list is sorted by Product ID before searching
