@@ -7,9 +7,10 @@ package View.Admin;
 import View.WelcomeView;
 import View.components.NavbarPanel;
 import View.components.SidebarPanel;
-
-import javax.swing.*;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.CardLayout;
+import java.awt.Color;
+import javax.swing.JPanel;
 
 /**
  *
@@ -33,14 +34,14 @@ public class AdminContentPanel extends JPanel {
         setLayout(new BorderLayout());
         setBackground(new Color(240, 242, 245));    // same light background as before
 
-        // ─── LEFT: Sidebar ───────────────────────────────────────
+        //Sidebar 
         sidebarPanel = new SidebarPanel(parentFrame);   // ← pass WelcomeView, not old frame
         add(sidebarPanel, BorderLayout.WEST);
 
-        // ─── CENTER + TOP: Right area with navbar + content ──────
+        //cENTER + TOP
         JPanel rightArea = new JPanel(new BorderLayout());
 
-        // Top: Navbar (fixed)
+        // Navbar
         navbarPanel = new NavbarPanel();
         rightArea.add(navbarPanel, BorderLayout.NORTH);
 
@@ -51,15 +52,13 @@ public class AdminContentPanel extends JPanel {
 
         add(rightArea, BorderLayout.CENTER);
 
-        // ─── Add all admin pages ─────────────────────────────────
-        // Make sure these panels exist and .getContentPanel() returns JPanel
         contentPanel.add(new AdminDashboardPanel().getContentPanel(), "Dashboard");
         contentPanel.add(new AdminProductPanel().getContentPanel(), "Products");
         contentPanel.add(new AdminTransactionPanel().getContentPanel(), "Transactions");
         contentPanel.add(new AdminCustomerPanel().getContentPanel(), "Customer");
         contentPanel.add(new AdminUserPanel().getContentPanel(), "User");
 
-        // Start with Dashboard visible + button highlighted
+        //Start with Dashboard visible 
         cardLayout.show(contentPanel, "Dashboard");
         sidebarPanel.setActiveButton("Dashboard");
     }
@@ -72,7 +71,7 @@ public class AdminContentPanel extends JPanel {
         sidebarPanel.setActiveButton(pageName);
     }
 
-    // Optional: method to force refresh / revalidate after major changes
+    //method to force refresh: this method helps to referesh the panel when any changes is makes  
     public void refresh() {
         revalidate();
         repaint();

@@ -8,7 +8,6 @@ import model.User;
 import java.util.ArrayList;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  *
@@ -16,12 +15,11 @@ import java.util.stream.Collectors;
  */
 public class UserController {
 
-    private static List<User> users = new ArrayList<>();
+    private static final List<User> users = new ArrayList<>();
 
     public UserController() {
         if (users.isEmpty()) {
-            users.add(
-                    new User("U001", "Silvia Sharma", "silvia@gmail.com", "9864892021", "cashier123", "Cashier", null));
+            users.add(new User("U001", "Silvia Sharma", "silvia@gmail.com", "9864892021", "cashier123", "Cashier", null));
             users.add(new User("U002", "Admin User", "admin@gmail.com", "9801234567", "admin123", "Admin", null));
         }
     }
@@ -31,10 +29,12 @@ public class UserController {
     }
 
     public User login(String email, String password) {
-        return users.stream()
-                .filter(u -> u.getEmail().equals(email) && u.getPassword().equals(password))
-                .findFirst()
-                .orElse(null);
+        for (User u : users) {
+            if (u.getEmail().equals(email) && u.getPassword().equals(password)) {
+                return u;
+            }
+        }
+        return null;
     }
 
     public void addUser(User user) {
@@ -54,7 +54,7 @@ public class UserController {
         users.removeIf(u -> u.getEmail().equals(email));
     }
 
-    //Linear Search O(N)
+    // Linear Search O(N)
     public List<User> searchUsers(String keyword) {
         if (keyword == null || keyword.trim().isEmpty()) {
             return getAllUsers();
@@ -76,19 +76,21 @@ public class UserController {
     }
 
     public List<User> getUsersByRole(String role) {
-        List<User> result;
+        List<User> result = new ArrayList<>();
         if (role.equals("All")) {
             result = getAllUsers();
         } else {
-            result = users.stream()
-                    .filter(u -> u.getRole().equals(role))
-                    .collect(Collectors.toList());
+            for (User u : users) {
+                if (u.getRole().equals(role)) {
+                    result.add(u);
+                }
+            }
         }
         sortUsersByName(result); // Sort filtered results
         return result;
     }
 
-    // === Merge Sort Implementation for Users (Sort by Name) ===
+    //Merge Sort Implementation for Users (Sort by Name) ===
     public void sortUsersByName(List<User> userList) {
         if (userList.size() <= 1) {
             return;

@@ -15,7 +15,6 @@ import java.awt.FlowLayout;
 import java.awt.Font;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
-import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -35,7 +34,6 @@ public class CashSidebarPanel extends JPanel {
     private final Color TEXT_COLOR = Color.WHITE;
     private final Color HIGHLIGHT_BG = new Color(52, 152, 219); // Friendly blue
     private final Color HOVER_BG = new Color(73, 80, 87);
-    // private CashMainFrame mainFrame;
     private WelcomeView parentFrame;
 
     // Fields for buttons
@@ -55,17 +53,10 @@ public class CashSidebarPanel extends JPanel {
         JLabel logoLabel = new JLabel("PharmaStock");
         logoLabel.setFont(new Font("InaiMathi", Font.BOLD, 24));
         logoLabel.setForeground(Color.WHITE);
-        // Safe icon loading
-        // if (!java.beans.Beans.isDesignTime()) {
-        // java.net.URL iconUrl =
-        // getClass().getClassLoader().getResource("images/logo-icon.png");
-        // if (iconUrl != null) {
-        // logoLabel.setIcon(new ImageIcon(iconUrl));
-        // logoLabel.setIconTextGap(10);
-        // }
-        // }
-        // logoPanel.add(logoLabel);
-        // add(logoPanel, BorderLayout.NORTH);
+        logoPanel.add(logoLabel);
+
+        logoPanel.add(Box.createVerticalGlue()); // Push items up
+        add(logoPanel, BorderLayout.NORTH); //add the logopanel to the parent container 
 
         // Menu Panel
         JPanel menuPanel = new JPanel();
@@ -107,27 +98,6 @@ public class CashSidebarPanel extends JPanel {
         menuPanel.add(Box.createRigidArea(new Dimension(0, 20))); // Space above
         menuPanel.add(logoutBtn);
 
-        // dashboardBtn.addActionListener(e -> {
-        // mainFrame.switchPage("Dashboard");
-        // setActiveButton("Dashboard");
-        // });
-        //
-        // productBtn.addActionListener(e -> {
-        // mainFrame.switchPage("Product");
-        // setActiveButton("Product");
-        // });
-        //
-        // orderBtn.addActionListener(e -> {
-        // mainFrame.switchPage("Order");
-        // setActiveButton("Order");
-        // });
-        //
-        // accountBtn.addActionListener(e -> {
-        // mainFrame.switchPage("Account");
-        // setActiveButton("Account");
-        // });
-        // logoutBtn.addActionListener(e -> logout()); // If you have logout
-        // Change listeners:
         dashboardBtn.addActionListener(e -> {
             parentFrame.switchPage("Dashboard");
             setActiveButton("Dashboard");
@@ -190,7 +160,7 @@ public class CashSidebarPanel extends JPanel {
 
     // Public method to highlight active menu from pages
     public void setActiveButton(String buttonName) {
-        JButton[] allButtons = { dashboardBtn, productBtn, orderBtn, accountBtn };
+        JButton[] allButtons = {dashboardBtn, productBtn, orderBtn, accountBtn};
         for (JButton btn : allButtons) {
             if (btn != null) {
                 btn.setBackground(null);
@@ -230,17 +200,6 @@ public class CashSidebarPanel extends JPanel {
         }
     }
 
-    // private void logout() {
-    // int confirm = JOptionPane.showConfirmDialog(null,
-    // "Are you sure you want to log out?",
-    // "Confirm Logout",
-    // JOptionPane.YES_NO_OPTION);
-    //
-    // if (confirm == JOptionPane.YES_OPTION) {
-    // SwingUtilities.getWindowAncestor(this).dispose();
-    // new WelcomeView().setVisible(true);
-    // }
-    // }
     private void logout() {
         int confirm = JOptionPane.showConfirmDialog(parentFrame,
                 "Are you sure you want to log out?",
@@ -248,7 +207,7 @@ public class CashSidebarPanel extends JPanel {
                 JOptionPane.YES_NO_OPTION);
 
         if (confirm == JOptionPane.YES_OPTION) {
-            parentFrame.showLoginScreen(); // ← Same important call
+            parentFrame.showLoginScreen(); //important call
         }
     }
 }

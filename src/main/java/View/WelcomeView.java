@@ -5,11 +5,9 @@
 package View;
 
 import View.Admin.AdminContentPanel;
-//import View.Admin.AdminMainFrame;
 import View.Cashier.CashContentPanel;
 import controller.UserController;
 import model.User;
-//import View.Cashier.CashMainFrame;
 import java.awt.BorderLayout;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -20,110 +18,110 @@ import javax.swing.JPanel;
  */
 public class WelcomeView extends javax.swing.JFrame {
 
-        private static final java.util.logging.Logger logger = java.util.logging.Logger
-                        .getLogger(WelcomeView.class.getName());
-        private UserController userController;
-        private JPanel loginContentPanel;
+    private static final java.util.logging.Logger logger = java.util.logging.Logger
+            .getLogger(WelcomeView.class.getName());
+    private UserController userController;
+    private JPanel loginContentPanel;
 
-        private AdminContentPanel adminContent;
-        private CashContentPanel cashierContent;
+    private AdminContentPanel adminContent;
+    private CashContentPanel cashierContent;
 
-        /**
-         * Creates new form WelcomeView
-         */
-        public WelcomeView() {
-                initComponents();
-                userController = new UserController();
+    /**
+     * Creates new form WelcomeView
+     */
+    public WelcomeView() {
+        initComponents();
+        userController = new UserController();
 
-                loginContentPanel = jPanel1;
-                // setLocationRelativeTo(null);
+        loginContentPanel = jPanel1;
+        // setLocationRelativeTo(null);
+    }
+
+    /**
+     * Called after successful login — switches to admin or cashier view
+     */
+    public void showAdminView() {
+        getContentPane().removeAll();
+        getContentPane().setLayout(new java.awt.BorderLayout());
+
+        if (adminContent == null) {
+            adminContent = new AdminContentPanel(this); //pass 'this' so sidebar can call back
         }
 
-        /**
-         * Called after successful login — switches to admin or cashier view
-         */
-        public void showAdminView() {
-                getContentPane().removeAll();
-                getContentPane().setLayout(new java.awt.BorderLayout()); // Fix: Set layout after removeAll
+        getContentPane().add(adminContent, BorderLayout.CENTER);
+        revalidate();
+        repaint();
 
-                if (adminContent == null) {
-                        adminContent = new AdminContentPanel(this); // pass 'this' so sidebar can call back
-                }
+        //maximize or set bigger size for dashboard
+        setExtendedState(MAXIMIZED_BOTH);
+    }
 
-                getContentPane().add(adminContent, BorderLayout.CENTER);
-                revalidate();
-                repaint();
+    /**
+     * Called after successful cashier login
+     */
+    public void showCashierView(User loggedInUser) {
+        getContentPane().removeAll();
+        getContentPane().setLayout(new java.awt.BorderLayout()); // Fix: Set layout after removeAll
 
-                // Optional: maximize or set bigger size for dashboard
-                setExtendedState(MAXIMIZED_BOTH);
+        if (cashierContent == null) {
+            cashierContent = new CashContentPanel(this, loggedInUser);
         }
 
-        /**
-         * Called after successful cashier login
-         */
-        public void showCashierView(User loggedInUser) {
-                getContentPane().removeAll();
-                getContentPane().setLayout(new java.awt.BorderLayout()); // Fix: Set layout after removeAll
+        getContentPane().add(cashierContent, BorderLayout.CENTER);
+        revalidate();
+        repaint();
 
-                if (cashierContent == null) {
-                        cashierContent = new CashContentPanel(this, loggedInUser);
-                }
+        setExtendedState(MAXIMIZED_BOTH);
+    }
 
-                getContentPane().add(cashierContent, BorderLayout.CENTER);
-                revalidate();
-                repaint();
+    /**
+     * Called from sidebar logout button — returns to login screen
+     */
+    public void showLoginScreen() {
+        getContentPane().removeAll();
+        getContentPane().setLayout(new java.awt.BorderLayout()); //Set layout after removeAll
 
-                setExtendedState(MAXIMIZED_BOTH);
+        getContentPane().add(loginContentPanel, BorderLayout.CENTER);
+
+        // Optional: clear fields
+        jTextField3.setText("");
+        jPasswordField1.setText("");
+
+        // Optional: reset role toggle to default (Admin selected)
+        jToggleButton1.setSelected(true);
+        jToggleButton2.setSelected(false);
+
+        // Fix: Navigation bug by resetting active panels on logout
+        adminContent = null;
+        cashierContent = null;
+
+        revalidate();
+        repaint();
+
+        // Restore initial maximized state to match startup behavior
+        setExtendedState(MAXIMIZED_BOTH);
+    }
+
+    /**
+     * Called from sidebar when user clicks a menu item Forwards the request to
+     * the currently visible content panel
+     */
+    public void switchPage(String pageName) {
+        if (adminContent != null && adminContent.isVisible()) {
+            adminContent.switchPage(pageName);
+        } else if (cashierContent != null && cashierContent.isVisible()) {
+            cashierContent.switchPage(pageName);
         }
+    }
 
-        /**
-         * Called from sidebar logout button — returns to login screen
-         */
-        public void showLoginScreen() {
-                getContentPane().removeAll();
-                getContentPane().setLayout(new java.awt.BorderLayout()); // Fix: Set layout after removeAll
-
-                getContentPane().add(loginContentPanel, BorderLayout.CENTER);
-
-                // Optional: clear fields
-                jTextField3.setText("");
-                jPasswordField1.setText("");
-
-                // Optional: reset role toggle to default (Admin selected)
-                jToggleButton1.setSelected(true);
-                jToggleButton2.setSelected(false);
-
-                // Fix: Navigation bug by resetting active panels on logout
-                adminContent = null;
-                cashierContent = null;
-
-                revalidate();
-                repaint();
-
-                // Restore initial maximized state to match startup behavior
-                setExtendedState(MAXIMIZED_BOTH);
-        }
-
-        /**
-         * Called from sidebar when user clicks a menu item Forwards the request to
-         * the currently visible content panel
-         */
-        public void switchPage(String pageName) {
-                if (adminContent != null && adminContent.isVisible()) {
-                        adminContent.switchPage(pageName);
-                } else if (cashierContent != null && cashierContent.isVisible()) {
-                        cashierContent.switchPage(pageName);
-                }
-        }
-
-        /**
-         * This method is called from within the constructor to initialize the form.
-         * WARNING: Do NOT modify this code. The content of this method is always
-         * regenerated by the Form Editor.
-         */
-        @SuppressWarnings("unchecked")
-        // <editor-fold defaultstate="collapsed" desc="Generated
-        // <editor-fold defaultstate="collapsed" desc="Generated
+    /**
+     * This method is called from within the constructor to initialize the form.
+     * WARNING: Do NOT modify this code. The content of this method is always
+     * regenerated by the Form Editor.
+     */
+    @SuppressWarnings("unchecked")
+    // <editor-fold defaultstate="collapsed" desc="Generated
+    // <editor-fold defaultstate="collapsed" desc="Generated
         // Code">//GEN-BEGIN:initComponents
         private void initComponents() {
 
@@ -380,110 +378,76 @@ public class WelcomeView extends javax.swing.JFrame {
                 setLocationRelativeTo(null);
         }// </editor-fold>//GEN-END:initComponents
 
-        private void jToggleButton2ActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jToggleButton2ActionPerformed
-                // TODO add your handling code here:
-        }// GEN-LAST:event_jToggleButton2ActionPerformed
+    private void jToggleButton2ActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jToggleButton2ActionPerformed
+        // TODO add your handling code here:
+    }// GEN-LAST:event_jToggleButton2ActionPerformed
 
-        private void jTextField3ActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jTextField3ActionPerformed
-                // TODO add your handling code here:
-        }// GEN-LAST:event_jTextField3ActionPerformed
+    private void jTextField3ActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jTextField3ActionPerformed
+        // TODO add your handling code here:
+    }// GEN-LAST:event_jTextField3ActionPerformed
 
-        private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jButton1ActionPerformed
-                // // TODO add your handling code here:
-                // String email = jTextField3.getText().trim();
-                // String password = new String(jPasswordField1.getPassword()).trim();
-                //
-                // if (email.isEmpty() || password.isEmpty()) {
-                // JOptionPane.showMessageDialog(this, "Please enter email and password!",
-                // "Error", JOptionPane.ERROR_MESSAGE);
-                // return;
-                // }
-                //
-                // // Determine selected role
-                // String selectedRole = jToggleButton1.isSelected() ? "Admin" : "Cashier";
-                //
-                // // Attempt login
-                // User user = userController.login(email, password);
-                //
-                // if (user != null && user.getRole().equals(selectedRole)) {
-                // JOptionPane.showMessageDialog(this, "Login successful! Welcome, " +
-                // user.getName(), "Success",
-                // JOptionPane.INFORMATION_MESSAGE);
-                //
-                // // Close login window
-                // this.dispose();
-                //
-                // // Open correct dashboard based on role
-                // if (user.getRole().equals("Admin")) {
-                // new AdminMainFrame().setVisible(true);
-                // } else if (user.getRole().equals("Cashier")) {
-                // new CashMainFrame(user).setVisible(true);
-                // }
-                // } else {
-                // JOptionPane.showMessageDialog(this, "Invalid email, password, or role!",
-                // "Login Failed",
-                // JOptionPane.ERROR_MESSAGE);
-                // }
-                String email = jTextField3.getText().trim();
-                String password = new String(jPasswordField1.getPassword()).trim();
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jButton1ActionPerformed
 
-                if (email.isEmpty() || password.isEmpty()) {
-                        JOptionPane.showMessageDialog(this, "Please enter email and password!", "Error",
-                                        JOptionPane.ERROR_MESSAGE);
-                        return;
-                }
+        String email = jTextField3.getText().trim();
+        String password = new String(jPasswordField1.getPassword()).trim();
 
-                String selectedRole = jToggleButton1.isSelected() ? "Admin" : "Cashier";
-
-                User user = userController.login(email, password);
-
-                if (user != null && user.getRole().equals(selectedRole)) {
-                        JOptionPane.showMessageDialog(this,
-                                        "Login successful! Welcome, " + user.getName(),
-                                        "Success", JOptionPane.INFORMATION_MESSAGE);
-
-                        // ─── SWITCH CONTENT INSIDE SAME WINDOW ───
-                        if (user.getRole().equals("Admin")) {
-                                showAdminView();
-                        } else if (user.getRole().equals("Cashier")) {
-                                showCashierView(user);
-                        }
-                } else {
-                        JOptionPane.showMessageDialog(this,
-                                        "Invalid email, password, or role!",
-                                        "Login Failed", JOptionPane.ERROR_MESSAGE);
-                }
+        if (email.isEmpty() || password.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Please enter email and password!", "Error",
+                    JOptionPane.ERROR_MESSAGE);
+            return;
         }
 
-        /**
-         * @param args the command line arguments
-         */
-        public static void main(String args[]) {
-                /* Set the Nimbus look and feel */
-                // <editor-fold defaultstate="collapsed" desc=" Look and feel setting code
-                // (optional) ">
-                /*
+        String selectedRole = jToggleButton1.isSelected() ? "Admin" : "Cashier";
+
+        User user = userController.login(email, password);
+
+        if (user != null && user.getRole().equals(selectedRole)) {
+            JOptionPane.showMessageDialog(this,
+                    "Login successful! Welcome, " + user.getName(),
+                    "Success", JOptionPane.INFORMATION_MESSAGE);
+
+            // ─── SWITCH CONTENT INSIDE SAME WINDOW ───
+            if (user.getRole().equals("Admin")) {
+                showAdminView();
+            } else if (user.getRole().equals("Cashier")) {
+                showCashierView(user);
+            }
+        } else {
+            JOptionPane.showMessageDialog(this,
+                    "Invalid email, password, or role!",
+                    "Login Failed", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    /**
+     * @param args the command line arguments
+     */
+    public static void main(String args[]) {
+        /* Set the Nimbus look and feel */
+        // <editor-fold defaultstate="collapsed" desc=" Look and feel setting code
+        // (optional) ">
+        /*
                  * If Nimbus (introduced in Java SE 6) is not available, stay with the default
                  * look and feel.
                  * For details see
                  * http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html
-                 */
-                try {
-                        for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager
-                                        .getInstalledLookAndFeels()) {
-                                if ("Nimbus".equals(info.getName())) {
-                                        javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                                        break;
-                                }
-                        }
-                } catch (ReflectiveOperationException | javax.swing.UnsupportedLookAndFeelException ex) {
-                        logger.log(java.util.logging.Level.SEVERE, null, ex);
+         */
+        try {
+            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager
+                    .getInstalledLookAndFeels()) {
+                if ("Nimbus".equals(info.getName())) {
+                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
+                    break;
                 }
-                // </editor-fold>
-
-                /* Create and display the form */
-                java.awt.EventQueue.invokeLater(() -> new WelcomeView().setVisible(true));
+            }
+        } catch (ReflectiveOperationException | javax.swing.UnsupportedLookAndFeelException ex) {
+            logger.log(java.util.logging.Level.SEVERE, null, ex);
         }
+        // </editor-fold>
+
+        /* Create and display the form */
+        java.awt.EventQueue.invokeLater(() -> new WelcomeView().setVisible(true));
+    }
 
         // Variables declaration - do not modify//GEN-BEGIN:variables
         private javax.swing.ButtonGroup buttonGroup1;

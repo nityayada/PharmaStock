@@ -1,6 +1,5 @@
 package View.components;
 
-//import View.Admin.AdminMainFrame;
 import View.WelcomeView;
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -14,13 +13,10 @@ import java.awt.event.MouseEvent;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
-import javax.swing.SwingUtilities;
-
 import javax.swing.border.EmptyBorder;
 
 public class SidebarPanel extends JPanel {
@@ -29,7 +25,6 @@ public class SidebarPanel extends JPanel {
     private final Color TEXT_COLOR = Color.WHITE;
     private final Color HIGHLIGHT_BG = new Color(0, 123, 255); // Bootstrap blue for active
     private final Color HOVER_BG = new Color(73, 80, 87);
-    // private AdminMainFrame mainFrame;
     private WelcomeView parentFrame;
 
     // Add these private fields to access buttons later
@@ -49,6 +44,10 @@ public class SidebarPanel extends JPanel {
         JLabel logoLabel = new JLabel("PharmaStock");
         logoLabel.setFont(new Font("InaiMathi", Font.BOLD, 24));
         logoLabel.setForeground(Color.WHITE);
+        logoPanel.add(logoLabel);
+
+        logoPanel.add(Box.createVerticalGlue()); // Push items up
+        add(logoPanel, BorderLayout.NORTH);
 
         // Menu Items Panel
         JPanel menuPanel = new JPanel();
@@ -179,7 +178,7 @@ public class SidebarPanel extends JPanel {
     }
 
     public void setActiveButton(String buttonName) {
-        JButton[] allButtons = { dashboardBtn, productsBtn, categoriesBtn, transactionsBtn, Customerbtn, UserBtn };
+        JButton[] allButtons = {dashboardBtn, productsBtn, categoriesBtn, transactionsBtn, Customerbtn, UserBtn};
         for (JButton btn : allButtons) {
             if (btn != null) {
                 btn.setBackground(null);
@@ -209,19 +208,6 @@ public class SidebarPanel extends JPanel {
         }
     }
 
-    // private void logout() {
-    // int confirm = JOptionPane.showConfirmDialog(null, // to center the
-    // joptionpanel
-    // "Are you sure you want to log out?",
-    // "Confirm Logout",
-    // JOptionPane.YES_NO_OPTION);
-    //
-    // if (confirm == JOptionPane.YES_OPTION) {
-    // SwingUtilities.getWindowAncestor(this).dispose(); // close the page where it
-    // called
-    // new WelcomeView().setVisible(true); //open the Welcome page
-    // }
-    // }
     private void logout() {
         int confirm = JOptionPane.showConfirmDialog(parentFrame,
                 "Are you sure you want to log out?",
@@ -229,8 +215,8 @@ public class SidebarPanel extends JPanel {
                 JOptionPane.YES_NO_OPTION);
 
         if (confirm == JOptionPane.YES_OPTION) {
-            // Very important: tell WelcomeView to go back to login screen
-            parentFrame.showLoginScreen(); // ← You will create this method in WelcomeView
+            //tell WelcomeView to go back to login screen
+            parentFrame.showLoginScreen();
         }
     }
 }

@@ -10,10 +10,10 @@ package model;
  */
 public class Customer {
 
-    private String customerId;
+    private final String customerId;
     private String name;
     private String phoneNumber;
-    private String email;           // Optional for the customer 
+    private String email; // Optional for the customer
 
     public Customer(String customerId, String name, String phoneNumber, String email) {
         this.customerId = customerId;
@@ -25,10 +25,6 @@ public class Customer {
     // Getters and Setters
     public String getCustomerId() {
         return customerId;
-    }
-
-    public void setCustomerId(String customerId) {
-        this.customerId = customerId;
     }
 
     public String getName() {

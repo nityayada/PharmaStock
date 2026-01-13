@@ -8,13 +8,13 @@ import java.time.LocalDate;
  */
 public class Product {
 
-    private String productId;
+    private final String productId;
     private String name;
     private int quantity;
     private double price;
     private String status; // "Available", "Low Stock", "Empty"
-    private LocalDate expiryDate;   // compulsory
-    private String imagePath;       // product image path (optiona)
+    private LocalDate expiryDate; // compulsory
+    private String imagePath; // product image path (optiona)
 
     public Product(
             String productId,
@@ -22,8 +22,7 @@ public class Product {
             int quantity,
             double price,
             LocalDate expiryDate,
-            String imagePath
-    ) {
+            String imagePath) {
         this.productId = productId;
         this.name = name;
         this.quantity = quantity;
@@ -46,10 +45,6 @@ public class Product {
     // Getters & Setters
     public String getProductId() {
         return productId;
-    }
-
-    public void setProductId(String productId) {
-        this.productId = productId;
     }
 
     public String getName() {

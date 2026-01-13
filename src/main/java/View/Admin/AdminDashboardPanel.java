@@ -125,7 +125,6 @@ public class AdminDashboardPanel extends JPanel {
 
         productCard.add(titleLabel);
         productCard.add(linkLabel);
-
         lblTotalProductsCard = new JLabel("0");
         lblTotalProductsCard.setFont(new Font("InaiMathi", Font.BOLD, 40));
         lblTotalProductsCard.setForeground(Color.BLACK);

@@ -59,7 +59,7 @@ public class CashProductPanel extends JPanel {
 
     private JPanel createCashProductContent() {
         JPanel panel = new JPanel(new BorderLayout());
-        panel.setBackground(new Color(245, 245, 245));
+        panel.setBackground(new Color(217, 217, 217));
         // Header
         JLabel headerLabel = new JLabel("Product", SwingConstants.LEFT);
         headerLabel.setFont(new Font("InaiMathi", Font.BOLD, 32));
@@ -70,12 +70,12 @@ public class CashProductPanel extends JPanel {
         // Main vertical layout
         JPanel content = new JPanel();
         content.setLayout(new BoxLayout(content, BoxLayout.Y_AXIS));
-        content.setBackground(new Color(245, 245, 245));
+        content.setBackground(new Color(217, 217, 217));
         content.setBorder(BorderFactory.createEmptyBorder(20, 50, 50, 50));
 
         // === Top 3 Cards (connected to ProductController) ===
         JPanel cardsRow = new JPanel(new GridLayout(1, 3, 25, 20));
-        cardsRow.setBackground(new Color(245, 245, 245));
+        cardsRow.setBackground(new Color(217, 217, 217));
 
         cardsRow.add(createIconCard("Total Products", String.valueOf(productController.getTotalProducts()),
                 "product-icon.png", new Color(52, 152, 219)));
@@ -90,19 +90,19 @@ public class CashProductPanel extends JPanel {
 
         // === Search Bar & Sort ===
         JPanel searchPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 10));
-        searchPanel.setBackground(new Color(245, 245, 245));
+        searchPanel.setBackground(new Color(217, 217, 217));
 
         JTextField searchField = new JTextField("Search anything");
         searchField.setPreferredSize(new Dimension(400, 45));
         searchField.setFont(new Font("InaiMathi", Font.PLAIN, 16));
         searchField.addActionListener(e -> updateTable(productController.searchProducts(searchField.getText()))); // Real
-                                                                                                                  // search
+        // search
         searchPanel.add(searchField);
 
         searchPanel.add(Box.createRigidArea(new Dimension(20, 0)));
 
         // Sort Combo
-        String[] sortOptions = { "Sort By...", "Price", "Quantity", "Name" };
+        String[] sortOptions = {"Sort By...", "Price", "Quantity", "Name"};
         javax.swing.JComboBox<String> sortCombo = new javax.swing.JComboBox<>(sortOptions);
         sortCombo.setPreferredSize(new Dimension(150, 45));
         sortCombo.addActionListener(e -> {
@@ -118,7 +118,7 @@ public class CashProductPanel extends JPanel {
         content.add(Box.createRigidArea(new Dimension(0, 30)));
 
         // === Table (connected to ProductController) ===
-        String[] columns = { "Product ID", "Product Name", "Items", "Price (Rs)", "Status", "Action" };
+        String[] columns = {"Product ID", "Product Name", "Items", "Price (Rs)", "Status", "Action"};
         model = new DefaultTableModel(columns, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
@@ -181,6 +181,7 @@ public class CashProductPanel extends JPanel {
 
     // Custom Editor to handle button clicks
     private class ActionEditor extends javax.swing.AbstractCellEditor implements javax.swing.table.TableCellEditor {
+
         private JPanel panel;
         private int row;
 
@@ -214,13 +215,13 @@ public class CashProductPanel extends JPanel {
     private void updateTable(List<Product> productList) {
         model.setRowCount(0); // Clear table
         for (Product p : productList) {
-            model.addRow(new Object[] {
-                    p.getProductId(),
-                    p.getName(),
-                    p.getQuantity(),
-                    p.getPrice(),
-                    p.getStatus(),
-                    "" // Action placeholder
+            model.addRow(new Object[]{
+                p.getProductId(),
+                p.getName(),
+                p.getQuantity(),
+                p.getPrice(),
+                p.getStatus(),
+                "" // Action placeholder
             });
         }
     }

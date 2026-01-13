@@ -9,11 +9,7 @@ import java.util.List;
 public class ProductController {
 
     private static final ArrayList<Product> products = new ArrayList<>();
-
-    // Manual Queue implementation using ArrayList for recent activities
     private static final ArrayList<String> recentActivities = new ArrayList<>();
-
-    // Manual Stack implementation using ArrayList for deleted products
     private final ArrayList<Product> deletedProducts = new ArrayList<>();
 
     // Load sample data only once
@@ -44,7 +40,6 @@ public class ProductController {
                     LocalDate.of(2025, 12, 30),
                     "/images/aloe.png"));
 
-            // Additional Sample Data
             products.add(new Product("P1001", "Amoxicillin 500mg", 100, 35.0, LocalDate.of(2025, 8, 10),
                     "/images/amoxicillin.png"));
             products.add(new Product("P1002", "Ibuprofen 400mg", 25, 20.0, LocalDate.of(2024, 5, 15),
@@ -72,12 +67,12 @@ public class ProductController {
         }
     }
 
-    // Helper to log activity (Manual Queue management)
+    // Helper to log activity
     private void logActivity(String activity) {
         recentActivities.add(LocalTime.now().withNano(0) + ": " + activity);
         // Keep only last 10 activities - Manual removal of first element (Queue FIFO)
         if (recentActivities.size() > 10) {
-            // Manual Shift items for removal at index 0
+            //Shift items for removal at index 0
             for (int i = 0; i < recentActivities.size() - 1; i++) {
                 recentActivities.set(i, recentActivities.get(i + 1));
             }

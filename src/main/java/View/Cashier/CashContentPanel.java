@@ -34,16 +34,15 @@ public class CashContentPanel extends JPanel {
 
     private void initializeUI() {
         setLayout(new BorderLayout());
-        setBackground(new Color(240, 242, 245));    // consistent light background
+        setBackground(new Color(240, 242, 245));
 
-        // ─── LEFT: Cashier Sidebar ───────────────────────────────
-        sidebarPanel = new CashSidebarPanel(parentFrame);   // ← pass WelcomeView
+        //Siderbarpanel
+        sidebarPanel = new CashSidebarPanel(parentFrame);
         add(sidebarPanel, BorderLayout.WEST);
 
-        // ─── RIGHT AREA: Navbar on top + switchable content ──────
         JPanel rightArea = new JPanel(new BorderLayout());
 
-        // Top: Navbar (fixed)
+        //Navbar
         navbarPanel = new CashNavbarPanel();
         rightArea.add(navbarPanel, BorderLayout.NORTH);
 
@@ -54,19 +53,18 @@ public class CashContentPanel extends JPanel {
 
         add(rightArea, BorderLayout.CENTER);
 
-        // ─── Add cashier-specific pages ──────────────────────────
-        // Make sure these classes exist and .getContentPanel() returns a JPanel
+        //Add cashier-specific pages 
         contentPanel.add(new CashDashboardPanel().getContentPanel(), "Dashboard");
         contentPanel.add(new CashProductPanel().getContentPanel(), "Product");
         contentPanel.add(new CashOrderPanel().getContentPanel(), "Order");
 
-        // Important: Account panel needs the logged-in user
+        //Account panel needs the logged-in user
         contentPanel.add(
                 new CashAccountPanel(loggedInUser).getContentPanel(),
                 "Account"
         );
 
-        // Start on Dashboard + highlight correct sidebar button
+        // Start on Dashboard
         cardLayout.show(contentPanel, "Dashboard");
         sidebarPanel.setActiveButton("Dashboard");
     }
@@ -79,7 +77,7 @@ public class CashContentPanel extends JPanel {
         sidebarPanel.setActiveButton(pageName);
     }
 
-    // Optional: refresh layout after big changes
+    // refresh layout after big changes
     public void refresh() {
         revalidate();
         repaint();

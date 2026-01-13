@@ -19,8 +19,6 @@ public class CustomerController {
     public CustomerController() {
         if (customers.isEmpty()) {
             customers.add(new Customer("C8583", "Hari Prasad Khadka", "9874672922", "hari@example.com"));
-
-            // Additional Customers
             customers.add(new Customer("C8584", "Sita Sharma", "9841234567", "sita@example.com"));
             customers.add(new Customer("C8585", "Ram Bahadur Tha", "9801987654", "ram.b@example.com"));
             customers.add(new Customer("C8586", "Gita Newa", "9812345678", "gita.n@example.com"));

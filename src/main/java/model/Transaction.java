@@ -15,12 +15,13 @@ import java.util.List;
  */
 public class Transaction {
 
-    private String transactionId;
-    private String customerId;
-    private LocalDate date;
-    private LocalTime time;
-    private double amount;
-    private List<String> productIds;
+    // using the final keyword so the details can't be changed which makes the financal data relaible 
+    private final String transactionId;
+    private final String customerId;
+    private final LocalDate date;
+    private final LocalTime time;
+    private final double amount;
+    private final List<String> productIds;
     // List of product IDs in this transaction using list here 
     //so it will be easy to change in the other list like linkedlist 
 

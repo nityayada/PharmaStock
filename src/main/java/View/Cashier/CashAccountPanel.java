@@ -66,11 +66,11 @@ public class CashAccountPanel extends JPanel {
 
     private JPanel createAccountContent() {
         JPanel panel = new JPanel(new BorderLayout());
-        panel.setBackground(new Color(248, 250, 252));
+        panel.setBackground(new Color(217, 217, 217));
         panel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
         JPanel container = new JPanel(new GridBagLayout());
-        container.setBackground(new Color(248, 250, 252));
+        container.setBackground(new Color(217, 217, 217));
 
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.gridx = 0;
@@ -82,7 +82,7 @@ public class CashAccountPanel extends JPanel {
 
         // Header Panel
         JPanel headerPanel = new JPanel(new BorderLayout());
-        headerPanel.setBackground(new Color(248, 250, 252));
+        headerPanel.setBackground(new Color(217, 217, 217));
         headerPanel.setBorder(BorderFactory.createEmptyBorder(20, 0, 40, 0));
 
         JLabel headerLabel = new JLabel("My Account", SwingConstants.CENTER);
