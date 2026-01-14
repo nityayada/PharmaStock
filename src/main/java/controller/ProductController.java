@@ -9,8 +9,17 @@ import java.util.List;
 public class ProductController {
 
     private static final ArrayList<Product> products = new ArrayList<>();
-    private static final ArrayList<String> recentActivities = new ArrayList<>();
-    private final ArrayList<Product> deletedProducts = new ArrayList<>();
+
+    // --- Manual Queue for Activity Log ---
+    private static final int QUEUE_SIZE = 10;
+    private static final String[] activityQueue = new String[QUEUE_SIZE];
+    private static int front = -1;
+    private static int rear = -1;
+
+    // --- Manual Stack for Undo Delete ---
+    private static final int STACK_MAX = 20;
+    private static final Product[] undoStack = new Product[STACK_MAX];
+    private static int top = -1;
 
     // Load sample data only once
     public ProductController() {
@@ -67,22 +76,38 @@ public class ProductController {
         }
     }
 
-    // Helper to log activity
+    // Helper to log activity (Manual Queue implementation)
     private void logActivity(String activity) {
-        recentActivities.add(LocalTime.now().withNano(0) + ": " + activity);
-        // Keep only last 10 activities - Manual removal of first element (Queue FIFO)
-        if (recentActivities.size() > 10) {
-            //Shift items for removal at index 0
-            for (int i = 0; i < recentActivities.size() - 1; i++) {
-                recentActivities.set(i, recentActivities.get(i + 1));
+        String logEntry = LocalTime.now().withNano(0) + ": " + activity;
+
+        // Circular Queue logic or simple shift
+        // If queue is full, we dequeue the oldest
+        if (rear == QUEUE_SIZE - 1) {
+            // dequeue oldest
+            for (int i = 0; i < rear; i++) {
+                activityQueue[i] = activityQueue[i + 1];
             }
-            // Remove the last duplicate after shift
-            recentActivities.remove(recentActivities.size() - 1);
+            rear--;
         }
+
+        if (front == -1) {
+            front = 0;
+        }
+
+        rear++;
+        activityQueue[rear] = logEntry;
     }
 
     public List<String> getRecentActivities() {
-        return new ArrayList<>(recentActivities);
+        List<String> activities = new ArrayList<>();
+        if (front != -1) {
+            for (int i = front; i <= rear; i++) {
+                if (activityQueue[i] != null) {
+                    activities.add(activityQueue[i]);
+                }
+            }
+        }
+        return activities;
     }
 
     public List<Product> getAllProducts() {
@@ -138,7 +163,10 @@ public class ProductController {
 
         if (toDelete != null) {
             // Push to manual stack (add to end)
-            deletedProducts.add(toDelete);
+            if (top < STACK_MAX - 1) {
+                top++;
+                undoStack[top] = toDelete;
+            }
 
             // Manual removal from ArrayList with shifting
             for (int i = deleteIndex; i < products.size() - 1; i++) {
@@ -151,9 +179,12 @@ public class ProductController {
     }
 
     public boolean undoDelete() {
-        if (!deletedProducts.isEmpty()) {
+        if (top != -1) {
             // Pop from manual stack (remove from end)
-            Product restored = deletedProducts.remove(deletedProducts.size() - 1);
+            Product restored = undoStack[top];
+            undoStack[top] = null;
+            top--;
+
             products.add(restored);
             logActivity("Undid deletion of: " + restored.getName());
             return true;
@@ -161,7 +192,7 @@ public class ProductController {
         return false;
     }
 
-    // === Linear Search Implementation (Explicit Loop) ===
+    // Linear Search Implementation
     public List<Product> searchProducts(String keyword) {
         if (keyword == null || keyword.trim().isEmpty()) {
             return getAllProducts();
@@ -255,7 +286,7 @@ public class ProductController {
         sortProducts(criteria, "Quick Sort");
     }
 
-    // --- Quick Sort ---
+    // Quick Sort
     private void quickSort(List<Product> list, int low, int high, String criteria) {
         if (low < high) {
             int pi = partition(list, low, high, criteria);
@@ -298,7 +329,7 @@ public class ProductController {
         return i + 1;
     }
 
-    // --- Insertion Sort ---
+    // Insertion Sort
     private void insertionSort(List<Product> list, String criteria) {
         int n = list.size();
         for (int i = 1; i < n; ++i) {
@@ -402,7 +433,7 @@ public class ProductController {
         }
     }
 
-    // === Order Processing ===
+    // Order Processing
     public Product getProduct(String id) {
         for (int i = 0; i < products.size(); i++) {
             if (products.get(i).getProductId().equals(id)) {
@@ -425,7 +456,7 @@ public class ProductController {
         logActivity("Sold " + quantityToSell + " of " + p.getName());
     }
 
-    // Binary Search Algorithms O(n) time complexity
+    // Binary Search Algorithms O(log N) time complexity
     // Used for finding a product by explicit ID (requires sorting first)
     public Product binarySearchProduct(String productId) {
         // Ensure the list is sorted by Product ID before searching

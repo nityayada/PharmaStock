@@ -49,7 +49,7 @@ public class AdminUserPanel extends JPanel {
         content.setBackground(new Color(217, 217, 217));
         content.setBorder(BorderFactory.createEmptyBorder(20, 50, 50, 50));
 
-        // === Search + Role Combo + Add New ===
+        // Search + Role Combo + Add New
         JPanel filterPanel = new JPanel(new BorderLayout());
         filterPanel.setBackground(new Color(217, 217, 217));
 
@@ -62,7 +62,7 @@ public class AdminUserPanel extends JPanel {
         searchField.addActionListener(e -> updateTable(userController.searchUsers(searchField.getText())));
         leftFilters.add(searchField);
 
-        JComboBox<String> roleCombo = new JComboBox<>(new String[]{"Roles", "All", "Admin", "Cashier"});
+        JComboBox<String> roleCombo = new JComboBox<>(new String[] { "Roles", "All", "Admin", "Cashier" });
         roleCombo.setPreferredSize(new Dimension(180, 45));
         roleCombo.addActionListener(e -> {
             String role = (String) roleCombo.getSelectedItem();
@@ -91,12 +91,12 @@ public class AdminUserPanel extends JPanel {
         content.add(filterPanel);
         content.add(Box.createRigidArea(new Dimension(0, 30)));
 
-        // === Table ===
-        String[] columns = {"Name", "Email", "Phone Number", "Role", "Action"};
+        // Table
+        String[] columns = { "Name", "Email", "Phone Number", "Role", "Action" };
         model = new DefaultTableModel(columns, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
-                return column == 4; // Only Action
+                return column == 4; // Only Action is editable
             }
         };
 
@@ -169,12 +169,12 @@ public class AdminUserPanel extends JPanel {
     private void updateTable(List<User> userList) {
         model.setRowCount(0);
         for (User u : userList) {
-            model.addRow(new Object[]{
-                u.getName(),
-                u.getEmail(),
-                u.getPhoneNumber(),
-                u.getRole(),
-                "" // Action placeholder
+            model.addRow(new Object[] {
+                    u.getName(),
+                    u.getEmail(),
+                    u.getPhoneNumber(),
+                    u.getRole(),
+                    "" // Action placeholder
             });
         }
     }
@@ -239,7 +239,7 @@ public class AdminUserPanel extends JPanel {
         JTextField nameField = new JTextField(u.getName());
         JTextField emailField = new JTextField(u.getEmail());
         JTextField phoneField = new JTextField(u.getPhoneNumber());
-        JComboBox<String> roleBox = new JComboBox<>(new String[]{"Admin", "Cashier"});
+        JComboBox<String> roleBox = new JComboBox<>(new String[] { "Admin", "Cashier" });
         roleBox.setSelectedItem(u.getRole());
         roleBox.setEnabled(false); // Prevent role change during edit if desired, or keep enabled.
         // User didn't strictly say disable edit role, but to be safe with "Admin"
@@ -258,7 +258,7 @@ public class AdminUserPanel extends JPanel {
         imagePathLabel.setToolTipText(initialPath); // Show full path on hover
 
         JButton browseBtn = new JButton("Browse");
-        final String[] selectedImagePath = {u.getImagePath()};
+        final String[] selectedImagePath = { u.getImagePath() };
 
         browseBtn.addActionListener(e -> {
             JFileChooser fc = new JFileChooser();
@@ -357,6 +357,8 @@ public class AdminUserPanel extends JPanel {
 
     // Add new user (simple dialog)
     private void addNewUser() {
+        JDialog dialog = new JDialog((JFrame) SwingUtilities.getWindowAncestor(this), "Add New User", true);
+        dialog.setLayout(new BorderLayout(10, 10));
 
         JTextField nameField = new JTextField();
         JTextField emailField = new JTextField();
@@ -364,60 +366,63 @@ public class AdminUserPanel extends JPanel {
         JPasswordField passwordField = new JPasswordField();
 
         // RESTRICTED: Only Cashier allowed
-        JComboBox<String> roleBox = new JComboBox<>(new String[]{"Cashier"});
+        JComboBox<String> roleBox = new JComboBox<>(new String[] { "Cashier" });
 
         // Image Upload
         JLabel imagePathLabel = new JLabel("No file selected");
         imagePathLabel.setPreferredSize(new Dimension(200, 20)); // Constraint size
         JButton browseBtn = new JButton("Browse");
-        final String[] selectedImagePath = {null};
+        final String[] selectedImagePath = { null };
 
         browseBtn.addActionListener(e -> {
             JFileChooser fc = new JFileChooser();
             javax.swing.filechooser.FileNameExtensionFilter filter = new javax.swing.filechooser.FileNameExtensionFilter(
                     "Images", "jpg", "png", "jpeg");
             fc.setFileFilter(filter);
-            if (fc.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
+            if (fc.showOpenDialog(dialog) == JFileChooser.APPROVE_OPTION) {
                 selectedImagePath[0] = fc.getSelectedFile().getAbsolutePath();
                 imagePathLabel.setText(fc.getSelectedFile().getName()); // Show only filename
                 imagePathLabel.setToolTipText(selectedImagePath[0]);
             }
         });
 
-        JPanel panel = new JPanel(new GridLayout(0, 2, 10, 10));
+        JPanel formPanel = new JPanel(new GridLayout(0, 2, 10, 10));
+        formPanel.setBorder(BorderFactory.createEmptyBorder(20, 30, 20, 30));
 
-        panel.add(new JLabel("Name:"));
-        panel.add(nameField);
+        formPanel.add(new JLabel("Name:"));
+        formPanel.add(nameField);
 
-        panel.add(new JLabel("Email:"));
-        panel.add(emailField);
+        formPanel.add(new JLabel("Email:"));
+        formPanel.add(emailField);
 
-        panel.add(new JLabel("Phone:"));
-        panel.add(phoneField);
+        formPanel.add(new JLabel("Phone:"));
+        formPanel.add(phoneField);
 
-        panel.add(new JLabel("Password:"));
-        panel.add(passwordField);
+        formPanel.add(new JLabel("Password:"));
+        formPanel.add(passwordField);
 
-        panel.add(new JLabel("Role:"));
-        panel.add(roleBox);
+        formPanel.add(new JLabel("Role:"));
+        formPanel.add(roleBox);
 
-        panel.add(new JLabel("Image (Optional):"));
+        formPanel.add(new JLabel("Image (Optional):"));
         JPanel imgPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
         imgPanel.add(browseBtn);
-        panel.add(imgPanel);
+        formPanel.add(imgPanel);
 
-        panel.add(new JLabel("")); // Spacer
-        panel.add(imagePathLabel);
+        formPanel.add(new JLabel("")); // Spacer
+        formPanel.add(imagePathLabel);
 
-        int result = JOptionPane.showConfirmDialog(
-                this,
-                panel,
-                "Add New User",
-                JOptionPane.OK_CANCEL_OPTION,
-                JOptionPane.PLAIN_MESSAGE);
+        dialog.add(formPanel, BorderLayout.CENTER);
 
-        if (result == JOptionPane.OK_OPTION) {
+        // Buttons
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 15, 15));
+        JButton cancelBtn = new JButton("Cancel");
+        cancelBtn.addActionListener(e -> dialog.dispose());
 
+        JButton saveBtn = new JButton("Save User");
+        saveBtn.setBackground(new Color(14, 40, 107));
+        saveBtn.setForeground(Color.WHITE);
+        saveBtn.addActionListener(e -> {
             String name = nameField.getText().trim();
             String email = emailField.getText().trim();
             String phone = phoneField.getText().trim();
@@ -426,21 +431,21 @@ public class AdminUserPanel extends JPanel {
 
             // Validation
             if (name.isEmpty() || email.isEmpty() || phone.isEmpty() || password.isEmpty()) {
-                JOptionPane.showMessageDialog(this, "All fields are required", "Validation Error",
+                JOptionPane.showMessageDialog(dialog, "Please fill all required fields", "Validation Error",
                         JOptionPane.ERROR_MESSAGE);
-                return;
+                return; // Keep dialog open
             }
 
             // Phone validation
             if (!phone.matches("\\d{10}")) {
-                JOptionPane.showMessageDialog(this, "Phone number must be exactly 10 digits!", "Validation Error",
+                JOptionPane.showMessageDialog(dialog, "Phone number must be exactly 10 digits!", "Validation Error",
                         JOptionPane.ERROR_MESSAGE);
                 return;
             }
 
             // Email validation
             if (!email.toLowerCase().endsWith("@gmail.com")) {
-                JOptionPane.showMessageDialog(this, "Email must be a valid @gmail.com address!", "Validation Error",
+                JOptionPane.showMessageDialog(dialog, "Email must be a valid @gmail.com address!", "Validation Error",
                         JOptionPane.ERROR_MESSAGE);
                 return;
             }
@@ -457,12 +462,19 @@ public class AdminUserPanel extends JPanel {
             userController.addUser(newUser);
             updateTable(userController.getAllUsers());
 
-            JOptionPane.showMessageDialog(
-                    this,
-                    "User added successfully",
-                    "Success",
+            JOptionPane.showMessageDialog(dialog, "User added successfully", "Success",
                     JOptionPane.INFORMATION_MESSAGE);
-        }
+            dialog.dispose();
+        });
+
+        buttonPanel.add(cancelBtn);
+        buttonPanel.add(saveBtn);
+        dialog.add(buttonPanel, BorderLayout.SOUTH);
+
+        dialog.pack();
+        dialog.setMinimumSize(new Dimension(500, 0)); // Ensure some width
+        dialog.setLocationRelativeTo(this);
+        dialog.setVisible(true);
     }
 
     private JPanel createIconCard(String title, String value, String iconPath, Color color) {

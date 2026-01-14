@@ -136,12 +136,12 @@ public class AdminProductPanel extends JPanel {
         leftFilters.add(searchField);
 
         // Sort Combo
-        String[] sortOptions = { "Sort By...", "Price", "Quantity", "Name" };
+        String[] sortOptions = {"Sort By...", "Price", "Quantity", "Name"};
         JComboBox<String> sortCombo = new JComboBox<>(sortOptions);
         sortCombo.setPreferredSize(new Dimension(120, 40));
 
         // Algorithm Combo
-        String[] algoOptions = { "Quick Sort", "Merge Sort", "Insertion Sort", "Selection Sort" };
+        String[] algoOptions = {"Quick Sort", "Merge Sort", "Insertion Sort", "Selection Sort"};
         JComboBox<String> algoCombo = new JComboBox<>(algoOptions);
         algoCombo.setPreferredSize(new Dimension(120, 40));
 
@@ -190,7 +190,7 @@ public class AdminProductPanel extends JPanel {
         content.add(filterPanel);
         content.add(Box.createRigidArea(new Dimension(0, 30)));
         // Table
-        String[] columns = { "Product ID", "Product Name", "Items", "Price (Rs)", "Status", "Action" };
+        String[] columns = {"Product ID", "Product Name", "Items", "Price (Rs)", "Status", "Action"};
         model = new DefaultTableModel(columns, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
@@ -234,13 +234,13 @@ public class AdminProductPanel extends JPanel {
     private void updateTable(List<Product> productList) {
         model.setRowCount(0);
         for (Product p : productList) {
-            model.addRow(new Object[] {
-                    p.getProductId(),
-                    p.getName(),
-                    p.getQuantity(),
-                    p.getPrice(),
-                    p.getStatus(),
-                    ""
+            model.addRow(new Object[]{
+                p.getProductId(),
+                p.getName(),
+                p.getQuantity(),
+                p.getPrice(),
+                p.getStatus(),
+                ""
             });
         }
     }
@@ -266,11 +266,11 @@ public class AdminProductPanel extends JPanel {
         // Text info
         JTextArea info = new JTextArea(
                 "Product ID: " + p.getProductId() + "\n"
-                        + "Name: " + p.getName() + "\n"
-                        + "Quantity: " + p.getQuantity() + "\n"
-                        + "Price: Rs. " + p.getPrice() + "\n"
-                        + "Status: " + p.getStatus() + "\n"
-                        + "Expiry Date: " + p.getExpiryDate());
+                + "Name: " + p.getName() + "\n"
+                + "Quantity: " + p.getQuantity() + "\n"
+                + "Price: Rs. " + p.getPrice() + "\n"
+                + "Status: " + p.getStatus() + "\n"
+                + "Expiry Date: " + p.getExpiryDate());
         info.setEditable(false);
         info.setBackground(null);
 
@@ -310,16 +310,22 @@ public class AdminProductPanel extends JPanel {
         JTextField priceField = new JTextField(String.valueOf(p.getPrice()));
         JTextField expiryField = new JTextField(p.getExpiryDate().toString());
 
-        JLabel imageLabel = new JLabel(p.getImagePath() == null ? "No image selected" : p.getImagePath());
+        JLabel imageLabel = new JLabel();
+        imageLabel.setPreferredSize(new Dimension(200, 20));
+        String initialPath = p.getImagePath();
+        imageLabel.setText(initialPath != null ? new java.io.File(initialPath).getName() : "No image selected");
+        imageLabel.setToolTipText(initialPath);
+
         JButton browseBtn = new JButton("Browse");
-        final String[] imagePath = { p.getImagePath() };
+        final String[] imagePath = {p.getImagePath()};
 
         browseBtn.addActionListener(e -> {
             JFileChooser fc = new JFileChooser();
             fc.setFileFilter(new FileNameExtensionFilter("Images", "jpg", "png", "jpeg"));
             if (fc.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
                 imagePath[0] = fc.getSelectedFile().getAbsolutePath();
-                imageLabel.setText(imagePath[0]);
+                imageLabel.setText(fc.getSelectedFile().getName());
+                imageLabel.setToolTipText(imagePath[0]);
             }
         });
 
@@ -346,24 +352,35 @@ public class AdminProductPanel extends JPanel {
 
         if (result == JOptionPane.OK_OPTION) {
             try {
+                String name = nameField.getText().trim();
+                String qtyStr = qtyField.getText().trim();
+                String priceStr = priceField.getText().trim();
+                String expiryStr = expiryField.getText().trim();
+
+                // Validate required fields
+                if (name.isEmpty() || qtyStr.isEmpty() || priceStr.isEmpty() || expiryStr.isEmpty()) {
+                    JOptionPane.showMessageDialog(this, "Please fill all required fields", "Validation Error",
+                            JOptionPane.ERROR_MESSAGE);
+
+                    return;
+                }
+
                 // Parse and validate expiry date
-                LocalDate expiry = LocalDate.parse(expiryField.getText().trim());
+                LocalDate expiry = LocalDate.parse(expiryStr);
                 if (expiry.isBefore(LocalDate.now())) {
                     JOptionPane.showMessageDialog(this, "Expiry must be a future date", "Validation Error",
                             JOptionPane.ERROR_MESSAGE);
                     return;
                 }
 
-                // Validate name
-                String name = nameField.getText().trim();
-                if (name.isEmpty()) {
-                    JOptionPane.showMessageDialog(this, "Name cannot be empty", "Validation Error",
+                int qty = Integer.parseInt(qtyStr);
+                double price = Double.parseDouble(priceStr);
+
+                if (qty < 0 || price < 0) {
+                    JOptionPane.showMessageDialog(this, "Quantity and Price must be Positive", "Validation Error",
                             JOptionPane.ERROR_MESSAGE);
                     return;
                 }
-
-                int qty = Integer.parseInt(qtyField.getText().trim());
-                double price = Double.parseDouble(priceField.getText().trim());
 
                 // Update product through controller
                 productController.updateProduct(productId, name, qty, price, expiry, imagePath[0]);
@@ -397,7 +414,7 @@ public class AdminProductPanel extends JPanel {
 
     private void showAddProductDialog() {
         JDialog dialog = new JDialog((JFrame) SwingUtilities.getWindowAncestor(this), "Add New Product", true);
-        dialog.setSize(500, 450);
+        dialog.setSize(500, 490);
         dialog.setLocationRelativeTo(this);
         dialog.setLayout(new BorderLayout(10, 10));
         dialog.getContentPane().setBackground(new Color(245, 245, 245));
@@ -410,7 +427,7 @@ public class AdminProductPanel extends JPanel {
         dialog.add(titleLabel, BorderLayout.NORTH);
 
         // Form Panel
-        JPanel formPanel = new JPanel(new GridLayout(6, 2, 10, 15));
+        JPanel formPanel = new JPanel(new GridLayout(7, 2, 10, 15));
         formPanel.setBorder(BorderFactory.createEmptyBorder(20, 30, 20, 30));
         formPanel.setBackground(new Color(245, 245, 245));
 
@@ -444,12 +461,19 @@ public class AdminProductPanel extends JPanel {
         JButton browseBtn = new JButton("Browse");
         formPanel.add(browseBtn);
 
-        final String[] imagePath = { null };
+        JLabel imageLabel = new JLabel("No image selected");
+        imageLabel.setPreferredSize(new Dimension(200, 20));
+        formPanel.add(new JLabel("")); // Spacer
+        formPanel.add(imageLabel);
+
+        final String[] imagePath = {null};
         browseBtn.addActionListener(e -> {
             JFileChooser fc = new JFileChooser();
             fc.setFileFilter(new FileNameExtensionFilter("Images", "jpg", "png", "jpeg"));
             if (fc.showOpenDialog(dialog) == JFileChooser.APPROVE_OPTION) {
                 imagePath[0] = fc.getSelectedFile().getAbsolutePath();
+                imageLabel.setText(fc.getSelectedFile().getName());
+                imageLabel.setToolTipText(imagePath[0]);
             }
         });
 
@@ -472,20 +496,30 @@ public class AdminProductPanel extends JPanel {
             try {
                 String id = idField.getText().trim();
                 String name = nameField.getText().trim();
-                int qty = Integer.parseInt(qtyField.getText().trim());
-                double price = Double.parseDouble(priceField.getText().trim());
+                String qtyStr = qtyField.getText().trim();
+                String priceStr = priceField.getText().trim();
+                String expiryStr = expiryField.getText().trim();
 
-                // Expiry validation (MANDATORY)
-                LocalDate expiry = LocalDate.parse(expiryField.getText().trim());
-                if (expiry.isBefore(LocalDate.now())) {
-                    JOptionPane.showMessageDialog(dialog, "Expiry date must be a future date", "Validation Error",
+                // Validate required fields
+                if (id.isEmpty() || name.isEmpty() || qtyStr.isEmpty() || priceStr.isEmpty() || expiryStr.isEmpty()) {
+                    JOptionPane.showMessageDialog(dialog, "Please fill all required fields", "Validation Error",
                             JOptionPane.ERROR_MESSAGE);
                     return;
                 }
 
-                // Validate required fields
-                if (id.isEmpty() || name.isEmpty()) {
-                    JOptionPane.showMessageDialog(dialog, "Product ID and Name cannot be empty", "Validation Error",
+                int qty = Integer.parseInt(qtyStr);
+                double price = Double.parseDouble(priceStr);
+
+                if (qty < 0 || price < 0) {
+                    JOptionPane.showMessageDialog(dialog, "Quantity and Price cannot be negative", "Validation Error",
+                            JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+
+                // Expiry validation (MANDATORY)
+                LocalDate expiry = LocalDate.parse(expiryStr);
+                if (expiry.isBefore(LocalDate.now())) {
+                    JOptionPane.showMessageDialog(dialog, "Expiry date must be a future date", "Validation Error",
                             JOptionPane.ERROR_MESSAGE);
                     return;
                 }
