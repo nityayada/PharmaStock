@@ -65,14 +65,14 @@ public class ProductController {
             products.add(new Product("P1006", "Omeprazole 20mg", 40, 50.0, LocalDate.of(2025, 12, 5),
                     "/images/omeprazole.png")); // Low
             // Stock
-            products.add(new Product("P1007", "Simvastatin 20mg", 90, 60.0, LocalDate.of(2026, 1, 30), null));
-            products.add(new Product("P1008", "Losartan 50mg", 120, 45.0, LocalDate.of(2025, 9, 30), null));
-            products.add(new Product("P1009", "Azithromycin 500mg", 60, 80.0, LocalDate.of(2025, 3, 1), null)); // Near
+            products.add(new Product("P1007", "Simvastatin 20mg", 90, 60.0, LocalDate.of(2026, 1, 30), "/images/simvastatin.png"));
+            products.add(new Product("P1008", "Losartan 50mg", 120, 45.0, LocalDate.of(2025, 9, 30), "/images/losartan.png"));
+            products.add(new Product("P1009", "Azithromycin 500mg", 60, 80.0, LocalDate.of(2025, 3, 1), "/images/azithromycin.png")); // Near
             // Expiry
-            products.add(new Product("P1010", "Ciprofloxacin 500mg", 110, 35.0, LocalDate.of(2026, 8, 20), null));
-            products.add(new Product("P1011", "Doxycycline 100mg", 30, 25.0, LocalDate.of(2024, 7, 10), null)); // Low
+            products.add(new Product("P1010", "Ciprofloxacin 500mg", 110, 35.0, LocalDate.of(2026, 8, 20), "/images/ciprofloxacin.png"));
+            products.add(new Product("P1011", "Doxycycline 100mg", 30, 25.0, LocalDate.of(2024, 7, 10), "/images/doxycycline.png")); // Low
             // Stock
-            products.add(new Product("P1012", "Gabapentin 300mg", 75, 150.0, LocalDate.of(2025, 11, 15), null));
+            products.add(new Product("P1012", "Gabapentin 300mg", 75, 150.0, LocalDate.of(2025, 11, 15), "/images/gabepentin.png"));
         }
     }
 

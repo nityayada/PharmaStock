@@ -5,12 +5,36 @@
 package View.Admin;
 
 import controller.UserController;
-import java.awt.*;
-import javax.swing.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.Font;
+import java.awt.GridLayout;
+import java.awt.Image;
 import javax.swing.table.DefaultTableModel;
 import model.User;
 import java.util.List;
+import javax.swing.AbstractCellEditor;
+import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JDialog;
+import javax.swing.JFileChooser;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JPasswordField;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.JTextField;
+import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
 import javax.swing.table.TableCellEditor;
 
 /**
@@ -62,7 +86,7 @@ public class AdminUserPanel extends JPanel {
         searchField.addActionListener(e -> updateTable(userController.searchUsers(searchField.getText())));
         leftFilters.add(searchField);
 
-        JComboBox<String> roleCombo = new JComboBox<>(new String[] { "Roles", "All", "Admin", "Cashier" });
+        JComboBox<String> roleCombo = new JComboBox<>(new String[]{"Roles", "All", "Admin", "Cashier"});
         roleCombo.setPreferredSize(new Dimension(180, 45));
         roleCombo.addActionListener(e -> {
             String role = (String) roleCombo.getSelectedItem();
@@ -92,7 +116,7 @@ public class AdminUserPanel extends JPanel {
         content.add(Box.createRigidArea(new Dimension(0, 30)));
 
         // Table
-        String[] columns = { "Name", "Email", "Phone Number", "Role", "Action" };
+        String[] columns = {"Name", "Email", "Phone Number", "Role", "Action"};
         model = new DefaultTableModel(columns, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
@@ -169,12 +193,12 @@ public class AdminUserPanel extends JPanel {
     private void updateTable(List<User> userList) {
         model.setRowCount(0);
         for (User u : userList) {
-            model.addRow(new Object[] {
-                    u.getName(),
-                    u.getEmail(),
-                    u.getPhoneNumber(),
-                    u.getRole(),
-                    "" // Action placeholder
+            model.addRow(new Object[]{
+                u.getName(),
+                u.getEmail(),
+                u.getPhoneNumber(),
+                u.getRole(),
+                "" // Action placeholder
             });
         }
     }
@@ -239,7 +263,7 @@ public class AdminUserPanel extends JPanel {
         JTextField nameField = new JTextField(u.getName());
         JTextField emailField = new JTextField(u.getEmail());
         JTextField phoneField = new JTextField(u.getPhoneNumber());
-        JComboBox<String> roleBox = new JComboBox<>(new String[] { "Admin", "Cashier" });
+        JComboBox<String> roleBox = new JComboBox<>(new String[]{"Admin", "Cashier"});
         roleBox.setSelectedItem(u.getRole());
         roleBox.setEnabled(false); // Prevent role change during edit if desired, or keep enabled.
         // User didn't strictly say disable edit role, but to be safe with "Admin"
@@ -258,7 +282,7 @@ public class AdminUserPanel extends JPanel {
         imagePathLabel.setToolTipText(initialPath); // Show full path on hover
 
         JButton browseBtn = new JButton("Browse");
-        final String[] selectedImagePath = { u.getImagePath() };
+        final String[] selectedImagePath = {u.getImagePath()};
 
         browseBtn.addActionListener(e -> {
             JFileChooser fc = new JFileChooser();
@@ -366,13 +390,13 @@ public class AdminUserPanel extends JPanel {
         JPasswordField passwordField = new JPasswordField();
 
         // RESTRICTED: Only Cashier allowed
-        JComboBox<String> roleBox = new JComboBox<>(new String[] { "Cashier" });
+        JComboBox<String> roleBox = new JComboBox<>(new String[]{"Cashier"});
 
         // Image Upload
         JLabel imagePathLabel = new JLabel("No file selected");
         imagePathLabel.setPreferredSize(new Dimension(200, 20)); // Constraint size
         JButton browseBtn = new JButton("Browse");
-        final String[] selectedImagePath = { null };
+        final String[] selectedImagePath = {null};
 
         browseBtn.addActionListener(e -> {
             JFileChooser fc = new JFileChooser();
@@ -438,14 +462,29 @@ public class AdminUserPanel extends JPanel {
 
             // Phone validation
             if (!phone.matches("\\d{10}")) {
-                JOptionPane.showMessageDialog(dialog, "Phone number must be exactly 10 digits!", "Validation Error",
+                JOptionPane.showMessageDialog(dialog, "Phone number must be exactly 10 digits!", "Invalid Phone Number",
                         JOptionPane.ERROR_MESSAGE);
                 return;
             }
 
             // Email validation
             if (!email.toLowerCase().endsWith("@gmail.com")) {
-                JOptionPane.showMessageDialog(dialog, "Email must be a valid @gmail.com address!", "Validation Error",
+                JOptionPane.showMessageDialog(dialog, "Please enter a valid email address ", "Invalid Email",
+                        JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            // Duplicate Email Change
+            if (userController.isEmailDuplicate(email)) {
+                JOptionPane.showMessageDialog(dialog, "Email already exists! Please use a different email address.",
+                        "Duplicate Email",
+                        JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            // Validate password strength
+            if (password.length() < 6) {
+                JOptionPane.showMessageDialog(dialog, "Password must be at least 6 characters.",
+                        "Password",
                         JOptionPane.ERROR_MESSAGE);
                 return;
             }

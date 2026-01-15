@@ -19,8 +19,9 @@ public class UserController {
 
     public UserController() {
         if (users.isEmpty()) {
-            users.add(new User("U001", "Silvia Sharma", "silvia@gmail.com", "9864892021", "cashier123", "Cashier", "images/femalUser.png"));
-            users.add(new User("U002", "Admin User", "admin@gmail.com", "9801234567", "admin123", "Admin", null));
+            users.add(new User("U001", "Silvia Sharma", "silvia@gmail.com", "9864892021", "cashier123", "Cashier",
+                    "/images/femalUser.png"));
+            users.add(new User("U002", "Admin User", "admin@gmail.com", "9801234567", "admin123", "Admin", "/images/user.png"));
         }
     }
 
@@ -39,6 +40,15 @@ public class UserController {
 
     public void addUser(User user) {
         users.add(user);
+    }
+
+    public boolean isEmailDuplicate(String email) {
+        for (User u : users) {
+            if (u.getEmail().equalsIgnoreCase(email)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public void updateUser(User updated) {
@@ -90,7 +100,7 @@ public class UserController {
         return result;
     }
 
-    //Merge Sort Implementation for Users (Sort by Name) ===
+    // Merge Sort Implementation for Users (Sort by Name) ===
     public void sortUsersByName(List<User> userList) {
         if (userList.size() <= 1) {
             return;

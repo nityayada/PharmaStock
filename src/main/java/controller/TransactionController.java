@@ -23,16 +23,29 @@ public class TransactionController {
 
     public TransactionController() {
         if (transactions.isEmpty()) {
-            transactions.add(new Transaction("TRX988", "C324", LocalDate.now(), LocalTime.now(), 550.0));
+            Transaction t1 = new Transaction("TRX988", "C324", LocalDate.now(), LocalTime.now(), 550.0);
+            t1.addProduct("P0321");
+            transactions.add(t1);
 
             // Additional Transactions
-            transactions.add(
-                    new Transaction("TRX989", "C8584", LocalDate.now().minusDays(1), LocalTime.of(10, 30), 120.0));
-            transactions.add(
-                    new Transaction("TRX990", "C8585", LocalDate.now().minusDays(2), LocalTime.of(14, 15), 340.0));
-            transactions.add(new Transaction("TRX991", "C8583", LocalDate.now(), LocalTime.of(9, 45), 85.0));
-            transactions.add(
-                    new Transaction("TRX992", "C8586", LocalDate.now().minusDays(5), LocalTime.of(16, 20), 210.0));
+            Transaction t2 = new Transaction("TRX989", "C8584", LocalDate.now().minusDays(1), LocalTime.of(10, 30),
+                    120.0);
+            t2.addProduct("P0685");
+            transactions.add(t2);
+
+            Transaction t3 = new Transaction("TRX990", "C8585", LocalDate.now().minusDays(2), LocalTime.of(14, 15),
+                    340.0);
+            t3.addProduct("P1001");
+            transactions.add(t3);
+
+            Transaction t4 = new Transaction("TRX991", "C8583", LocalDate.now(), LocalTime.of(9, 45), 85.0);
+            t4.addProduct("P1002");
+            transactions.add(t4);
+
+            Transaction t5 = new Transaction("TRX992", "C8586", LocalDate.now().minusDays(5), LocalTime.of(16, 20),
+                    210.0);
+            t5.addProduct("P1003");
+            transactions.add(t5);
         }
     }
 
