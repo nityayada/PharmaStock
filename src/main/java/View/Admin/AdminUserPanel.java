@@ -337,14 +337,20 @@ public class AdminUserPanel extends JPanel {
                 return;
             }
 
-            // Validation
+            // Duplicate Email Change
+            if (userController.isEmailDuplicate(newEmail)) {
+                JOptionPane.showMessageDialog(this, "Email already exists! Please use a different email address.",
+                        "Duplicate Email",
+                        JOptionPane.ERROR_MESSAGE);
+                return;
+            }            // Validation
             if (!phone.matches("\\d{10}")) {
                 JOptionPane.showMessageDialog(this, "Phone number must be exactly 10 digits!", "Validation Error",
                         JOptionPane.ERROR_MESSAGE);
                 return;
             }
             if (!newEmail.toLowerCase().endsWith("@gmail.com")) {
-                JOptionPane.showMessageDialog(this, "Email must be a valid @gmail.com address!", "Validation Error",
+                JOptionPane.showMessageDialog(this, "Please enter the valid email", "Email Error",
                         JOptionPane.ERROR_MESSAGE);
                 return;
             }
@@ -354,6 +360,8 @@ public class AdminUserPanel extends JPanel {
             u.setPhoneNumber(phone);
             u.setRole(roleBox.getSelectedItem().toString());
             u.setImagePath(selectedImagePath[0]);
+            JOptionPane.showMessageDialog(this, "User details updated successfully!", "Success",
+                    JOptionPane.INFORMATION_MESSAGE);
 
             userController.updateUser(u);
             updateTable(userController.getAllUsers());

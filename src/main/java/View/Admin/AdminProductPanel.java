@@ -545,10 +545,10 @@ public class AdminProductPanel extends JPanel {
                 dialog.dispose();
 
             } catch (NumberFormatException ex) {
-                JOptionPane.showMessageDialog(dialog, "Quantity and Price must be valid numbers", "Validation Error",
+                JOptionPane.showMessageDialog(dialog, "Quantity and Price must be valid numbers", "Error",
                         JOptionPane.ERROR_MESSAGE);
             } catch (Exception ex) {
-                JOptionPane.showMessageDialog(dialog, "Please enter valid data for all fields", "Validation Error",
+                JOptionPane.showMessageDialog(dialog, "Please enter the valid expiry date ", "Error",
                         JOptionPane.ERROR_MESSAGE);
             }
         });

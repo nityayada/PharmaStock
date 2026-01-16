@@ -143,12 +143,7 @@ public class CashOrderPanel extends JPanel {
 
         splitPane.setLeftComponent(leftPanel);
 
-        // ... (rest of layout)
-
-        // ... (Right Panel handling) => No changes needed
-
         // Return splitPane for layout not the whole method yet
-
         // Re-assembling the SplitPane part to ensure context validity
         JPanel cartPanel = new JPanel(new BorderLayout());
         cartPanel.setBackground(Color.WHITE);
@@ -186,7 +181,7 @@ public class CashOrderPanel extends JPanel {
         subTotalLabel = new JLabel("Rs. 0.00", SwingConstants.RIGHT);
         totalsPanel.add(subTotalLabel);
 
-        totalsPanel.add(new JLabel("Tax (10%):"));
+        totalsPanel.add(new JLabel("Tax (13%):"));
         taxLabel = new JLabel("Rs. 0.00", SwingConstants.RIGHT);
         totalsPanel.add(taxLabel);
 
@@ -351,7 +346,7 @@ public class CashOrderPanel extends JPanel {
             }
         }
 
-        double tax = subtotal * 0.10;
+        double tax = subtotal * 0.13;
         double total = subtotal + tax;
 
         subTotalLabel.setText(String.format("Rs. %.2f", subtotal));
@@ -433,7 +428,7 @@ public class CashOrderPanel extends JPanel {
                 Product p = productController.getProduct(entry.getKey());
                 totalAmount += p.getPrice() * entry.getValue();
             }
-            double finalAmount = totalAmount * 1.10; // +10% tax
+            double finalAmount = totalAmount * 1.13; // +13% tax
 
             // 4. Create Transaction
             Transaction trx = new Transaction(txId, custId, LocalDate.now(), LocalTime.now(), finalAmount);

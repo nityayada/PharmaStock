@@ -296,7 +296,7 @@ public class CashAccountPanel extends JPanel {
         JDialog dialog = new JDialog((Frame) SwingUtilities.getWindowAncestor(this), "Edit Profile", true);
         dialog.setLayout(new GridBagLayout());
         dialog.getContentPane().setBackground(Color.WHITE);
-        dialog.setSize(460, 450); // Increased size slightly
+        dialog.setSize(460, 470); // Increased size slightly
         dialog.setLocationRelativeTo(this);
 
         GridBagConstraints gbc = new GridBagConstraints();
