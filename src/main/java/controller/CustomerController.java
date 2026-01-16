@@ -9,13 +9,19 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- *
+ * Controller class for managing Customer-related operations.
+ * Handles the storage, retrieval, and searching of customer records.
+ * 
  * @author nityayadav
  */
 public class CustomerController {
 
     private static List<Customer> customers = new ArrayList<>();
 
+    /**
+     * Constructs a new CustomerController and initializes it with sample data if
+     * the list is empty.
+     */
     public CustomerController() {
         if (customers.isEmpty()) {
             customers.add(new Customer("C8583", "Hari Prasad Khadka", "9874672922", "hari@example.com"));

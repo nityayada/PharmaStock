@@ -10,18 +10,25 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- *
+ * Controller class for managing Users and authentication.
+ * Handles login validation, user registration, and role-based filtering.
+ * 
  * @author nityayadav
  */
 public class UserController {
 
     private static final List<User> users = new ArrayList<>();
 
+    /**
+     * Constructs a new UserController and initializes it with default accounts
+     * (Admin and Cashier).
+     */
     public UserController() {
         if (users.isEmpty()) {
             users.add(new User("U001", "Silvia Sharma", "silvia@gmail.com", "9864892021", "cashier123", "Cashier",
                     "/images/femalUser.png"));
-            users.add(new User("U002", "Admin User", "admin@gmail.com", "9801234567", "admin123", "Admin", "/images/user.png"));
+            users.add(new User("U002", "Admin User", "admin@gmail.com", "9801234567", "admin123", "Admin",
+                    "/images/user.png"));
         }
     }
 

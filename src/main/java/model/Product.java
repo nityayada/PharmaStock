@@ -3,7 +3,9 @@ package model;
 import java.time.LocalDate;
 
 /**
- *
+ * Represents a pharmaceutical Product in the inventory.
+ * Stores details such as stock levels, pricing, expiry date, and status.
+ * 
  * @author nityayadav
  */
 public class Product {
@@ -16,6 +18,16 @@ public class Product {
     private LocalDate expiryDate; // compulsory
     private String imagePath; // product image path (optiona)
 
+    /**
+     * Constructs a new Product with the specified details.
+     * 
+     * @param productId  Unique ID for the product.
+     * @param name       Name of the product.
+     * @param quantity   Initial quantity in stock.
+     * @param price      Unit price of the product.
+     * @param expiryDate Expiration date of the product.
+     * @param imagePath  Path to the product's image asset.
+     */
     public Product(
             String productId,
             String name,

@@ -14,13 +14,19 @@ import java.util.List;
 import java.util.Map;
 
 /**
- *
+ * Controller class for managing sales Transactions.
+ * Uses a LinkedList for efficient transaction record storage and analysis.
+ * 
  * @author nityayadav
  */
 public class TransactionController {
 
     private static List<Transaction> transactions = new LinkedList<>();
 
+    /**
+     * Constructs a new TransactionController and initializes it with sample
+     * transactions.
+     */
     public TransactionController() {
         if (transactions.isEmpty()) {
             Transaction t1 = new Transaction("TRX988", "C324", LocalDate.now(), LocalTime.now(), 550.0);

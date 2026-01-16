@@ -6,47 +6,39 @@ import model.Product;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Controller class for managing Product inventory.
+ * Implements advanced data structures and algorithms including:
+ * - Manual Stack for Undo Delete
+ * - Manual Queue for Activity Logging
+ * - Sorting: Quick, Insertion, Selection, Merge Sorts
+ * - Searching: Linear and Binary Search
+ * 
+ * @author nityayadav
+ */
 public class ProductController {
 
     private static final ArrayList<Product> products = new ArrayList<>();
-
-    // --- Manual Queue for Activity Log ---
     private static final int QUEUE_SIZE = 10;
     private static final String[] activityQueue = new String[QUEUE_SIZE];
     private static int front = -1;
     private static int rear = -1;
-
-    // --- Manual Stack for Undo Delete ---
     private static final int STACK_MAX = 20;
     private static final Product[] undoStack = new Product[STACK_MAX];
     private static int top = -1;
 
-    // Load sample data only once
+    /**
+     * Constructs a new ProductController and initializes it with sample data.
+     * Logs the system initialization in the activity queue.
+     */
     public ProductController() {
         if (products.isEmpty()) {
             logActivity("System Initialized with sample data");
-            products.add(new Product(
-                    "P0321",
-                    "Paracetamol Kalbe 500mg",
-                    789,
-                    20.0,
-                    LocalDate.of(2026, 5, 20),
+            products.add(new Product("P0321", "Paracetamol Kalbe 500mg", 789, 20.0, LocalDate.of(2026, 5, 20),
                     "/images/paracetamol.png"));
-
-            products.add(new Product(
-                    "P0685",
-                    "Blackmores Vit C 1000mg",
-                    540,
-                    80.0,
-                    LocalDate.of(2027, 1, 15),
+            products.add(new Product("P0685", "Blackmores Vit C 1000mg", 540, 80.0, LocalDate.of(2027, 1, 15),
                     "/images/vitc.png"));
-
-            products.add(new Product(
-                    "P0998",
-                    "Nature Republic Aloe Vera",
-                    48,
-                    50.0,
-                    LocalDate.of(2025, 12, 30),
+            products.add(new Product("P0998", "Nature Republic Aloe Vera", 48, 50.0, LocalDate.of(2025, 12, 30),
                     "/images/aloe.png"));
 
             products.add(new Product("P1001", "Amoxicillin 500mg", 100, 35.0, LocalDate.of(2025, 8, 10),
@@ -65,18 +57,29 @@ public class ProductController {
             products.add(new Product("P1006", "Omeprazole 20mg", 40, 50.0, LocalDate.of(2025, 12, 5),
                     "/images/omeprazole.png")); // Low
             // Stock
-            products.add(new Product("P1007", "Simvastatin 20mg", 90, 60.0, LocalDate.of(2026, 1, 30), "/images/simvastatin.png"));
-            products.add(new Product("P1008", "Losartan 50mg", 120, 45.0, LocalDate.of(2025, 9, 30), "/images/losartan.png"));
-            products.add(new Product("P1009", "Azithromycin 500mg", 60, 80.0, LocalDate.of(2025, 3, 1), "/images/azithromycin.png")); // Near
+            products.add(new Product("P1007", "Simvastatin 20mg", 90, 60.0, LocalDate.of(2026, 1, 30),
+                    "/images/simvastatin.png"));
+            products.add(new Product("P1008", "Losartan 50mg", 120, 45.0, LocalDate.of(2025, 9, 30),
+                    "/images/losartan.png"));
+            products.add(new Product("P1009", "Azithromycin 500mg", 60, 80.0, LocalDate.of(2025, 3, 1),
+                    "/images/azithromycin.png")); // Near
             // Expiry
-            products.add(new Product("P1010", "Ciprofloxacin 500mg", 110, 35.0, LocalDate.of(2026, 8, 20), "/images/ciprofloxacin.png"));
-            products.add(new Product("P1011", "Doxycycline 100mg", 30, 25.0, LocalDate.of(2024, 7, 10), "/images/doxycycline.png")); // Low
+            products.add(new Product("P1010", "Ciprofloxacin 500mg", 110, 35.0, LocalDate.of(2026, 8, 20),
+                    "/images/ciprofloxacin.png"));
+            products.add(new Product("P1011", "Doxycycline 100mg", 30, 25.0, LocalDate.of(2024, 7, 10),
+                    "/images/doxycycline.png")); // Low
             // Stock
-            products.add(new Product("P1012", "Gabapentin 300mg", 75, 150.0, LocalDate.of(2025, 11, 15), "/images/gabepentin.png"));
+            products.add(new Product("P1012", "Gabapentin 300mg", 75, 150.0, LocalDate.of(2025, 11, 15),
+                    "/images/gabepentin.png"));
         }
     }
 
-    // Helper to log activity (Manual Queue implementation)
+    /**
+     * Logs an activity entry in the manual queue.
+     * Uses manual array shifting to maintain First-In-First-Out (FIFO) behavior.
+     * 
+     * @param activity The description of the activity to log.
+     */
     private void logActivity(String activity) {
         String logEntry = LocalTime.now().withNano(0) + ": " + activity;
 
@@ -148,6 +151,13 @@ public class ProductController {
         }
     }
 
+    /**
+     * Deletes a product by its ID.
+     * Implements manual search and stack push for undo functionality.
+     * Before removal, the product is pushed onto the manual undo stack.
+     * 
+     * @param id The unique ID of the product to delete.
+     */
     public void deleteProduct(String id) {
         // Find product to delete - Manual Search
         Product toDelete = null;
@@ -178,6 +188,12 @@ public class ProductController {
         }
     }
 
+    /**
+     * Undoes the last deletion by popping a product from the manual undo stack.
+     * Restores the product to the main list.
+     * 
+     * @return true if restoration was successful, false if the stack is empty.
+     */
     public boolean undoDelete() {
         if (top != -1) {
             // Pop from manual stack (remove from end)
@@ -192,7 +208,12 @@ public class ProductController {
         return false;
     }
 
-    // Linear Search Implementation
+    /**
+     * Searches for products matching a keyword using Linear Search.
+     * 
+     * @param keyword The search term (Name or ID).
+     * @return A list of products that match the keyword.
+     */
     public List<Product> searchProducts(String keyword) {
         if (keyword == null || keyword.trim().isEmpty()) {
             return getAllProducts();
@@ -261,7 +282,13 @@ public class ProductController {
         return results;
     }
 
-    // === Sorting (Multiple Algorithms) ===
+    /**
+     * Entry point for sorting products based on specified criteria and algorithm.
+     * 
+     * @param criteria  The field to sort by (Price, Quantity, Name, Product ID).
+     * @param algorithm The sorting algorithm to use (Quick Sort, Insertion Sort,
+     *                  Selection Sort, Merge Sort).
+     */
     public void sortProducts(String criteria, String algorithm) {
         switch (algorithm) {
             case "Quick Sort":
@@ -281,6 +308,11 @@ public class ProductController {
         }
     }
 
+    /**
+     * Sorts products by criteria using the default algorithm (Quick Sort).
+     * 
+     * @param criteria The field to sort by.
+     */
     public void sortProducts(String criteria) {
         // Default to Quick Sort for backward compatibility
         sortProducts(criteria, "Quick Sort");
@@ -456,8 +488,13 @@ public class ProductController {
         logActivity("Sold " + quantityToSell + " of " + p.getName());
     }
 
-    // Binary Search Algorithms O(log N) time complexity
-    // Used for finding a product by explicit ID (requires sorting first)
+    /**
+     * Searches for a product using the Binary Search algorithm.
+     * Ensure the list is sorted by Product ID before calling this method.
+     * 
+     * @param productId The ID of the product to find.
+     * @return The Product object if found, null otherwise.
+     */
     public Product binarySearchProduct(String productId) {
         // Ensure the list is sorted by Product ID before searching
         // We use our existing QuickSort for efficiency O(N log N)

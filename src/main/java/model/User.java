@@ -5,7 +5,9 @@
 package model;
 
 /**
- *
+ * Represents a User in the PharmaStock system.
+ * Authorized users can be either Admin or Cashier.
+ * 
  * @author nityayadav
  */
 public class User {
@@ -18,6 +20,17 @@ public class User {
     private String role; // "Admin" or "Cashier"
     private String imagePath;
 
+    /**
+     * Constructs a new User with the specified details.
+     * 
+     * @param userId      Unique identifier for the user.
+     * @param name        Full name of the user.
+     * @param email       User's email address.
+     * @param phoneNumber User's contact number.
+     * @param password    User's secret password for authentication.
+     * @param role        User's access role (Admin/Cashier).
+     * @param imagePath   Path to the user's profile image.
+     */
     public User(String userId, String name, String email, String phoneNumber, String password, String role,
             String imagePath) {
         this.userId = userId;
