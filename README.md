@@ -63,15 +63,14 @@ This project serves as coursework for Data Structures and Algorithms, featuring 
    cd PharmaStock
    ```
 
-2. **Build the project**:
-   ```bash
-   mvn clean install
-   ```
+### 2. Running via IDE (Recommended)
 
-3. **Run the application**:
-   ```bash
-   mvn exec:java
-   ```
+The easiest way to run this project is using a modern Java IDE:
+
+1. **NetBeans**:
+   - Go to **File > Open Project**.
+   - Select the `PharmaStock` folder (it should have a Maven icon).
+   - Right-click the project in the sidebar and select **Run**.
 
 
 Developed as part of the Data Structure and Specialist Programming coursework.
