@@ -172,7 +172,7 @@
                   <Color blue="ba" green="ba" red="ba" type="rgb"/>
                 </Property>
                 <Property name="horizontalAlignment" type="int" value="0"/>
-                <Property name="text" type="java.lang.String" value="&#xa9; 2025 PharmaStock. Privacy Policy | Copyright Policy"/>
+                <Property name="text" type="java.lang.String" value="&#xa9; 2026 PharmaStock. Privacy Policy | Copyright Policy"/>
               </Properties>
             </Component>
           </SubComponents>
