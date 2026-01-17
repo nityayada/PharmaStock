@@ -73,9 +73,5 @@ This project serves as coursework for Data Structures and Algorithms, featuring 
    mvn exec:java
    ```
 
-## 📸 Screenshots
 
-*(Add your project screenshots here to showcase the stunning UI!)*
-
----
-Developed as part of the Data Structure and Algorithms Coursework.
+Developed as part of the Data Structure and Specialist Programming coursework.
